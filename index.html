@@ -5539,7 +5539,7 @@
         const imgEl = document.getElementById(map.img);
         const hintEl = document.getElementById(map.hint);
         const ctrlEl = document.getElementById(map.ctrl);
-        if (dataUrl && dataUrl.startsWith("data:image")) {
+        if (dataUrl && (dataUrl.startsWith("data:image") || dataUrl.startsWith("http://") || dataUrl.startsWith("https://") || dataUrl.startsWith("uploads/"))) {
             if (imgEl) { imgEl.src = dataUrl; imgEl.classList.remove("hidden"); }
             if (hintEl) hintEl.classList.add("hidden");
             if (ctrlEl) ctrlEl.classList.remove("hidden");
@@ -6067,7 +6067,7 @@
     window.buildBiometricCheckboxHTML = function(emp) {
         const isReg = emp.biometricRegistered !== false;
         const hasId = Boolean((emp.idFrontImg && emp.idFrontImg !== "") || (emp.idBackImg && emp.idBackImg !== ""));
-        const hasAvatar = Boolean(emp.personalImg && emp.personalImg.startsWith("data:image"));
+        const hasAvatar = Boolean(emp.personalImg && (emp.personalImg.startsWith("data:image") || emp.personalImg.startsWith("http://") || emp.personalImg.startsWith("https://") || emp.personalImg.startsWith("uploads/")));
         return `
             <div class="inline-flex flex-wrap items-center gap-1.5 no-print">
                 ${hasAvatar ? `<img src="${emp.personalImg}" class="emp-avatar-mini" title="الصورة الشخصية">` : ''}
@@ -7175,7 +7175,7 @@
         const img = document.getElementById("prev_civilRegImg");
         const hint = document.getElementById("hint_civilRegImg");
         const ctrl = document.getElementById("ctrl_civilRegImg");
-        if (dataUrl && dataUrl.startsWith("data:image")) {
+        if (dataUrl && (dataUrl.startsWith("data:image") || dataUrl.startsWith("http://") || dataUrl.startsWith("https://") || dataUrl.startsWith("uploads/"))) {
             if (img) { img.src = dataUrl; img.classList.remove("hidden"); }
             if (hint) hint.classList.add("hidden");
             if (ctrl) ctrl.classList.remove("hidden");
@@ -7234,7 +7234,7 @@
         const emp = (curComp().employees || []).find(e => String(e.id).trim() === String(empId).trim());
         if (!emp) return;
         const idbCivil = await getMediaFromDB(curComp().id, emp.id, "civil");
-        tempCivilRegData = (idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : "");
+        tempCivilRegData = (emp.civilRegImg && (emp.civilRegImg.startsWith("http://") || emp.civilRegImg.startsWith("https://") || emp.civilRegImg.startsWith("uploads/"))) ? emp.civilRegImg : ((idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : ""));
         updateCivilRegPreviewUI(tempCivilRegData);
 
         const sel = document.getElementById("f_docTypeSelector");
@@ -7271,7 +7271,7 @@
         const emp = (curComp().employees || []).find(e => String(e.id).trim() === String(empId).trim());
         if (!emp) return;
         const idbCivil = await getMediaFromDB(curComp().id, emp.id, "civil");
-        const civilImg = (idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : "");
+        const civilImg = (emp.civilRegImg && (emp.civilRegImg.startsWith("http://") || emp.civilRegImg.startsWith("https://") || emp.civilRegImg.startsWith("uploads/"))) ? emp.civilRegImg : ((idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : ""));
         if (!civilImg) { alert(`⚠️ لم يتم رفع صورة إخراج القيد للموظف (${emp.name}) بعد!`); return; }
         await generateFullA4CivilRegPDF({ ...emp, civilRegImg: civilImg }, blackAndWhite);
     };
@@ -7369,7 +7369,7 @@
         const emp = (curComp().employees || []).find(e => String(e.id).trim() === String(empId).trim());
         if (!emp) return;
         const idbCivil = await getMediaFromDB(curComp().id, emp.id, "civil");
-        const civil = (idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : "");
+        const civil = (emp.civilRegImg && (emp.civilRegImg.startsWith("http://") || emp.civilRegImg.startsWith("https://") || emp.civilRegImg.startsWith("uploads/"))) ? emp.civilRegImg : ((idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : ((emp.civilRegImg && emp.civilRegImg.startsWith("data:image")) ? emp.civilRegImg : ""));
         const box = document.getElementById("idv_imagesContainer");
         if (box) {
             box.insertAdjacentHTML("beforeend", `
@@ -15554,6 +15554,498 @@
 
     // سحب أولي فوري من Supabase عند فتح الصفحة
     setTimeout(() => { window.pullFromCloud(false, true); }, 250);
+
+
+    // ==================== 51. حزمة الترقية v42: محرك الدمج التلقائي الذكي (Smart Merge) لمنع التضارب بين الأقسام ====================
+    window._basmaEmpHashes = {};
+    window._basmaBypassSmartMerge = false;
+    let basmaSmartMergeQueue = false;
+
+    function computeSimpleHash(obj) {
+        try {
+            const copy = { ...obj };
+            delete copy._empUpdatedAt;
+            const str = JSON.stringify(copy);
+            let h = 5381;
+            for (let i = 0; i < str.length; i++) {
+                h = ((h << 5) + h) ^ str.charCodeAt(i);
+            }
+            return (h >>> 0).toString(36) + "_" + str.length;
+        } catch (e) {
+            return String(Date.now());
+        }
+    }
+
+    function snapshotCurrentEmployeeHashes() {
+        const map = {};
+        Object.entries(appData.companies || {}).forEach(([cid, comp]) => {
+            (comp.employees || []).forEach(emp => {
+                if (!emp || !emp.id) return;
+                map[cid + "::" + String(emp.id).trim()] = computeSimpleHash(emp);
+            });
+        });
+        window._basmaEmpHashes = map;
+    }
+
+    function stampLocallyChangedEmployees() {
+        const now = Date.now();
+        Object.entries(appData.companies || {}).forEach(([cid, comp]) => {
+            if (!comp.deletedEmpIds || typeof comp.deletedEmpIds !== "object") comp.deletedEmpIds = {};
+            (comp.employees || []).forEach(emp => {
+                if (!emp || !emp.id) return;
+                const key = cid + "::" + String(emp.id).trim();
+                const curHash = computeSimpleHash(emp);
+                const prevHash = window._basmaEmpHashes[key];
+                if (!prevHash || prevHash !== curHash) {
+                    emp._empUpdatedAt = now;
+                    // إذا أعيدت إضافة موظف كان محذوفاً سابقاً، نزيله من قائمة المحذوفات
+                    if (comp.deletedEmpIds[String(emp.id).trim()]) {
+                        delete comp.deletedEmpIds[String(emp.id).trim()];
+                    }
+                } else if (!emp._empUpdatedAt) {
+                    emp._empUpdatedAt = Number(appData.updatedAt) || now - 1000;
+                }
+            });
+        });
+    }
+
+    function mergeDeletedTombstones(localDel, remoteDel) {
+        const merged = {};
+        const cutoff = Date.now() - (30 * 24 * 60 * 60 * 1000); // الاحتفاظ بسجل الحذف لمدة 30 يوماً
+        const allKeys = new Set([...Object.keys(localDel || {}), ...Object.keys(remoteDel || {})]);
+        allKeys.forEach(k => {
+            const ts = Math.max(Number((localDel || {})[k]) || 0, Number((remoteDel || {})[k]) || 0);
+            if (ts > cutoff) merged[k] = ts;
+        });
+        return merged;
+    }
+
+    function mergeAlertsArrays(localAlerts, remoteAlerts) {
+        const byId = new Map();
+        const combined = [...(Array.isArray(remoteAlerts) ? remoteAlerts : []), ...(Array.isArray(localAlerts) ? localAlerts : [])];
+        combined.forEach(a => {
+            if (!a) return;
+            const key = a.id || `${a.time}_${a.dept}_${a.empId}_${a.action}`;
+            const existing = byId.get(key);
+            if (!existing) {
+                byId.set(key, { ...a });
+            } else {
+                // إذا تم تحديد التنبيه كمقروء في أي طرف، نبقيه مقروءاً
+                byId.set(key, { ...existing, ...a, read: Boolean(existing.read || a.read) });
+            }
+        });
+        return Array.from(byId.values()).slice(0, 120);
+    }
+
+    function smartMergeSingleCompany(localComp, remoteComp, cid) {
+        if (!remoteComp) return localComp;
+        if (!localComp) return remoteComp;
+
+        const mergedDeleted = mergeDeletedTombstones(localComp.deletedEmpIds, remoteComp.deletedEmpIds);
+        const localMap = new Map();
+        const remoteMap = new Map();
+
+        (localComp.employees || []).forEach(e => { if (e && e.id) localMap.set(String(e.id).trim(), e); });
+        (remoteComp.employees || []).forEach(e => { if (e && e.id) remoteMap.set(String(e.id).trim(), e); });
+
+        const allEmpIds = new Set([...remoteMap.keys(), ...localMap.keys()]);
+        const mergedEmployees = [];
+
+        allEmpIds.forEach(empId => {
+            const lEmp = localMap.get(empId);
+            const rEmp = remoteMap.get(empId);
+            const delTs = Number(mergedDeleted[empId]) || 0;
+
+            const lTs = Number(lEmp?._empUpdatedAt) || 0;
+            const rTs = Number(rEmp?._empUpdatedAt) || 0;
+
+            // إذا كان الموظف محذوفاً بتاريخ أحدث من آخر تعديل له في الطرفين، لا يُعاد
+            if (delTs > 0 && delTs >= Math.max(lTs, rTs)) {
+                return;
+            }
+
+            if (lEmp && !rEmp) {
+                mergedEmployees.push(lEmp);
+            } else if (!lEmp && rEmp) {
+                mergedEmployees.push(rEmp);
+            } else if (lEmp && rEmp) {
+                if (lTs > rTs) {
+                    mergedEmployees.push(lEmp);
+                } else if (rTs > lTs) {
+                    mergedEmployees.push(rEmp);
+                } else {
+                    // تساوي الطابع الزمني: نتحقق إن تغير محلياً عن اللقطة الأخيرة
+                    const key = cid + "::" + empId;
+                    const changedLocally = window._basmaEmpHashes[key] && (computeSimpleHash(lEmp) !== window._basmaEmpHashes[key]);
+                    mergedEmployees.push(changedLocally ? lEmp : rEmp);
+                }
+            }
+        });
+
+        // دمج الأقسام والصلاحيات وكلمات السر
+        const mergedDepts = { ...(remoteComp.departments || {}), ...(localComp.departments || {}) };
+        Object.keys(mergedDepts).forEach(d => {
+            const rSubs = Array.isArray(remoteComp.departments?.[d]) ? remoteComp.departments[d] : [];
+            const lSubs = Array.isArray(localComp.departments?.[d]) ? localComp.departments[d] : [];
+            mergedDepts[d] = Array.from(new Set([...rSubs, ...lSubs]));
+        });
+
+        const mergedAlerts = mergeAlertsArrays(localComp.hrAlerts, remoteComp.hrAlerts);
+
+        return {
+            ...remoteComp,
+            ...localComp,
+            departments: mergedDepts,
+            deptPasswords: { ...(remoteComp.deptPasswords || {}), ...(localComp.deptPasswords || {}) },
+            deptPermissions: { ...(remoteComp.deptPermissions || {}), ...(localComp.deptPermissions || {}) },
+            deletedEmpIds: mergedDeleted,
+            hrAlerts: mergedAlerts,
+            employees: mergedEmployees
+        };
+    }
+
+    function smartMergeAllCompanies(localCompanies, remoteCompanies) {
+        if (!remoteCompanies || typeof remoteCompanies !== "object") return localCompanies;
+        if (!localCompanies || typeof localCompanies !== "object") return remoteCompanies;
+        const result = {};
+        const allCompIds = new Set([...Object.keys(remoteCompanies), ...Object.keys(localCompanies)]);
+        allCompIds.forEach(cid => {
+            result[cid] = smartMergeSingleCompany(localCompanies[cid], remoteCompanies[cid], cid);
+        });
+        return result;
+    }
+
+    // تسجيل الحذف الصريح في deletedEmpIds حتى لا يعود الموظف المحذوف عند الدمج
+    const _v41DeleteEmp = window.deleteEmployeeById;
+    if (typeof _v41DeleteEmp === "function") {
+        window.deleteEmployeeById = async function(empId) {
+            const cleanId = String(empId || "").trim();
+            const existed = (curComp()?.employees || []).some(e => String(e.id).trim() === cleanId);
+            const res = await _v41DeleteEmp.apply(this, arguments);
+            const stillExists = (curComp()?.employees || []).some(e => String(e.id).trim() === cleanId);
+            if (existed && !stillExists && curComp()) {
+                if (!curComp().deletedEmpIds) curComp().deletedEmpIds = {};
+                curComp().deletedEmpIds[cleanId] = Date.now();
+                await window.pushToCloud(true, true);
+            }
+            return res;
+        };
+    }
+
+    // تجاوز الدمج عند استعادة نسخة احتياطية أو تصفير المنشأة عمداً
+    const _v41RestoreBackup = window.restoreSupabaseBackupByIdx;
+    if (typeof _v41RestoreBackup === "function") {
+        window.restoreSupabaseBackupByIdx = async function(idx) {
+            window._basmaBypassSmartMerge = true;
+            try { return await _v41RestoreBackup.apply(this, arguments); }
+            finally { window._basmaBypassSmartMerge = false; }
+        };
+    }
+
+    const _v41FactoryReset = window.executeFactoryReset;
+    if (typeof _v41FactoryReset === "function") {
+        window.executeFactoryReset = async function() {
+            window._basmaBypassSmartMerge = true;
+            try { return await _v41FactoryReset.apply(this, arguments); }
+            finally { window._basmaBypassSmartMerge = false; }
+        };
+    }
+
+    // ترقية pushToCloud لتنفيذ الدمج التلقائي الذكي قبل الرفع إلى Supabase
+    window.pushToCloud = async function(silent = true, forceSave = false) {
+        if (!isLoggedIn && !forceSave) return false;
+        if (appData.isDefaultSeed && !forceSave) return false;
+        if (!window.basmaCloudLoadedOnce && !forceSave) return false;
+        if (basmaSbPushing) {
+            basmaSmartMergeQueue = true;
+            return false;
+        }
+
+        basmaSbPushing = true;
+        try {
+            stampLocallyChangedEmployees();
+
+            // 1. سحب أحدث نسخة من Supabase ودمجها ذكياً قبل الكتابة (ما لم يكن استعادة نسخة احتياطية)
+            if (!window._basmaBypassSmartMerge) {
+                try {
+                    const preRes = await fetch(`${SUPABASE_URL}/rest/v1/basma_state?id=eq.${encodeURIComponent(SUPABASE_STATE_ID)}&select=data,updated_at`, {
+                        method: "GET",
+                        headers: getSupabaseHeaders(),
+                        cache: "no-store"
+                    });
+                    if (preRes.ok) {
+                        const preRows = await preRes.json();
+                        if (Array.isArray(preRows) && preRows.length > 0 && preRows[0]?.data?.companies) {
+                            const remoteData = preRows[0].data;
+                            appData.companies = smartMergeAllCompanies(appData.companies, remoteData.companies);
+                            ensureDataIntegrity();
+                        }
+                    }
+                } catch (preErr) {}
+            }
+
+            // 2. تجهيز الحزمة المدمجة ورفعها إلى Supabase
+            const payload = buildBasmaStatePayload();
+            const nowTs = Date.now();
+            payload.updatedAt = nowTs;
+            appData.updatedAt = nowTs;
+            appData.isDefaultSeed = false;
+
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/basma_state`, {
+                method: "POST",
+                headers: getSupabaseHeaders({ "Prefer": "resolution=merge-duplicates,return=minimal" }),
+                body: JSON.stringify({
+                    id: SUPABASE_STATE_ID,
+                    data: payload,
+                    updated_at: nowTs
+                })
+            });
+
+            if (!res.ok) {
+                setSupabaseBadgeStatus(false, "⚠️ خطأ حفظ Supabase");
+                if (!silent) showToast("⚠️ تعذر الحفظ في Supabase (رمز: " + res.status + ")");
+                return false;
+            }
+
+            snapshotCurrentEmployeeHashes();
+            setSupabaseBadgeStatus(true, "☁️ Supabase متصل (دمج ذكي)");
+            if (Date.now() - basmaLastAutoBackupTs > 15 * 60 * 1000) {
+                window.saveSupabaseBackupSnapshot(false);
+            }
+            if (!silent) showToast("☁️ تم الحفظ والدمج الذكي في Supabase بنجاح");
+            return true;
+        } catch (err) {
+            setSupabaseBadgeStatus(false, "⚠️ انقطاع الاتصال بالسحابة");
+            if (!silent) showToast("⚠️ تعذر الاتصال بسيرفر Supabase");
+            return false;
+        } finally {
+            basmaSbPushing = false;
+            if (basmaSmartMergeQueue) {
+                basmaSmartMergeQueue = false;
+                setTimeout(() => window.pushToCloud(true, false), 300);
+            }
+        }
+    };
+
+    // تحديث لقطة البصمات بعد كل سحب من Supabase
+    const _v41PullFromCloud = window.pullFromCloud;
+    window.pullFromCloud = async function(showFeedback = false, forceApply = false) {
+        const ok = await _v41PullFromCloud.apply(this, arguments);
+        if (ok) {
+            snapshotCurrentEmployeeHashes();
+            setSupabaseBadgeStatus(true, "☁️ Supabase متصل (دمج ذكي)");
+        }
+        return ok;
+    };
+
+    // مزامنة خلفية خفيفة كل 20 ثانية لتحديث الشاشات تلقائياً بين الأقسام والإدارة
+    if (!window._basmaSmartSyncTimer) {
+        window._basmaSmartSyncTimer = setInterval(() => {
+            if (!isLoggedIn || basmaSbPushing) return;
+            const activeEl = document.activeElement;
+            const isTyping = activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName === "TEXTAREA" || activeEl.tagName === "SELECT");
+            if (!isTyping) {
+                window.pullFromCloud(false, false);
+            }
+        }, 20000);
+    }
+
+
+    // ==================== 52. حزمة الترقية v43: نقل صور الهويات وإخراج القيد والصور الشخصية إلى Supabase Storage ====================
+    const SUPABASE_STORAGE_BUCKET = "emp-docs";
+
+    function sanitizeStorageSegment(str) {
+        const clean = String(str || "item").trim().replace(/[^a-zA-Z0-9_\-]/g, "_");
+        return clean || "item";
+    }
+
+    function dataUrlToBlobInfo(dataUrl) {
+        const parts = String(dataUrl || "").split(",");
+        if (parts.length < 2) return null;
+        const mimeMatch = parts[0].match(/data:([^;]+);base64/i);
+        const mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+        const ext = mime.includes("png") ? "png" : (mime.includes("webp") ? "webp" : "jpg");
+        const binStr = atob(parts[1]);
+        const len = binStr.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = binStr.charCodeAt(i);
+        return { blob: new Blob([bytes], { type: mime }), mime, ext };
+    }
+
+    window.uploadImageToSupabaseStorage = async function(compId, empId, type, dataUrl) {
+        if (!dataUrl || typeof dataUrl !== "string") return "";
+        if (!dataUrl.startsWith("data:image")) return dataUrl; // رابط جاهز مسبقاً
+        try {
+            const info = dataUrlToBlobInfo(dataUrl);
+            if (!info) return dataUrl;
+
+            const safeSlug = sanitizeStorageSegment(SUPABASE_STATE_ID);
+            const safeComp = sanitizeStorageSegment(compId || curComp()?.id || "orontes");
+            const safeEmp = sanitizeStorageSegment(empId || "emp");
+            const safeType = sanitizeStorageSegment(type || "img");
+            const objectPath = `${safeSlug}/${safeComp}/${safeEmp}/${safeType}.${info.ext}`;
+
+            const headers = {
+                "apikey": SUPABASE_KEY,
+                "Content-Type": info.mime,
+                "x-upsert": "true"
+            };
+            if (SUPABASE_KEY && !SUPABASE_KEY.startsWith("sb_publishable_")) {
+                headers["Authorization"] = "Bearer " + SUPABASE_KEY;
+            }
+
+            const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${SUPABASE_STORAGE_BUCKET}/${objectPath}`, {
+                method: "POST",
+                headers,
+                body: info.blob
+            });
+
+            if (res.ok) {
+                return `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_STORAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
+            } else {
+                const errTxt = await res.text().catch(() => "");
+                console.warn("Supabase Storage upload failed:", res.status, errTxt);
+                return dataUrl;
+            }
+        } catch (err) {
+            console.warn("Supabase Storage upload error:", err);
+            return dataUrl;
+        }
+    };
+
+    // توجيه دالة الرفع القديمة (InfinityFree) تلقائياً إلى Supabase Storage
+    uploadImageToInfinityFreeServer = async function(empId, type, dataUrl) {
+        return await window.uploadImageToSupabaseStorage(curComp()?.id, empId, type, dataUrl);
+    };
+
+    // رفع الصور الأربع (الشخصية + الهوية وجه/قفا + إخراج القيد) تلقائياً إلى Supabase Storage عند حفظ الموظف
+    const _v42SaveNewEmployee = window.saveNewEmployee;
+    window.saveNewEmployee = async function() {
+        const empId = document.getElementById("f_id")?.value.trim();
+        const cid = curComp()?.id || "orontes";
+        if (empId) {
+            let uploadingAny = false;
+            if ((tempPersonalData && tempPersonalData.startsWith("data:image")) ||
+                (tempIdFrontData && tempIdFrontData.startsWith("data:image")) ||
+                (tempIdBackData && tempIdBackData.startsWith("data:image")) ||
+                (typeof tempCivilRegData !== "undefined" && tempCivilRegData && tempCivilRegData.startsWith("data:image"))) {
+                uploadingAny = true;
+                showToast("☁️ جاري رفع صور الموظف إلى Supabase Storage...");
+            }
+            if (tempPersonalData && tempPersonalData.startsWith("data:image")) {
+                tempPersonalData = await window.uploadImageToSupabaseStorage(cid, empId, "personal", tempPersonalData);
+            }
+            if (tempIdFrontData && tempIdFrontData.startsWith("data:image")) {
+                tempIdFrontData = await window.uploadImageToSupabaseStorage(cid, empId, "front", tempIdFrontData);
+            }
+            if (tempIdBackData && tempIdBackData.startsWith("data:image")) {
+                tempIdBackData = await window.uploadImageToSupabaseStorage(cid, empId, "back", tempIdBackData);
+            }
+            if (typeof tempCivilRegData !== "undefined" && tempCivilRegData && tempCivilRegData.startsWith("data:image")) {
+                tempCivilRegData = await window.uploadImageToSupabaseStorage(cid, empId, "civil", tempCivilRegData);
+            }
+            if (uploadingAny) {
+                updateMediaPreviewUI("personal", tempPersonalData);
+                updateMediaPreviewUI("front", tempIdFrontData);
+                updateMediaPreviewUI("back", tempIdBackData);
+                if (typeof updateCivilRegPreviewUI === "function" && typeof tempCivilRegData !== "undefined") {
+                    updateCivilRegPreviewUI(tempCivilRegData);
+                }
+            }
+        }
+        return await _v42SaveNewEmployee.apply(this, arguments);
+    };
+
+    // رفع الصورة تلقائياً إلى Supabase Storage بعد التدوير من نافذة عرض الهوية
+    const _v42RotateSavedEmpPhoto = window.rotateSavedEmpPhoto;
+    if (typeof _v42RotateSavedEmpPhoto === "function") {
+        window.rotateSavedEmpPhoto = async function(empId, type) {
+            const emp = (curComp().employees || []).find(e => String(e.id).trim() === String(empId).trim());
+            if (!emp) return;
+            const cur = await resolveEmpMedia(emp, type);
+            if (!cur) return;
+            const rotated = await rotateImage90(cur);
+            const finalUrl = await window.uploadImageToSupabaseStorage(curComp().id, emp.id, type, rotated);
+            if (type === "personal") emp.personalImg = finalUrl;
+            else if (type === "front") emp.idFrontImg = finalUrl;
+            else if (type === "back") emp.idBackImg = finalUrl;
+            await saveMediaToDB(curComp().id, emp.id, type, finalUrl);
+            await persistData();
+            openEmployeeIdCardViewer(emp.id);
+            showToast("🔄 تم تدوير الصورة ورفعها إلى Supabase Storage بنجاح");
+        };
+    }
+
+    // أداة نقل جميع الصور الحالية (Base64 / IndexedDB) إلى Supabase Storage بضغطة زر
+    window.migrateAllPhotosToSupabaseStorage = async function(silent = false) {
+        const comps = Object.entries(appData.companies || {});
+        let uploaded = 0, alreadyCloud = 0, failed = 0;
+        if (!silent) showToast("🖼️ جاري فحص ونقل صور الهويات إلى Supabase Storage...");
+
+        const mediaMap = [
+            ["personalImg", "personal"],
+            ["idFrontImg", "front"],
+            ["idBackImg", "back"],
+            ["civilRegImg", "civil"]
+        ];
+
+        for (const [cid, comp] of comps) {
+            for (const emp of (comp.employees || [])) {
+                if (!emp || !emp.id) continue;
+                for (const [prop, type] of mediaMap) {
+                    let val = emp[prop] || "";
+                    if (!val || val === "__IDB__") {
+                        const idbVal = await getMediaFromDB(cid, emp.id, type);
+                        if (idbVal && idbVal.startsWith("data:image")) val = idbVal;
+                    }
+                    if (!val) continue;
+                    if (val.startsWith("http://") || val.startsWith("https://")) {
+                        alreadyCloud++;
+                        continue;
+                    }
+                    if (val.startsWith("data:image")) {
+                        const newUrl = await window.uploadImageToSupabaseStorage(cid, emp.id, type, val);
+                        if (newUrl && newUrl.startsWith("https://")) {
+                            emp[prop] = newUrl;
+                            emp._empUpdatedAt = Date.now();
+                            await saveMediaToDB(cid, emp.id, type, newUrl);
+                            uploaded++;
+                        } else {
+                            failed++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (uploaded > 0) {
+            await window.pushToCloud(true, true);
+            renderAllViews();
+        }
+
+        if (!silent) {
+            if (failed > 0 && uploaded === 0) {
+                alert(`⚠️ تعذر رفع (${failed}) صورة إلى Supabase Storage!\n\nتأكد من إنشاء مجلد (Bucket) باسم: emp-docs في Supabase وجعله Public مع تفعيل صلاحية الرفع.`);
+            } else {
+                showToast(`✅ اكتمل النقل: تم رفع (${uploaded}) صورة جديدة | (${alreadyCloud}) محفوظة مسبقاً${failed ? ' | فشل: ' + failed : ''}`);
+            }
+        }
+        return { uploaded, alreadyCloud, failed };
+    };
+
+    // إضافة زر نقل الصور إلى نافذة ☁️ السحابة
+    const _v42OpenCloudModal = window.openCloudModal;
+    window.openCloudModal = function() {
+        if (typeof _v42OpenCloudModal === "function") _v42OpenCloudModal();
+        const box = document.querySelector("#sbCloudPanelBox .flex.flex-wrap");
+        if (box && !document.getElementById("btnMigratePhotosSbStorage")) {
+            box.insertAdjacentHTML("beforeend", `
+                <button type="button" id="btnMigratePhotosSbStorage" onclick="migrateAllPhotosToSupabaseStorage(false)" class="btn-lux btn-emerald-wa !py-1.5 !px-3.5 !text-xs">
+                    <span>🖼️ نقل صور الهويات إلى Supabase Storage</span>
+                </button>
+            `);
+        }
+    };
 
     // تشغيل أولي نظيف وفوري
     // إظهار لوحة الدخول الجديدة فوراً بعد اكتمال التصميم بدون أي ومضة للوحة القديمة
