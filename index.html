@@ -15857,7 +15857,6 @@
     window.pushToCloud = async function(silent = true, forceSave = false) {
         if (!isLoggedIn && !forceSave) return false;
         if (appData.isDefaultSeed && !forceSave) return false;
-        if (!window.basmaCloudLoadedOnce && !forceSave) return false;
         if (basmaSbPushing) {
             basmaSmartMergeQueue = true;
             return false;
@@ -17047,6 +17046,71 @@
             const sp = document.getElementById("basmaSplashIntro");
             if (sp) sp.remove();
         }, 50);
+    }
+
+
+    // ==================== 55. حزمة الترقية v52: مزامنة فورية مضمونة بين رابط الإدخال السريع (?mode=entry) والموقع الأساسي ====================
+    // 1. ختم كل موظف يُحفظ من الاستمارة بطابع زمني فوري لضمان فوز التعديل في الدمج الذكي مع Supabase
+    const _v51ReadFormObj = window.readFormObject;
+    if (typeof _v51ReadFormObj === "function") {
+        window.readFormObject = function() {
+            const obj = _v51ReadFormObj.apply(this, arguments);
+            if (obj && typeof obj === "object") {
+                obj._empUpdatedAt = Date.now();
+            }
+            return obj;
+        };
+    }
+
+    // 2. بث إشارة فورية لجميع التبويبات المفتوحة فور نجاح الرفع إلى Supabase
+    const _v51PushToCloud = window.pushToCloud;
+    if (typeof _v51PushToCloud === "function") {
+        window.pushToCloud = async function(silent = true, forceSave = false) {
+            const ok = await _v51PushToCloud.call(this, silent, forceSave);
+            if (ok) {
+                window.basmaCloudLoadedOnce = true;
+                try {
+                    if (syncChannel) {
+                        syncChannel.postMessage({ type: "SUPABASE_PUSHED", updatedAt: appData.updatedAt || Date.now() });
+                    }
+                } catch (e) {}
+            }
+            return ok;
+        };
+    }
+
+    // 3. استلام الإشارة في الموقع الأساسي (أو أي تبويب مفتوح) وسحب التعديلات فوراً من Supabase
+    if (syncChannel) {
+        const _v51OnMsg = syncChannel.onmessage;
+        syncChannel.onmessage = (ev) => {
+            if (ev.data && ev.data.type === "SUPABASE_PUSHED") {
+                if (isLoggedIn && typeof window.pullFromCloud === "function") {
+                    window.pullFromCloud(false, true).then(() => {
+                        if (typeof renderAllViews === "function") renderAllViews();
+                    }).catch(() => {});
+                }
+                return;
+            }
+            if (typeof _v51OnMsg === "function") _v51OnMsg(ev);
+        };
+    }
+
+    // 4. تأكيد الرفع الفوري وإظهار رسالة واضحة للمستخدم بعد الحفظ في رابط الإدخال السريع
+    const _v51SaveNewEmp = window.saveNewEmployee;
+    if (typeof _v51SaveNewEmp === "function") {
+        window.saveNewEmployee = async function() {
+            const empNameBefore = document.getElementById("f_name")?.value.trim() || "";
+            const res = await _v51SaveNewEmp.apply(this, arguments);
+            if (BASMA_CLEAN_ENTRY_MODE && empNameBefore) {
+                const synced = await window.pushToCloud(true, true);
+                if (synced) {
+                    showToast(`☁️ تم حفظ (${empNameBefore}) ومزامنته فوراً مع الموقع الأساسي`);
+                } else {
+                    showToast(`⚠️ تعذر الرفع الفوري إلى Supabase — تأكد من الإنترنت واضغط 🔄 تحديث`);
+                }
+            }
+            return res;
+        };
     }
 
     // تشغيل أولي نظيف وفوري
