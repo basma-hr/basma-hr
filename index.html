@@ -4497,7 +4497,19 @@
     }
 
 
-    /* ==================== 25. حزمة الترقية v44: زر توليد إضبارة عمل PDF ==================== */
+    /* ==================== 25. حزمة الترقية v44/v46: زر توليد إضبارة عمل PDF + تثبيت خط Arial ومنع تقطع الحروف العربية ==================== */
+    #basmaDossierRenderStage,
+    #basmaDossierRenderStage *,
+    .dossier-exact-contract,
+    .dossier-exact-contract * {
+        font-family: Arial, "Helvetica Neue", Tahoma, sans-serif !important;
+        letter-spacing: 0 !important;
+        word-spacing: normal !important;
+        font-variant-ligatures: normal !important;
+    }
+    #basmaDossierPreviewModal {
+        z-index: 9995 !important;
+    }
     .btn-basma-dossier {
         background: linear-gradient(135deg, #0f766e 0%, #0d9488 55%, #115e59 100%) !important;
         border: 1.5px solid #99f6e4 !important;
@@ -4511,6 +4523,78 @@
     .btn-basma-dossier:hover { background: linear-gradient(135deg, #115e59 0%, #134e4a 100%) !important; }
     body.is-dept-head-mode .btn-basma-dossier,
     body.is-dept-head-mode button[onclick*="generateWorkDossierPdf"] {
+        display: none !important;
+    }
+
+
+    /* ==================== 26. حزمة الترقية v48: وضع إدخال البيانات النظيف السريع (?mode=entry) بدون أي مؤثرات أو شعارات متحركة ==================== */
+    body.basma-clean-entry-mode,
+    body.basma-clean-entry-mode * {
+        animation: none !important;
+        transition: none !important;
+    }
+    body.basma-clean-entry-mode *::before,
+    body.basma-clean-entry-mode *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+    body.basma-clean-entry-mode .btn-lux::after,
+    body.basma-clean-entry-mode .btn-basma-advance::after,
+    body.basma-clean-entry-mode .btn-basma-leave::after,
+    body.basma-clean-entry-mode .btn-basma-holo-card::after {
+        display: none !important;
+    }
+    body.basma-clean-entry-mode {
+        background: #f1f5f9 !important;
+        background-image: none !important;
+    }
+    body.basma-clean-entry-mode #basmaSplashIntro,
+    body.basma-clean-entry-mode #basmaBgWatermark,
+    body.basma-clean-entry-mode #basma3dAiMascot,
+    body.basma-clean-entry-mode #basmaOfficialFooter,
+    body.basma-clean-entry-mode #basmaScrollProgress,
+    body.basma-clean-entry-mode #basmaBackToTop,
+    body.basma-clean-entry-mode #basmaCornerExitBtn,
+    body.basma-clean-entry-mode header,
+    body.basma-clean-entry-mode nav,
+    body.basma-clean-entry-mode #view-dashboard,
+    body.basma-clean-entry-mode #view-payroll,
+    body.basma-clean-entry-mode #view-search,
+    body.basma-clean-entry-mode #view-reports,
+    body.basma-clean-entry-mode #view-master,
+    body.basma-clean-entry-mode #view-stats,
+    body.basma-clean-entry-mode #view-form > .lg\:col-span-4,
+    body.basma-clean-entry-mode #deptAddBoxCard,
+    body.basma-clean-entry-mode #hrSidebarShortcuts,
+    body.basma-clean-entry-mode #deptHeadRosterCard,
+    body.basma-clean-entry-mode #btnEditLabelsForm {
+        display: none !important;
+    }
+    body.basma-clean-entry-mode main {
+        max-width: 1060px !important;
+        margin: 0 auto !important;
+        padding: 14px !important;
+    }
+    body.basma-clean-entry-mode #view-form {
+        display: block !important;
+    }
+    body.basma-clean-entry-mode #view-form > .lg\:col-span-8 {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    body.basma-clean-entry-mode .lux-card {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+        border-radius: 12px !important;
+    }
+    body.basma-clean-entry-mode #loginScreen {
+        background: #f1f5f9 !important;
+    }
+    body.basma-clean-entry-mode #loginScreen > .lux-card::before {
+        display: none !important;
+    }
+    body.basma-clean-entry-mode #loginScreen .basma-oval-emblem {
         display: none !important;
     }
 
@@ -16066,7 +16150,7 @@
     };
 
 
-    // ==================== 53. حزمة الترقية v44: حقل الخانة + محرك توليد إضبارة عمل PDF (غلاف رسمي + عقد عمل مطابق للوورد + صورة الهوية) ====================
+    // ==================== 53. حزمة الترقية v46: حقل الخانة + نافذة معاينة وتعديل بيانات الإضبارة والعقد + عقد Arial مطابق 100% للوورد ====================
     function ensureDossierFieldsInForm() {
         const addrEl = document.getElementById("f_address");
         const anchorCol = addrEl ? (addrEl.closest("div.md\\:col-span-8") || addrEl.parentElement) : document.getElementById("f_dob")?.closest("div.md\\:col-span-4");
@@ -16087,18 +16171,16 @@
             `);
         }
 
-        // إضافة زر توليد إضبارة العمل بجانب أزرار تصدير الهوية في الاستمارة
         const formIdPdfBtn = document.querySelector('button[onclick*="exportCurrentFormEmpIdToPdf(false)"]');
         if (formIdPdfBtn && !document.getElementById("btnFormGenerateDossierPdf")) {
             formIdPdfBtn.insertAdjacentHTML("beforebegin", `
                 <button type="button" id="btnFormGenerateDossierPdf" onclick="generateCurrentFormWorkDossierPdf()" class="btn-lux btn-basma-dossier !py-2 !px-4">
-                    <span>📁 توليد إضبارة عمل (PDF)</span>
+                    <span>📁 معاينة وتوليد إضبارة عمل (PDF)</span>
                 </button>
             `);
         }
     }
 
-    // ربط حقول (الخانة، اسم الأم، تاريخ منح الهوية) بالحفظ والتحميل والتفريغ
     const _v43ReadFormObj = window.readFormObject;
     window.readFormObject = function() {
         const obj = _v43ReadFormObj();
@@ -16130,19 +16212,17 @@
         });
     };
 
-    // إضافة زر إضبارة عمل داخل الجدول بجانب زر PDF الهوية
     const _v43BuildBioHtml = window.buildBiometricCheckboxHTML;
     if (typeof _v43BuildBioHtml === "function") {
         window.buildBiometricCheckboxHTML = function(emp) {
             let out = _v43BuildBioHtml(emp);
-            const btnHtml = `<button type="button" onclick="generateWorkDossierPdf('${emp.id}')" class="px-2 py-0.5 rounded text-[10.5px] font-extrabold btn-basma-dossier" title="توليد ملف إضبارة عمل PDF كامل (غلاف + عقد عمل + هوية)">📁 إضبارة</button>`;
+            const btnHtml = `<button type="button" onclick="generateWorkDossierPdf('${emp.id}')" class="px-2 py-0.5 rounded text-[10.5px] font-extrabold btn-basma-dossier" title="معاينة وتعديل البيانات وتوليد إضبارة عمل PDF">📁 إضبارة</button>`;
             const idx = out.lastIndexOf("</div>");
             if (idx !== -1) return out.slice(0, idx) + btnHtml + out.slice(idx);
             return out + btnHtml;
         };
     }
 
-    // إضافة زر إضبارة عمل داخل نافذة عارض الهوية
     const _v43OpenIdViewer = window.openEmployeeIdCardViewer;
     if (typeof _v43OpenIdViewer === "function") {
         window.openEmployeeIdCardViewer = async function(empId) {
@@ -16151,7 +16231,7 @@
             if (colorBtn) {
                 let dBtn = document.getElementById("btnModalGenerateDossierPdf");
                 if (!dBtn) {
-                    colorBtn.insertAdjacentHTML("beforebegin", `<button type="button" id="btnModalGenerateDossierPdf" class="btn-lux btn-basma-dossier"><span>📁 توليد إضبارة عمل PDF</span></button>`);
+                    colorBtn.insertAdjacentHTML("beforebegin", `<button type="button" id="btnModalGenerateDossierPdf" class="btn-lux btn-basma-dossier"><span>📁 معاينة وتوليد إضبارة عمل PDF</span></button>`);
                     dBtn = document.getElementById("btnModalGenerateDossierPdf");
                 }
                 if (dBtn) dBtn.onclick = () => window.generateWorkDossierPdf(empId);
@@ -16161,6 +16241,10 @@
 
     function escDossierHtml(v) {
         return String(v || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function toArabicDigits(v) {
+        return String(v ?? "").replace(/[0-9]/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
     }
 
     function parseDatePartsDMY(dateStr) {
@@ -16174,98 +16258,287 @@
     }
 
     async function fetchImageAsSafeDataUrl(src) {
-        if (!src) return "";
-        if (src.startsWith("data:image")) return src;
+        if (!src || typeof src !== "string") return "";
+        const clean = src.trim();
+        if (!clean || clean === "__IDB__") return "";
+        if (clean.startsWith("data:image")) return clean;
         try {
-            const resp = await fetch(src, { mode: "cors", cache: "no-store" });
-            if (!resp.ok) return src;
+            const resp = await fetch(clean, { mode: "cors", cache: "no-store" });
+            if (!resp.ok) return "";
             const blob = await resp.blob();
+            if (!blob || !blob.type || !blob.type.startsWith("image/")) return "";
             return await new Promise((resolve) => {
                 const fr = new FileReader();
-                fr.onloadend = () => resolve(fr.result || src);
-                fr.onerror = () => resolve(src);
+                fr.onloadend = () => {
+                    const res = fr.result;
+                    resolve((typeof res === "string" && res.startsWith("data:image")) ? res : "");
+                };
+                fr.onerror = () => resolve("");
                 fr.readAsDataURL(blob);
             });
         } catch (e) {
-            return src;
+            return "";
         }
     }
 
-    // توليد الصفحة 1: غلاف إضبارة عمل رسمي (بدون شعار المنصة)
+    // ==================== نافذة معاينة وتعديل بيانات إضبارة العمل والعقد قبل التوليد ====================
+    window._basmaPendingDossierEmp = null;
+
+    function ensureDossierPreviewModal() {
+        if (document.getElementById("basmaDossierPreviewModal")) return;
+        document.body.insertAdjacentHTML("beforeend", `
+            <div id="basmaDossierPreviewModal" class="fixed inset-0 bg-slate-950/80 hidden items-center justify-center p-3 backdrop-blur-sm">
+                <div class="lux-card max-w-3xl w-full p-5 text-right space-y-4 max-h-[92vh] overflow-y-auto border-2 border-teal-500">
+                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b" style="border-color: var(--border-col);">
+                        <div>
+                            <h3 class="font-title text-base font-black">📁 معاينة وتعديل بيانات إضبارة العمل وعقد العمل قبل التوليد</h3>
+                            <p class="text-xs font-bold opacity-75 mt-0.5">راجع وعدّل أي حقل تريده هنا، ثم اضغط توليد لإصدار ملف PDF مطابق 100% لنموذج العقد</p>
+                        </div>
+                        <button type="button" onclick="closeDossierPreviewModal()" class="btn-lux btn-dark-lux !py-1 !px-3">✕ إغلاق</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block font-extrabold mb-1">اسم العامل الكامل *:</label>
+                            <input type="text" id="dp_name" class="w-full lux-input font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">اسم الأم (والدته/):</label>
+                            <input type="text" id="dp_motherName" placeholder="مثال: عائشة" class="w-full lux-input">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">الرقم الوطني:</label>
+                            <input type="text" id="dp_natId" class="w-full lux-input num-mono text-center">
+                        </div>
+
+                        <div>
+                            <label class="block font-extrabold mb-1">مكان الولادة:</label>
+                            <input type="text" id="dp_birthPlace" placeholder="حماة" class="w-full lux-input text-center">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">تاريخ الولادة:</label>
+                            <input type="text" id="dp_dob" placeholder="YYYY-MM-DD" onblur="smartFormatDateInput(this)" class="w-full lux-input num-mono text-center">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">الصادرة عن أمين السجل المدني في:</label>
+                            <input type="text" id="dp_idRegistry" placeholder="مثال: حماة / محردة / السلمية..." class="w-full lux-input text-center font-bold">
+                        </div>
+
+                        <div>
+                            <label class="block font-extrabold mb-1">الخانة (خــــــــ):</label>
+                            <input type="text" id="dp_khana" placeholder="مثال: الحاضر 12" class="w-full lux-input text-center font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">تاريخ منح الهوية:</label>
+                            <input type="text" id="dp_idIssueDate" placeholder="YYYY-MM-DD" onblur="smartFormatDateInput(this)" class="w-full lux-input num-mono text-center">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">عنوانه في معرض تنفيذ هذا العقد:</label>
+                            <input type="text" id="dp_address" placeholder="حماة – ..." class="w-full lux-input">
+                        </div>
+
+                        <div>
+                            <label class="block font-extrabold mb-1">المهنة (في مقدمة العقد):</label>
+                            <input type="text" id="dp_job" placeholder="مثال: طباخ / كاشير / أراكيل" class="w-full lux-input">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">أو بعمل عامل (القسم):</label>
+                            <input type="text" id="dp_workType" placeholder="مثال: مطبخ / صالة" class="w-full lux-input">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">الأجر الشهري بالعقد (ليرة سورية):</label>
+                            <input type="text" id="dp_salary" placeholder="مثال: 1400000" class="w-full lux-input num-mono text-center font-bold">
+                        </div>
+
+                        <div>
+                            <label class="block font-extrabold mb-1">تاريخ بداية العقد (مادة 2):</label>
+                            <input type="text" id="dp_startDate" placeholder="YYYY-MM-DD" onblur="smartFormatDateInput(this)" class="w-full lux-input num-mono text-center">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">تاريخ نهاية العقد (مادة 2):</label>
+                            <input type="text" id="dp_endDate" placeholder="YYYY-MM-DD" onblur="smartFormatDateInput(this)" class="w-full lux-input num-mono text-center">
+                        </div>
+                        <div>
+                            <label class="block font-extrabold mb-1">تاريخ تحرير العقد (الأسفل):</label>
+                            <input type="text" id="dp_signDate" placeholder="YYYY-MM-DD" onblur="smartFormatDateInput(this)" class="w-full lux-input num-mono text-center">
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t" style="border-color: var(--border-col);">
+                        <label class="inline-flex items-center gap-2 text-xs font-extrabold cursor-pointer select-none">
+                            <input type="checkbox" id="dp_saveToProfile" checked class="w-4 h-4 accent-teal-600">
+                            <span>حفظ هذه التعديلات في بطاقة الموظف على Supabase أيضاً</span>
+                        </label>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" onclick="closeDossierPreviewModal()" class="btn-lux btn-dark-lux">إلغاء</button>
+                            <button type="button" onclick="confirmAndGenerateDossierPdf()" class="btn-lux btn-basma-dossier !px-6 !py-2.5">
+                                <span>📄 اعتماد وتوليد إضبارة العمل (PDF)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+    }
+
+    window.closeDossierPreviewModal = function() {
+        const m = document.getElementById("basmaDossierPreviewModal");
+        if (m) { m.classList.add("hidden"); m.classList.remove("flex"); }
+    };
+
+    window.openDossierPreviewModal = function(empData) {
+        ensureDossierPreviewModal();
+        window._basmaPendingDossierEmp = empData;
+
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const startStr = empData.hireDate || todayStr;
+        const sp = parseDatePartsDMY(startStr);
+        const endStr = sp ? `${sp.y + 1}-${String(sp.m).padStart(2, "0")}-${String(sp.d).padStart(2, "0")}` : "";
+
+        const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ""; };
+        setV("dp_name", empData.name || "");
+        setV("dp_motherName", empData.motherName || "");
+        setV("dp_natId", empData.natId || "");
+        setV("dp_birthPlace", empData.birthPlace || "حماة");
+        setV("dp_idRegistry", empData.idRegistry || empData.birthPlace || "حماة");
+        setV("dp_dob", empData.dob || "");
+        setV("dp_khana", empData.khana || "");
+        setV("dp_idIssueDate", empData.idIssueDate || "");
+        setV("dp_address", empData.address || "");
+        setV("dp_job", empData.subDept || "");
+        setV("dp_workType", empData.mainDept || "");
+        setV("dp_salary", (Number(empData.salary) || 0) > 0 ? String(empData.salary) : "");
+        setV("dp_startDate", startStr);
+        setV("dp_endDate", endStr);
+        setV("dp_signDate", startStr);
+
+        const m = document.getElementById("basmaDossierPreviewModal");
+        m.classList.remove("hidden");
+        m.classList.add("flex");
+    };
+
+    window.confirmAndGenerateDossierPdf = async function() {
+        const base = window._basmaPendingDossierEmp || {};
+        const edited = {
+            ...base,
+            name: document.getElementById("dp_name")?.value.trim() || base.name || "",
+            motherName: document.getElementById("dp_motherName")?.value.trim() || "",
+            natId: document.getElementById("dp_natId")?.value.trim() || "",
+            birthPlace: document.getElementById("dp_birthPlace")?.value.trim() || "حماة",
+            idRegistry: document.getElementById("dp_idRegistry")?.value.trim() || "",
+            dob: document.getElementById("dp_dob")?.value.trim() || "",
+            khana: document.getElementById("dp_khana")?.value.trim() || "",
+            idIssueDate: document.getElementById("dp_idIssueDate")?.value.trim() || "",
+            address: document.getElementById("dp_address")?.value.trim() || "",
+            contractJob: document.getElementById("dp_job")?.value.trim() || "",
+            contractWorkType: document.getElementById("dp_workType")?.value.trim() || "",
+            contractSalary: document.getElementById("dp_salary")?.value.trim() || "",
+            contractStartDate: document.getElementById("dp_startDate")?.value.trim() || "",
+            contractEndDate: document.getElementById("dp_endDate")?.value.trim() || "",
+            contractSignDate: document.getElementById("dp_signDate")?.value.trim() || ""
+        };
+
+        if (!edited.name) {
+            alert("⚠️ يرجى كتابة اسم العامل الكامل!");
+            return;
+        }
+
+        const shouldSave = document.getElementById("dp_saveToProfile")?.checked;
+        if (shouldSave && edited.id) {
+            const realEmp = (curComp().employees || []).find(e => String(e.id).trim() === String(edited.id).trim());
+            if (realEmp) {
+                realEmp.name = edited.name;
+                realEmp.motherName = edited.motherName;
+                realEmp.natId = edited.natId;
+                realEmp.birthPlace = edited.birthPlace;
+                realEmp.idRegistry = edited.idRegistry;
+                realEmp.dob = edited.dob;
+                realEmp.khana = edited.khana;
+                realEmp.idIssueDate = edited.idIssueDate;
+                realEmp.address = edited.address;
+                if (edited.contractStartDate) realEmp.hireDate = edited.contractStartDate;
+                const numSal = Number(String(edited.contractSalary).replace(/,/g, ""));
+                if (!isNaN(numSal) && numSal > 0) realEmp.salary = numSal;
+                realEmp._empUpdatedAt = Date.now();
+                await persistData();
+            }
+        }
+
+        closeDossierPreviewModal();
+        await generateWorkDossierPdfFromObj(edited);
+    };
+
+    // الصفحة 1: غلاف إضبارة عمل رسمي (بدون شعار المنصة + بدون أي letter-spacing لمنع تقطع الحروف العربية)
     function buildDossierCoverHtml(emp, personalDataUrl, hasIdDoc, hasCivilDoc) {
         const compName = (curComp()?.name || "مطعم أورانتس").split("(")[0].trim();
         const todayStr = new Date().toISOString().slice(0, 10);
         const ageVal = calcAge(emp.dob);
-        const jobTitle = emp.subDept ? `${emp.mainDept || ''} — ${emp.subDept}` : (emp.mainDept || '—');
+        const jobTitle = emp.contractJob ? `${emp.contractWorkType || emp.mainDept || ''} — ${emp.contractJob}` : (emp.subDept ? `${emp.mainDept || ''} — ${emp.subDept}` : (emp.mainDept || '—'));
         const hasAnyId = hasIdDoc || hasCivilDoc;
         return `
-            <div dir="rtl" style="width:794px;height:1123px;padding:38px 44px;background:#ffffff;color:#0f172a;font-family:'Arial','Tajawal',sans-serif;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;border:2px solid #1e3a5f;">
-                <!-- ترويسة المنشأة الرسمية بدون شعار المنصة -->
+            <div dir="rtl" style="width:794px;height:1123px;padding:38px 44px;background:#ffffff;color:#0f172a;font-family:Arial,sans-serif;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;border:2px solid #1e3a5f;letter-spacing:0;">
                 <div>
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px double #1e3a5f;padding-bottom:14px;">
                         <div style="text-align:right;line-height:1.7;">
-                            <div style="font-size:15px;font-weight:900;color:#1e3a5f;">الجمهورية العربية السورية</div>
-                            <div style="font-size:20px;font-weight:900;color:#0f172a;margin-top:2px;">منشأة ${escDossierHtml(compName)}</div>
+                            <div style="font-size:15px;font-weight:700;color:#1e3a5f;">الجمهورية العربية السورية</div>
+                            <div style="font-size:20px;font-weight:700;color:#0f172a;margin-top:2px;">منشأة ${escDossierHtml(compName)}</div>
                             <div style="font-size:13px;font-weight:700;color:#334155;">إدارة الموارد البشرية وشؤون العاملين — حماة – حي الطوافرة</div>
                         </div>
-                        <div style="text-align:left;font-size:12.5px;font-weight:800;border:1.5px solid #1e3a5f;border-radius:8px;padding:8px 14px;background:#f8fafc;line-height:1.8;">
-                            <div>رقم الإضبارة: <span style="font-family:monospace;font-size:14px;">#${escDossierHtml(emp.id || '—')}</span></div>
-                            <div>تاريخ التنظيم: <span style="font-family:monospace;">${todayStr}</span></div>
+                        <div style="text-align:left;font-size:12.5px;font-weight:700;border:1.5px solid #1e3a5f;border-radius:8px;padding:8px 14px;background:#f8fafc;line-height:1.8;">
+                            <div>رقم الإضبارة: <span style="font-size:14px;">#${escDossierHtml(emp.id || '—')}</span></div>
+                            <div>تاريخ التنظيم: <span>${todayStr}</span></div>
                         </div>
                     </div>
 
-                    <!-- عنوان الإضبارة المركزي + إطار الصورة الشخصية -->
                     <div style="margin:28px 0 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;">
                         <div style="flex:1;text-align:center;border:3px solid #1e3a5f;border-radius:12px;padding:20px 16px;background:#f8fafc;">
-                            <div style="font-size:32px;font-weight:900;color:#0f172a;letter-spacing:0.5px;">إضبـارة عمـل موظـف</div>
-                            <div style="font-size:14px;font-weight:700;color:#334155;margin-top:6px;">ملف شخصي ووظيفي معتمد وفق أحكام قانون العمل رقم (17) لعام 2010</div>
+                            <div style="font-size:32px;font-weight:700;color:#0f172a;letter-spacing:0;line-height:1.4;">إضبارة عمل موظف</div>
+                            <div style="font-size:14px;font-weight:700;color:#334155;margin-top:6px;letter-spacing:0;">ملف شخصي ووظيفي معتمد وفق أحكام قانون العمل رقم (17) لعام 2010</div>
                         </div>
-                        <div style="width:118px;height:142px;border:2px solid #1e3a5f;border-radius:8px;background:#ffffff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+                        <div id="dossierPersonalSlot" style="width:118px;height:142px;border:2px solid #1e3a5f;border-radius:8px;background:#ffffff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
                             ${personalDataUrl
-                                ? `<img src="${personalDataUrl}" style="width:100%;height:100%;object-fit:cover;">`
+                                ? ''
                                 : `<span style="font-size:11.5px;font-weight:700;color:#64748b;text-align:center;padding:8px;">صورة شخصية<br>(4×4)</span>`}
                         </div>
                     </div>
 
-                    <!-- بطاقة البيانات الأساسية للموظف -->
-                    <div style="font-size:15px;font-weight:900;color:#1e3a5f;margin-bottom:8px;border-right:4px solid #1e3a5f;padding-right:10px;">
+                    <div style="font-size:15px;font-weight:700;color:#1e3a5f;margin-bottom:8px;border-right:4px solid #1e3a5f;padding-right:10px;">
                         أولاً: البيانات الشخصية والوظيفية لصاحب الإضبارة
                     </div>
                     <table style="width:100%;border-collapse:collapse;border:2px solid #1e3a5f;font-size:13.5px;color:#0f172a;">
                         <tr>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;width:24%;">الاسم الكامل للعامل:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;font-size:15.5px;width:36%;">${escDossierHtml(emp.name || '—')}</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;width:18%;">اسم الأم:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:800;width:22%;">${escDossierHtml(emp.motherName || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;width:24%;">الاسم الكامل للعامل:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;font-size:15px;width:36%;">${escDossierHtml(emp.name || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;width:18%;">اسم الأم:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;width:22%;">${escDossierHtml(emp.motherName || '—')}</td>
                         </tr>
                         <tr>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">الرقم الوطني:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;font-family:monospace;font-size:14.5px;">${escDossierHtml(emp.natId || '—')}</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">الخانة (خ):</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;">${escDossierHtml(emp.khana || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">الرقم الوطني:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;font-size:14px;">${escDossierHtml(emp.natId || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">الخانة (خ):</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(emp.khana || '—')}</td>
                         </tr>
                         <tr>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">مكان وتاريخ الولادة:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:800;">${escDossierHtml(emp.birthPlace || 'حماة')} ${emp.dob ? '— ' + escDossierHtml(emp.dob) : ''} ${ageVal !== '' ? '(' + ageVal + ' سنة)' : ''}</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">الجنس / الحالة:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:800;">${escDossierHtml(emp.gender || 'ذكر')} — ${escDossierHtml(emp.maritalStatus || 'عازب')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">مكان وتاريخ الولادة:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(emp.birthPlace || 'حماة')} ${emp.dob ? '— ' + escDossierHtml(emp.dob) : ''} ${ageVal !== '' ? '(' + ageVal + ' سنة)' : ''}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">الجنس / الحالة:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(emp.gender || 'ذكر')} — ${escDossierHtml(emp.maritalStatus || 'عازب')}</td>
                         </tr>
                         <tr>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">القسم والعمل المكلف به:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;">${escDossierHtml(jobTitle)}</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">تاريخ المباشرة:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;font-family:monospace;">${escDossierHtml(emp.hireDate || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">القسم والعمل المكلف به:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(jobTitle)}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">تاريخ المباشرة:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(emp.contractStartDate || emp.hireDate || '—')}</td>
                         </tr>
                         <tr>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">العنوان السكني:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:800;">${escDossierHtml(emp.address || '—')}</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:900;">رقم الهاتف:</td>
-                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:900;font-family:monospace;" dir="ltr">${escDossierHtml(emp.phone || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">العنوان السكني:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;">${escDossierHtml(emp.address || '—')}</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;background:#f1f5f9;font-weight:700;">رقم الهاتف:</td>
+                            <td style="padding:10px 12px;border:1px solid #64748b;font-weight:700;" dir="ltr">${escDossierHtml(emp.phone || '—')}</td>
                         </tr>
                     </table>
 
-                    <!-- جرد محتويات الإضبارة -->
-                    <div style="font-size:15px;font-weight:900;color:#1e3a5f;margin:26px 0 8px;border-right:4px solid #1e3a5f;padding-right:10px;">
+                    <div style="font-size:15px;font-weight:700;color:#1e3a5f;margin:26px 0 8px;border-right:4px solid #1e3a5f;padding-right:10px;">
                         ثانياً: فهرس ومحتويات إضبارة العمل
                     </div>
                     <table style="width:100%;border-collapse:collapse;border:1.5px solid #1e3a5f;font-size:13.5px;color:#0f172a;">
@@ -16275,43 +16548,42 @@
                             <th style="padding:9px;border:1px solid #1e3a5f;width:22%;text-align:center;">حالة التوفر</th>
                         </tr>
                         <tr>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;">1</td>
-                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:800;">عقد العمل الفردي وفق قانون العمل رقم (17) لعام 2010</td>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;color:#047857;">☑ مرفق</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;">1</td>
+                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:700;">عقد العمل الفردي وفق قانون العمل رقم (17) لعام 2010</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;color:#047857;">☑ مرفق</td>
                         </tr>
                         <tr style="background:#f8fafc;">
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;">2</td>
-                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:800;">صورة البطاقة الشخصية (الوجهين) أو إخراج قيد مدني</td>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;color:${hasAnyId ? '#047857' : '#64748b'};">${hasAnyId ? '☑ مرفق' : '☐ غير مرفق'}</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;">2</td>
+                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:700;">صورة البطاقة الشخصية (الوجهين) أو إخراج قيد مدني</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;color:${hasAnyId ? '#047857' : '#64748b'};">${hasAnyId ? '☑ مرفق' : '☐ غير مرفق'}</td>
                         </tr>
                         <tr>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;">3</td>
-                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:800;">الصورة الشخصية للموظف</td>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;color:${personalDataUrl ? '#047857' : '#64748b'};">${personalDataUrl ? '☑ مرفق' : '☐ غير مرفق'}</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;">3</td>
+                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:700;">الصورة الشخصية للموظف</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;color:${personalDataUrl ? '#047857' : '#64748b'};">${personalDataUrl ? '☑ مرفق' : '☐ غير مرفق'}</td>
                         </tr>
                         <tr style="background:#f8fafc;">
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;">4</td>
-                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:800;">الشهادة الصحية / خلاصة السجل العدلي / وثيقة غير محكوم</td>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:800;color:#64748b;">☐ .................</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;">4</td>
+                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:700;">الشهادة الصحية / خلاصة السجل العدلي / وثيقة غير محكوم</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;color:#64748b;">☐ .................</td>
                         </tr>
                         <tr>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:900;">5</td>
-                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:800;">استمارة التسجيل في التأمينات الاجتماعية / وثائق إضافية</td>
-                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:800;color:#64748b;">☐ .................</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;">5</td>
+                            <td style="padding:9px 12px;border:1px solid #94a3b8;font-weight:700;">استمارة التسجيل في التأمينات الاجتماعية / وثائق إضافية</td>
+                            <td style="padding:9px;border:1px solid #94a3b8;text-align:center;font-weight:700;color:#64748b;">☐ .................</td>
                         </tr>
                     </table>
                 </div>
 
-                <!-- التذييل والاعتماد -->
-                <div style="border-top:2px solid #1e3a5f;padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end;font-size:13.5px;font-weight:800;">
+                <div style="border-top:2px solid #1e3a5f;padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end;font-size:13.5px;font-weight:700;">
                     <div style="text-align:center;width:42%;">
                         <div>تنظيم وتدقيق</div>
-                        <div style="margin-top:6px;font-weight:900;">إدارة الموارد البشرية</div>
+                        <div style="margin-top:6px;">إدارة الموارد البشرية</div>
                         <div style="margin-top:26px;color:#64748b;">........................................</div>
                     </div>
                     <div style="text-align:center;width:42%;">
                         <div>اعتماد صاحب المنشأة</div>
-                        <div style="margin-top:6px;font-weight:900;">السيد عزام طربين — منشأة أورانتس</div>
+                        <div style="margin-top:6px;">السيد عزام طربين — منشأة أورانتس</div>
                         <div style="margin-top:26px;color:#64748b;">........................................</div>
                     </div>
                 </div>
@@ -16319,67 +16591,69 @@
         `;
     }
 
-    // توليد الصفحة 2: عقد العمل الفردي المطابق تماماً لملف الوورد (خط Arial Bold + نفس الأحجام والهوامش والنصوص بالحرف)
+    // الصفحة 2: عقد العمل الفردي المطابق 100% لملف الوورد (Arial Bold — نفس الهوامش والأحجام والتسطير والمسافات بالحرف)
     function buildExactWordContractHtml(emp) {
         const nameTxt = escDossierHtml(emp.name || "..................................");
         const motherTxt = emp.motherName ? escDossierHtml(emp.motherName) : "....................";
         const birthPlaceTxt = escDossierHtml(emp.birthPlace || "حماة");
+        const idRegistryTxt = escDossierHtml(emp.idRegistry || emp.birthPlace || "حماة");
         const dobParts = parseDatePartsDMY(emp.dob);
-        const dobFmt = dobParts ? `${dobParts.d}/${dobParts.m}/${dobParts.y}` : "   /   /      ";
-        const khanaTxt = emp.khana ? escDossierHtml(emp.khana) : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        const dobFmt = dobParts ? toArabicDigits(`${dobParts.d}/${dobParts.m}/${dobParts.y}`) : "   /   /      ";
+        const khanaTxt = emp.khana ? toArabicDigits(escDossierHtml(emp.khana)) : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
         const issueParts = parseDatePartsDMY(emp.idIssueDate);
         const issueFmt = issueParts
-            ? `&nbsp;${issueParts.d}&nbsp;&nbsp;/&nbsp;&nbsp;${issueParts.m}&nbsp;&nbsp;/&nbsp;&nbsp;${issueParts.y}`
+            ? `&nbsp;&nbsp;${toArabicDigits(issueParts.d)}&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${toArabicDigits(issueParts.m)}&nbsp;/&nbsp;&nbsp;${toArabicDigits(issueParts.y)}`
             : `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`;
 
-        const natIdTxt = emp.natId ? escDossierHtml(emp.natId) : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        const addrTxt = emp.address ? escDossierHtml(emp.address) : "حماة – ........................................";
-        const jobTxt = emp.subDept ? escDossierHtml(emp.subDept) : "....................................";
-        const deptWorkTxt = emp.mainDept ? escDossierHtml(emp.mainDept) : "....................................";
+        const natIdTxt = emp.natId ? toArabicDigits(escDossierHtml(emp.natId)) : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        const addrTxt = emp.address ? toArabicDigits(escDossierHtml(emp.address)) : "حماة – ........................................";
+        const jobTxt = emp.contractJob ? toArabicDigits(escDossierHtml(emp.contractJob)) : (emp.subDept ? toArabicDigits(escDossierHtml(emp.subDept)) : "....................................");
+        const deptWorkTxt = emp.contractWorkType ? toArabicDigits(escDossierHtml(emp.contractWorkType)) : (emp.mainDept ? toArabicDigits(escDossierHtml(emp.mainDept)) : "....................................");
 
-        const startParts = parseDatePartsDMY(emp.hireDate) || parseDatePartsDMY(new Date().toISOString().slice(0, 10));
-        const sD = startParts.d, sM = startParts.m, sY = startParts.y;
-        const eY = sY + 1;
+        const startParts = parseDatePartsDMY(emp.contractStartDate || emp.hireDate) || parseDatePartsDMY(new Date().toISOString().slice(0, 10));
+        const endParts = parseDatePartsDMY(emp.contractEndDate) || { d: startParts.d, m: startParts.m, y: startParts.y + 1 };
+        const signParts = parseDatePartsDMY(emp.contractSignDate) || startParts;
 
-        let salVal = Number(emp.salary) || 0;
-        if (salVal > 0 && emp.currency === "ل.س جديد") {
-            // تحويل الليرة الجديدة إلى قديمة فقط إذا كان الرقم صغيراً (أقل من 100 ألف) أو إبقاؤه كما هو إن كان مدخلاً بالليرة القديمة
-            salVal = salVal;
-        }
-        const salTxt = salVal > 0 ? salVal.toString() : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        const sDAr = toArabicDigits(startParts.d), sMAr = toArabicDigits(startParts.m), sYAr = toArabicDigits(startParts.y);
+        const eDAr = toArabicDigits(endParts.d), eMAr = toArabicDigits(endParts.m), eYAr = toArabicDigits(endParts.y);
+        const gDAr = toArabicDigits(signParts.d), gMAr = toArabicDigits(signParts.m), gYAr = toArabicDigits(signParts.y);
 
-        // مقاس A4 عند 96dpi = 794 × 1123 px؛ الهوامش المطابقة للوورد: أعلى 9.5mm (36px) أسفل 8.5mm (32px) يمين/يسار 11.5mm (43px)
-        // خط Arial Bold؛ العنوان 11.5pt (15.3px)؛ العنوان الفرعي 10.5pt (14px)؛ بيانات الأطراف 9.5pt (12.7px)؛ المواد 8.5pt (11.35px)
-        const pParty = "margin:0 0 2.5px 0;font-size:12.4px;line-height:1.28;font-weight:700;text-align:right;";
-        const pArt = "margin:0 0 2.2px 0;font-size:11.3px;line-height:1.26;font-weight:700;text-align:justify;";
+        const salRaw = emp.contractSalary !== undefined && emp.contractSalary !== "" ? emp.contractSalary : ((Number(emp.salary) || 0) > 0 ? String(emp.salary) : "");
+        const salTxt = salRaw ? toArabicDigits(escDossierHtml(salRaw)) : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+
+        // مطابق تماماً لإعدادات الوورد:
+        // الصفحة: A4 (210x297mm = 794x1123px) | الهوامش: أعلى 9.5mm (36px) أسفل 8.5mm (32px) يمين/يسار 11.5mm (43px)
+        // الخط: Arial Bold | العنوان 11.5pt (15.3px) | الفرعي 10.5pt (14px) | الأطراف 9.5pt (12.66px) | المواد 8.5pt (11.33px)
+        const pParty = "margin:0 0 1.6px 0;font-size:12.66px;line-height:1.18;font-weight:700;text-align:right;font-family:Arial,sans-serif !important;letter-spacing:0 !important;";
+        const pArt = "margin:0 0 1.4px 0;font-size:11.33px;line-height:1.18;font-weight:700;text-align:right;font-family:Arial,sans-serif !important;letter-spacing:0 !important;";
 
         return `
-            <div dir="rtl" style="width:794px;height:1123px;padding:34px 43px 28px 43px;background:#ffffff;color:#000000;font-family:Arial,sans-serif !important;font-weight:700;box-sizing:border-box;">
-                <div style="text-align:center;font-size:15.5px;font-weight:700;line-height:1.2;margin-bottom:2px;font-family:Arial,sans-serif !important;">عقد عمل فردي</div>
-                <div style="text-align:center;font-size:14px;font-weight:700;line-height:1.25;margin-bottom:8px;font-family:Arial,sans-serif !important;">وفق أحكام قانون العمل رقم (١٧) لعام - ٢٠١٠ -</div>
+            <div dir="rtl" class="dossier-exact-contract" style="width:794px;height:1123px;padding:36px 43px 32px 43px;background:#ffffff;color:#000000;font-family:Arial,sans-serif !important;font-weight:700;box-sizing:border-box;letter-spacing:0 !important;">
+                <div style="text-align:center;font-size:15.33px;font-weight:700;line-height:1.15;margin:0 0 1px 0;">عقد عمل فردي</div>
+                <div style="text-align:center;font-size:14px;font-weight:700;line-height:1.15;margin:0 0 6px 0;">وفق أحكام قانون العمل رقم (١٧) لعام - ٢٠١٠ -</div>
 
                 <p style="${pParty}"><span style="text-decoration:underline;">الطرف الأول :</span> السيد/ة .عزام طربين &nbsp;&nbsp;&nbsp;&nbsp; صاحب منشأة &nbsp;اورانتس</p>
                 <p style="${pParty}">عنوان المنشأة : .حماة – حي الطوافرة</p>
                 <p style="${pParty}">يمثله السيد/ة .......................................... بموجب سند التوكيل الخاص رقم عام /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ خاص /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ سجل /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</p>
-                <p style="${pParty}">جنسيته عربي سوري يحمل البطاقة الشخصية الصادرة عن أمين السجل المدني في &nbsp;حماة خــــ &nbsp;&nbsp;&nbsp;شرقية 54 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; تاريخ المنح &nbsp;25 &nbsp;&nbsp;/ 9 &nbsp;/ &nbsp;2005</p>
-                <p style="${pParty}">الرقم الوطني /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;05010057011&nbsp;&nbsp;&nbsp;&nbsp;/ مكان وتاريخ الولادة : حماة /10/8/1957</p>
+                <p style="${pParty}">جنسيته عربي سوري يحمل البطاقة الشخصية الصادرة عن أمين السجل المدني في &nbsp;حماة خــــ &nbsp;&nbsp;&nbsp;شرقية ٥٤ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; تاريخ المنح &nbsp;٢٥ &nbsp;&nbsp;/ ٩ &nbsp;/ &nbsp;٢٠٠٥</p>
+                <p style="${pParty}">الرقم الوطني /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;٠٥٠١٠٠٥٧٠١١&nbsp;&nbsp;&nbsp;&nbsp;/ مكان وتاريخ الولادة : حماة /١٠/٨/١٩٥٧</p>
                 <p style="${pParty}">أو يحمل جواز السفر رقم /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ صادر عن ..................................... بتاريخ &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
-                <p style="${pParty}margin-bottom:7px;">عنوانه في معرض تنفيذ هذا العقد : حماة – حي الطوافرة</p>
+                <p style="${pParty}margin-bottom:5.5px;">عنوانه في معرض تنفيذ هذا العقد : حماة – حي الطوافرة</p>
 
-                <p style="${pParty}"><span style="text-decoration:underline;">الطرف الثاني :</span> السيد/ة .${nameTxt} &nbsp; والدته/ .${motherTxt} &nbsp; مكان وتاريخ الولادة ${birthPlaceTxt} ${dobFmt}</p>
-                <p style="${pParty}">جنسيته عربي سوري يحمل البطاقة الشخصية الصادرة عن أمين السجل المدني في ${birthPlaceTxt} &nbsp;خــــــــ &nbsp;${khanaTxt}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; تاريخ المنح ${issueFmt}</p>
-                <p style="${pParty}">الرقم الوطني /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${natIdTxt}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ أو يحمل جواز السفر الصادر عن/ .............................. / برقم &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; وتاريخ &nbsp;&nbsp;/&nbsp;&nbsp;/ ٢٠٠</p>
-                <p style="${pParty}margin-bottom:6px;">عنوانه في معرض تنفيذ هذا العقد : ${addrTxt}</p>
+                <p style="${pParty}"><span style="text-decoration:underline;">الطرف الثاني :</span> السيد/ة .${nameTxt} &nbsp; والدته/ .${motherTxt} مكان وتاريخ الولادة ${birthPlaceTxt} ${dobFmt}</p>
+                <p style="${pParty}">جنسيته عربي سوري يحمل البطاقة الشخصية الصادرة عن أمين السجل المدني في ${idRegistryTxt} &nbsp;خــــــــ &nbsp;${khanaTxt}&nbsp;&nbsp;&nbsp;&nbsp; تاريخ المنح ${issueFmt}</p>
+                <p style="${pParty}">الرقم الوطني /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${natIdTxt}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ أو يحمل جواز السفر الصادر عن/ .............................. / برقم &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; وتاريخ &nbsp;&nbsp;/&nbsp;&nbsp;/ ٢٠٠</p>
+                <p style="${pParty}margin-bottom:4.5px;">عنوانه في معرض تنفيذ هذا العقد : ${addrTxt}</p>
 
-                <p style="${pParty}margin-bottom:2px;"><span style="text-decoration:underline;">مقدمة العقد :</span></p>
-                <p style="${pArt}">لما كان الطرف الأول بصفته المبينة آنفاً ، يرغب بالتعاقد مع الطرف الثاني للعمل في المنشأة المذكورة بمهنة &nbsp;${jobTxt}&nbsp; أو بعمل عامل &nbsp;${deptWorkTxt}&nbsp; وكان الطرف الثاني يرغب بذلك وقد اطلع على أنظمة العمل النافذة لديها وقبل الالتزام بها ( مع مراعاة أحكام المادة ( ٤ / ب ) من قانون العمل ) .</p>
-                <p style="${pArt}margin-bottom:3.5px;">فإن الطرفين قد اتفقا على ما يلي :</p>
+                <p style="${pParty}margin-bottom:1.5px;"><span style="text-decoration:underline;">مقدمة العقد :</span></p>
+                <p style="${pArt}">لما كان الطرف الأول بصفته المبينة آنفاً ، يرغب بالتعاقد مع الطرف الثاني للعمل في المنشأة المذكورة بمهنة ${jobTxt} أو بعمل عامل ${deptWorkTxt} وكان الطرف الثاني يرغب بذلك وقد اطلع على أنظمة العمل النافذة لديها وقبل الالتزام بها ( مع مراعاة أحكام المادة ( ٤ / ب ) من قانون العمل ) .</p>
+                <p style="${pArt}margin-bottom:2.5px;">فإن الطرفين قد اتفقا على ما يلي :</p>
 
                 <p style="${pArt}">مادة ١ - تعتبر مقدمة هذا العقد جزءاً لا يتجزأ منه .</p>
-                <p style="${pArt}">مادة ٢ - تبدأ مدة العقد بتاريخ &nbsp;&nbsp;&nbsp;${sD}&nbsp;&nbsp;/&nbsp;&nbsp;${sM}&nbsp;&nbsp;/&nbsp;&nbsp;${sY}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; وتنتهي بتاريخ &nbsp;&nbsp;&nbsp;${sD}&nbsp;&nbsp;/&nbsp;&nbsp;${sM}&nbsp;&nbsp;/&nbsp;&nbsp;${eY}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>(أما إذا كان العقد بقصد إنجاز عمل معين ، فإن العقد ينتهي بإنجاز العمل المذكور ) .</p>
+                <p style="${pArt}">مادة ٢ - تبدأ مدة العقد بتاريخ &nbsp;&nbsp;&nbsp;&nbsp;${sDAr}&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${sMAr}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${sYAr}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; وتنتهي بتاريخ &nbsp;&nbsp;&nbsp;${eDAr}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${eMAr}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;${eYAr}<br>(أما إذا كان العقد بقصد إنجاز عمل معين ، فإن العقد ينتهي بإنجاز العمل المذكور ) .</p>
                 <p style="${pArt}">مادة ٣ - تعتبر الأشهر الثلاثة الأولى من عمل الطرف الثاني مدة اختبار لا يجوز تكرارها أو زيادتها ولكل من الطرفين إنهاء العقد خلال هذه المدة دون إخطار مسبق أو التزام بتعويض ، ولا يترتب على الطرف الأول أي مسؤولية في حال إنهاء العقد خلال المدة المذكورة .</p>
-                <p style="${pArt}">مادة ٤ - <span style="text-decoration:underline;">أ-</span> اتفق الطرفان على تحديد الأجر الشهري للطرف الثاني بمبلغ قدره /&nbsp;&nbsp;&nbsp;${salTxt}&nbsp;&nbsp;&nbsp;&nbsp;/ ليرة سورية يؤدى إليه مكان عمله خلال ساعات الدوام الرسمي في موعد لا يتجاوز اليوم السادس من الشهر التالي . يجب أن لا يقل الأجر المتفق عليه عن الحد الأدنى للأجور ( الحد الأدنى لأجر المهنة – الحد الأدنى العام للأجور ) .</p>
+                <p style="${pArt}">مادة ٤ - <span style="text-decoration:underline;">أ-</span> اتفق الطرفان على تحديد الأجر الشهري للطرف الثاني بمبلغ قدره /&nbsp;&nbsp;&nbsp;${salTxt}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ ليرة سورية يؤدى إليه مكان عمله خلال ساعات الدوام الرسمي في موعد لا يتجاوز اليوم السادس من الشهر التالي . يجب أن لا يقل الأجر المتفق عليه عن الحد الأدنى للأجور ( الحد الأدنى لأجر المهنة – الحد الأدنى العام للأجور ) .</p>
                 <p style="${pArt}"><span style="text-decoration:underline;">ب-</span> اتفق الطرفان على منح الطرف الثاني – إضافة للأجر الشهري – المزايا النقدية أو العينية التالية : ........................................................................</p>
                 <p style="${pArt}"><span style="text-decoration:underline;">ج-</span> اتفق الطرفان على منح الطرف الثاني ترفيعة دورية كل سنتين بنسبة ٩% . أما إذا كان صاحب العمل يستخدم أكثر من خمسة عشر عاملاً فيجب ذكر الترفيعة الدورية في النظام الداخلي للمنشأة ( لا تدخل المزايا بنوعيها في مفهوم الأجر ) .</p>
                 <p style="${pArt}">مادة ٥ - <span style="text-decoration:underline;">أ-</span> اتفق الطرفان على تحديد ساعات التشغيل الفعلي للطرف الثاني بـ ( ٨ ) ساعات يومياً ، لا تدخل فيها الفترات المخصصة للطعام والراحة . ( يجب ألا تتجاوز ساعات التشغيل الفعلي المتفق عليها / ٤٨ / ساعة أسبوعياً ، كما يجب على الطرف الأول تنظيم ساعات العمل وفترات الراحة على نحو يحقق عدم وجود العامل في مكان العمل أكثر من عشر ساعات في اليوم الواحد ) . <span style="text-decoration:underline;">ب-</span> يجوز زيادة ساعات العمل اليومي إلى تسع ساعات وفق أحكام المادة / ١٠٧ / من قانون العمل .</p>
@@ -16396,47 +16670,45 @@
                 <p style="${pArt}">مادة ١٥ - يجب أن يتضمن العقد حقوق وواجبات الطرفين ، ويرجع في شأن ما تضمنه ، وفيما لم يرد عليه نص فيه ، إلى أحكام قانون العمل رقم (١٧) لعام ٢٠١٠ التي تعتبر دنيا لحقوق العمال المشمولين بأحكامه فلا يجوز التنازل عنها .</p>
                 <p style="${pArt}">مادة ١٦ - نظم هذا العقد على ثلاث نسخ ، نسخة لكل من الطرفين ، ويلتزم الطرف الأول إيداع النسخة الثالثة لدى مديرية التأمينات الاجتماعية في المحافظة التي تقع فيها المنشأة خلال ثلاثة أشهر من تاريخ تحرير العقد ( على صاحب العمل تنظيم نسخة عن عقد العمل باللغة الأجنبية في حال كان العامل المتعاقد غير عربي ) .</p>
 
-                <p style="${pParty}margin-top:6px;margin-bottom:8px;">حرر في &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ ١٤ هـ &nbsp; و &nbsp;&nbsp;&nbsp;${sD}&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;${sM}&nbsp;&nbsp;&nbsp;/ ${sY} م .</p>
+                <p style="${pParty}margin-top:4px;margin-bottom:8px;">حرر في &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ ١٤ هـ &nbsp; و &nbsp;&nbsp;&nbsp;${gDAr}&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;${gMAr}&nbsp;&nbsp;&nbsp;/ ${gYAr} م .</p>
 
-                <table style="width:100%;border-collapse:collapse;border:none;margin-top:4px;">
-                    <tr>
-                        <td style="width:50%;text-align:center;font-size:12.5px;font-weight:700;border:none;padding:4px;">الطرف الأول</td>
-                        <td style="width:50%;text-align:center;font-size:12.5px;font-weight:700;border:none;padding:4px;">الطرف الثاني</td>
-                    </tr>
-                </table>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;margin-top:4px;padding:0;">
+                    <div style="width:50%;text-align:right;font-size:12.66px;font-weight:700;text-decoration:underline;line-height:1.2;">الطرف الثاني</div>
+                    <div style="width:50%;text-align:right;font-size:12.66px;font-weight:700;text-decoration:underline;line-height:1.2;">الطرف الأول</div>
+                </div>
             </div>
         `;
     }
 
-    // توليد الصفحة 3: صورة الهوية الشخصية (أو إخراج القيد) بدون شعار المنصة
+    // الصفحة 3: صورة الهوية الشخصية (HD) بدون شعار المنصة
     function buildDossierIdPageHtml(emp, hasFront, hasBack) {
         const compName = (curComp()?.name || "مطعم أورانتس").split("(")[0].trim();
         const issueDate = new Date().toISOString().slice(0, 10);
         return `
-            <div dir="rtl" style="width:794px;height:1123px;padding:34px 42px;background:#ffffff;color:#0f172a;font-family:'Arial','Tajawal',sans-serif;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;border:1px solid #cbd5e1;">
+            <div dir="rtl" style="width:794px;height:1123px;padding:34px 42px;background:#ffffff;color:#0f172a;font-family:Arial,sans-serif;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;border:1px solid #cbd5e1;letter-spacing:0;">
                 <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2.5px solid #1e3a5f;padding-bottom:10px;">
                     <div>
-                        <div style="font-size:19px;font-weight:900;color:#0f172a;">منشأة ${escDossierHtml(compName)}</div>
-                        <div style="font-size:13.5px;font-weight:800;color:#1e3a5f;margin-top:2px;">مرفق إضبارة العمل — صورة البطاقة الشخصية</div>
+                        <div style="font-size:19px;font-weight:700;color:#0f172a;">منشأة ${escDossierHtml(compName)}</div>
+                        <div style="font-size:13.5px;font-weight:700;color:#1e3a5f;margin-top:2px;">مرفق إضبارة العمل — صورة البطاقة الشخصية</div>
                     </div>
-                    <div style="text-align:left;font-size:12px;font-weight:800;border:1.5px solid #1e3a5f;padding:6px 12px;border-radius:8px;background:#f8fafc;">
+                    <div style="text-align:left;font-size:12px;font-weight:700;border:1.5px solid #1e3a5f;padding:6px 12px;border-radius:8px;background:#f8fafc;">
                         <div>الاسم: ${escDossierHtml(emp.name || '—')}</div>
                         <div>الرقم الوطني: ${escDossierHtml(emp.natId || '—')} | ${issueDate}</div>
                     </div>
                 </div>
                 <div style="text-align:center;">
-                    <div style="font-size:13.5px;font-weight:900;margin-bottom:6px;text-align:right;border-right:4px solid #1e3a5f;padding-right:8px;">أولاً: الوجه الأمامي للهوية الشخصية</div>
+                    <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;text-align:right;border-right:4px solid #1e3a5f;padding-right:8px;">أولاً: الوجه الأمامي للهوية الشخصية</div>
                     <div id="dossierFrontSlot" style="width:540px;height:330px;margin:0 auto;border:2px solid #1e3a5f;border-radius:10px;background:#ffffff;display:flex;align-items:center;justify-content:center;">
                         ${!hasFront ? '<span style="font-size:13px;font-weight:700;color:#64748b;">(لم تُرفق صورة الوجه الأمامي)</span>' : ''}
                     </div>
                 </div>
                 <div style="text-align:center;">
-                    <div style="font-size:13.5px;font-weight:900;margin-bottom:6px;text-align:right;border-right:4px solid #1e3a5f;padding-right:8px;">ثانياً: الوجه الخلفي (القفا) للهوية الشخصية</div>
+                    <div style="font-size:13.5px;font-weight:700;margin-bottom:6px;text-align:right;border-right:4px solid #1e3a5f;padding-right:8px;">ثانياً: الوجه الخلفي (القفا) للهوية الشخصية</div>
                     <div id="dossierBackSlot" style="width:540px;height:330px;margin:0 auto;border:2px solid #1e3a5f;border-radius:10px;background:#ffffff;display:flex;align-items:center;justify-content:center;">
                         ${!hasBack ? '<span style="font-size:13px;font-weight:700;color:#64748b;">(لم تُرفق صورة القفا)</span>' : ''}
                     </div>
                 </div>
-                <div style="border-top:1.5px solid #1e3a5f;padding-top:8px;display:flex;justify-content:space-between;font-size:12px;font-weight:800;">
+                <div style="border-top:1.5px solid #1e3a5f;padding-top:8px;display:flex;justify-content:space-between;font-size:12px;font-weight:700;">
                     <span>الاسم: ${escDossierHtml(emp.name || '—')} | الخانة: ${escDossierHtml(emp.khana || '—')}</span>
                     <span>القسم: ${escDossierHtml(emp.mainDept || '—')} — ${escDossierHtml(emp.subDept || '—')}</span>
                 </div>
@@ -16460,8 +16732,13 @@
         }
 
         try {
-            // تجهيز الصور (تعمل مع Supabase Storage و Base64 و IndexedDB)
-            const personalSafe = await fetchImageAsSafeDataUrl(empData.personalImg || "");
+            // محاولة جلب الصورة الشخصية من بيانات الموظف (السحابة أو IndexedDB أو النموذج)
+            let rawPersonal = empData.personalImg || "";
+            if (!rawPersonal && empData.id) {
+                const realEmp = (curComp().employees || []).find(e => String(e.id).trim() === String(empData.id).trim());
+                if (realEmp) rawPersonal = await resolveEmpMedia(realEmp, "personal");
+            }
+            const personalSafe = await fetchImageAsSafeDataUrl(rawPersonal);
             const frontSafe = await fetchImageAsSafeDataUrl(empData.idFrontImg || "");
             const backSafe = await fetchImageAsSafeDataUrl(empData.idBackImg || "");
             const civilSafe = await fetchImageAsSafeDataUrl(empData.civilRegImg || "");
@@ -16471,18 +16748,39 @@
 
             const pdf = new window.jspdf.jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
 
-            // --- الصفحة 1: غلاف إضبارة العمل ---
+            // الصفحة 1: غلاف إضبارة العمل + رسم الصورة الشخصية مباشرة بدقة عالية في إطارها
             stage.innerHTML = buildDossierCoverHtml(empData, personalSafe, hasIdDoc, hasCivilDoc);
+            const coverStageRect = stage.getBoundingClientRect();
+            const personalSlotEl = document.getElementById("dossierPersonalSlot");
+            const personalSlotRect = personalSlotEl ? personalSlotEl.getBoundingClientRect() : null;
             const c1 = await html2canvas(stage, { backgroundColor: "#ffffff", scale: 2, useCORS: true });
             pdf.addImage(c1.toDataURL("image/jpeg", 0.94), "JPEG", 0, 0, 210, 297, undefined, "FAST");
 
-            // --- الصفحة 2: عقد العمل الفردي المطابق للوورد ---
+            if (personalSafe && personalSafe.startsWith("data:image") && personalSlotRect) {
+                try {
+                    const imP = await loadImgAsync(personalSafe);
+                    const pxToMmX = 210 / 794;
+                    const pxToMmY = 297 / 1123;
+                    const boxX = (personalSlotRect.left - coverStageRect.left) * pxToMmX + 1;
+                    const boxY = (personalSlotRect.top - coverStageRect.top) * pxToMmY + 1;
+                    const boxW = personalSlotRect.width * pxToMmX - 2;
+                    const boxH = personalSlotRect.height * pxToMmY - 2;
+                    const ratio = Math.min(boxW / imP.width, boxH / imP.height);
+                    const drawW = imP.width * ratio;
+                    const drawH = imP.height * ratio;
+                    pdf.addImage(personalSafe, "JPEG", boxX + (boxW - drawW) / 2, boxY + (boxH - drawH) / 2, drawW, drawH, undefined, "FAST");
+                } catch (pErr) {
+                    console.warn("Skipped unreadable personal photo on cover:", pErr);
+                }
+            }
+
+            // الصفحة 2: عقد العمل الفردي المطابق للوورد (Arial Bold)
             pdf.addPage();
             stage.innerHTML = buildExactWordContractHtml(empData);
             const c2 = await html2canvas(stage, { backgroundColor: "#ffffff", scale: 2, useCORS: true });
             pdf.addImage(c2.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, 210, 297, undefined, "FAST");
 
-            // --- الصفحة 3: صورة الهوية الشخصية (HD) ---
+            // الصفحة 3: صورة الهوية الشخصية (HD)
             if (hasIdDoc) {
                 pdf.addPage();
                 stage.innerHTML = buildDossierIdPageHtml(empData, Boolean(frontSafe), Boolean(backSafe));
@@ -16496,31 +16794,39 @@
                 pdf.addImage(c3.toDataURL("image/jpeg", 0.94), "JPEG", 0, 0, 210, 297, undefined, "FAST");
 
                 async function drawHdInSlot(imgSrc, slotRect) {
-                    if (!imgSrc) return;
-                    const proc = await smartCropAndOrientIDCard(imgSrc, { autoCrop: true, forceLandscape: true, blackAndWhite: false });
-                    const im = await loadImgAsync(proc);
-                    const boxX = (slotRect.left - stageRect.left) * pxToMmX + 2;
-                    const boxY = (slotRect.top - stageRect.top) * pxToMmY + 2;
-                    const boxW = slotRect.width * pxToMmX - 4;
-                    const boxH = slotRect.height * pxToMmY - 4;
-                    const ratio = Math.min(boxW / im.width, boxH / im.height);
-                    const drawW = im.width * ratio;
-                    const drawH = im.height * ratio;
-                    pdf.addImage(proc, "JPEG", boxX + (boxW - drawW) / 2, boxY + (boxH - drawH) / 2, drawW, drawH, undefined, "FAST");
+                    if (!imgSrc || !imgSrc.startsWith("data:image")) return;
+                    try {
+                        const proc = await smartCropAndOrientIDCard(imgSrc, { autoCrop: true, forceLandscape: true, blackAndWhite: false });
+                        const im = await loadImgAsync(proc);
+                        const boxX = (slotRect.left - stageRect.left) * pxToMmX + 2;
+                        const boxY = (slotRect.top - stageRect.top) * pxToMmY + 2;
+                        const boxW = slotRect.width * pxToMmX - 4;
+                        const boxH = slotRect.height * pxToMmY - 4;
+                        const ratio = Math.min(boxW / im.width, boxH / im.height);
+                        const drawW = im.width * ratio;
+                        const drawH = im.height * ratio;
+                        pdf.addImage(proc, "JPEG", boxX + (boxW - drawW) / 2, boxY + (boxH - drawH) / 2, drawW, drawH, undefined, "FAST");
+                    } catch (imgErr) {
+                        console.warn("Skipped unreadable ID image in dossier:", imgErr);
+                    }
                 }
                 await drawHdInSlot(frontSafe, frontRect);
                 await drawHdInSlot(backSafe, backRect);
             }
 
-            // --- صفحة إضافية: إخراج القيد إذا كان مرفقاً ---
-            if (hasCivilDoc) {
-                pdf.addPage();
-                const procCivil = await smartCropAndOrientIDCard(civilSafe, { autoCrop: true, forceLandscape: false, blackAndWhite: false });
-                const imC = await loadImgAsync(procCivil);
-                const maxW = 190, maxH = 277;
-                const ratio = Math.min(maxW / imC.width, maxH / imC.height);
-                const wMm = imC.width * ratio, hMm = imC.height * ratio;
-                pdf.addImage(procCivil, "JPEG", (210 - wMm) / 2, (297 - hMm) / 2, wMm, hMm, undefined, "FAST");
+            // صفحة إضافية: إخراج القيد إذا كان مرفقاً
+            if (hasCivilDoc && civilSafe.startsWith("data:image")) {
+                try {
+                    pdf.addPage();
+                    const procCivil = await smartCropAndOrientIDCard(civilSafe, { autoCrop: true, forceLandscape: false, blackAndWhite: false });
+                    const imC = await loadImgAsync(procCivil);
+                    const maxW = 190, maxH = 277;
+                    const ratio = Math.min(maxW / imC.width, maxH / imC.height);
+                    const wMm = imC.width * ratio, hMm = imC.height * ratio;
+                    pdf.addImage(procCivil, "JPEG", (210 - wMm) / 2, (297 - hMm) / 2, wMm, hMm, undefined, "FAST");
+                } catch (civErr) {
+                    console.warn("Skipped unreadable civil image in dossier:", civErr);
+                }
             }
 
             const safeName = String(empData.name || "موظف").trim().replace(/[\\/:*?"<>|\s]+/g, "_");
@@ -16528,10 +16834,11 @@
             showToast(`✅ تم توليد ملف (اضبارة_عمل_${safeName}.pdf) بنجاح`);
         } catch (err) {
             console.error("Dossier PDF error:", err);
-            alert("حدث خطأ أثناء توليد ملف إضبارة العمل PDF!");
+            alert("حدث خطأ أثناء توليد ملف إضبارة العمل PDF: " + (err?.message || err));
         }
     }
 
+    // فتح نافذة المعاينة والتعديل أولاً عند الضغط على زر الإضبارة من الجدول أو عارض الهوية
     window.generateWorkDossierPdf = async function(empId) {
         const emp = (curComp().employees || []).find(e => String(e.id).trim() === String(empId).trim());
         if (!emp) { alert("⚠️ لم يتم العثور على بيانات الموظف!"); return; }
@@ -16542,7 +16849,7 @@
         const civil = (emp.civilRegImg && (emp.civilRegImg.startsWith("http://") || emp.civilRegImg.startsWith("https://") || emp.civilRegImg.startsWith("uploads/")))
             ? emp.civilRegImg
             : ((idbCivil && idbCivil.startsWith("data:image")) ? idbCivil : (emp.civilRegImg || ""));
-        await generateWorkDossierPdfFromObj({
+        window.openDossierPreviewModal({
             ...emp,
             personalImg: personal,
             idFrontImg: front,
@@ -16551,13 +16858,14 @@
         });
     };
 
+    // فتح نافذة المعاينة والتعديل أولاً عند الضغط على زر الإضبارة من استمارة الموظف
     window.generateCurrentFormWorkDossierPdf = async function() {
         const empObj = window.readFormObject();
         if (!empObj.name) {
             alert("⚠️ يرجى اختيار موظف أو كتابة اسمه أولاً قبل توليد إضبارة العمل!");
             return;
         }
-        await generateWorkDossierPdfFromObj({
+        window.openDossierPreviewModal({
             ...empObj,
             personalImg: tempPersonalData || empObj.personalImg || "",
             idFrontImg: tempIdFrontData || empObj.idFrontImg || "",
@@ -16566,8 +16874,142 @@
         });
     };
 
-    // تهيئة حقول الإضبارة فور التحميل
     setTimeout(ensureDossierFieldsInForm, 400);
+
+
+    // ==================== 54. حزمة الترقية v48: وضع إدخال البيانات السريع النظيف (?mode=entry) + إضافته في لوحة تحكم المالك ====================
+    const BASMA_CLEAN_ENTRY_MODE = (new URLSearchParams(window.location.search).get("mode") || "").trim().toLowerCase() === "entry";
+
+    function getCleanEntryModeUrl() {
+        const baseUrl = window.location.origin + window.location.pathname;
+        const cPrefix = BASMA_CLIENT_SLUG ? `c=${encodeURIComponent(BASMA_CLIENT_SLUG)}&` : "";
+        return `${baseUrl}?${cPrefix}mode=entry`;
+    }
+
+    window.copyCleanEntryLink = function() {
+        const url = getCleanEntryModeUrl();
+        if (navigator.clipboard) navigator.clipboard.writeText(url);
+        showToast("📋 تم نسخ رابط إدخال البيانات السريع (الوضع النظيف)");
+    };
+
+    // إضافة رابط الوضع النظيف لإدخال البيانات داخل لوحة تحكم المالك
+    const _v47OpenMasterControl = window.openBasmaMasterControl;
+    if (typeof _v47OpenMasterControl === "function") {
+        window.openBasmaMasterControl = function() {
+            const res = _v47OpenMasterControl.apply(this, arguments);
+            const modal = document.getElementById("basmaMasterControlModal");
+            if (modal && !document.getElementById("basmaCleanEntryLinkCard")) {
+                const card = modal.querySelector(".lux-card");
+                const hdr = card?.querySelector(".border-b");
+                const entryUrl = getCleanEntryModeUrl();
+                const boxHtml = `
+                    <div id="basmaCleanEntryLinkCard" class="p-3.5 rounded-xl border-2 border-teal-500/60 bg-teal-50/70 space-y-2 text-xs">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <div class="font-black text-sm text-teal-900">⚡ رابط إدخال وتعديل بيانات الموظفين (الوضع النظيف بدون مؤثرات)</div>
+                                <div class="text-[11px] font-bold text-slate-600 mt-0.5">رابط خاص سريع وخفيف بدون شعارات متحركة أو أقسام — مخصص لإدخال وتعديل الموظفين ومزامنة صور الهوية مع Supabase مباشرة</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" readonly value="${entryUrl}" dir="ltr" class="flex-1 lux-input num-mono !text-xs !h-9 bg-white text-left">
+                            <button type="button" onclick="copyCleanEntryLink()" class="btn-lux btn-cyan-glass !py-1.5 !px-3.5 !text-xs"><span>📋 نسخ الرابط</span></button>
+                            <a href="${entryUrl}" target="_blank" rel="noopener noreferrer" class="btn-lux btn-basma-dossier !py-1.5 !px-3.5 !text-xs"><span>🚀 فتح الآن</span></a>
+                        </div>
+                    </div>
+                `;
+                if (hdr) hdr.insertAdjacentHTML("afterend", boxHtml);
+                else if (card) card.insertAdjacentHTML("afterbegin", boxHtml);
+            }
+            return res;
+        };
+    }
+
+    function renderCleanEntryEmpPicker() {
+        if (!BASMA_CLEAN_ENTRY_MODE) return;
+        const sel = document.getElementById("cleanEntryEmpSelect");
+        const cntEl = document.getElementById("cleanEntryCountBadge");
+        if (!sel) return;
+        const emps = [...(curComp()?.employees || [])].sort((a, b) => {
+            const na = parseInt(a.id, 10), nb = parseInt(b.id, 10);
+            if (!isNaN(na) && !isNaN(nb)) return na - nb;
+            return String(a.id).localeCompare(String(b.id));
+        });
+        if (cntEl) cntEl.innerText = emps.length;
+        const curSelected = document.getElementById("f_id")?.value.trim() || "";
+        const q = (document.getElementById("cleanEntryQuickSearch")?.value || "").trim().toLowerCase();
+        const filtered = q
+            ? emps.filter(e => `${e.id} ${e.name} ${e.mainDept} ${e.phone || ''}`.toLowerCase().includes(q))
+            : emps;
+        sel.innerHTML = `<option value="">— اختر موظفاً للتعديل (${filtered.length}) —</option>` +
+            filtered.map(e => `<option value="${e.id}" ${String(e.id) === curSelected ? 'selected' : ''}>#${e.id} — ${e.name} (${e.mainDept || ''})</option>`).join("");
+    }
+
+    function ensureCleanEntryTopBar() {
+        if (!BASMA_CLEAN_ENTRY_MODE) return;
+        if (document.getElementById("basmaCleanEntryTopBar")) {
+            renderCleanEntryEmpPicker();
+            return;
+        }
+        const mainEl = document.querySelector("main");
+        if (!mainEl) return;
+        mainEl.insertAdjacentHTML("afterbegin", `
+            <div id="basmaCleanEntryTopBar" class="lux-card p-3.5 mb-4 space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-title font-black text-sm text-slate-900">⚡ إدخال وتعديل بيانات الموظفين (الوضع النظيف)</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">☁️ Supabase + Storage</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-sky-100 text-sky-900 border border-sky-300">العدد: <b id="cleanEntryCountBadge" class="num-mono">0</b></span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="clearEmployeeForm(); generateNextEmpId();" class="btn-lux btn-azure-primary !py-1.5 !px-3.5 !text-xs"><span>➕ موظف جديد</span></button>
+                        <button type="button" onclick="pullFromCloud(true, true)" class="btn-lux btn-dark-lux !py-1.5 !px-3.5 !text-xs"><span>🔄 تحديث من السحابة</span></button>
+                        <button type="button" onclick="lockSystem()" class="btn-lux btn-crimson-lux !py-1.5 !px-3.5 !text-xs"><span>🔒 خروج</span></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center text-xs">
+                    <div class="md:col-span-5">
+                        <input type="text" id="cleanEntryQuickSearch" oninput="renderCleanEntryEmpPicker()" placeholder="🔍 بحث سريع بالاسم أو الرقم أو القسم لتعديل موظف..." class="w-full lux-input !h-9">
+                    </div>
+                    <div class="md:col-span-7">
+                        <select id="cleanEntryEmpSelect" onchange="if(this.value) loadEmployeeToForm(this.value);" class="w-full lux-input !h-9 font-bold"></select>
+                    </div>
+                </div>
+            </div>
+        `);
+        renderCleanEntryEmpPicker();
+    }
+
+    if (BASMA_CLEAN_ENTRY_MODE) {
+        document.body.classList.add("basma-clean-entry-mode");
+        // إيقاف الصوت التفاعلي تلقائياً في الوضع النظيف
+        if (appData.platformConfig) appData.platformConfig.soundEnabled = false;
+        // تحديث نصوص شاشة الدخول للوضع النظيف
+        const pill = document.getElementById("loginRolePill");
+        if (pill) pill.innerText = "⚡ بوابة إدخال البيانات السريعة (الوضع النظيف)";
+        const sub = document.getElementById("loginSubTitle");
+        if (sub) sub.innerText = "إدخال وتعديل بيانات الموظفين ومزامنة صور الهوية مباشرة بدون مؤثرات";
+
+        // توجيه الدخول مباشرةً إلى استمارة الإدخال والتعديل
+        const _v47SwitchTab = window.switchTab;
+        window.switchTab = function(tabName) {
+            return _v47SwitchTab("form");
+        };
+
+        const _v47RenderAllViews = window.renderAllViews;
+        window.renderAllViews = function() {
+            const res = _v47RenderAllViews.apply(this, arguments);
+            if (isLoggedIn) {
+                ensureCleanEntryTopBar();
+                renderCleanEntryEmpPicker();
+            }
+            return res;
+        };
+
+        setTimeout(() => {
+            const sp = document.getElementById("basmaSplashIntro");
+            if (sp) sp.remove();
+        }, 50);
+    }
 
     // تشغيل أولي نظيف وفوري
     // إظهار لوحة الدخول الجديدة فوراً بعد اكتمال التصميم بدون أي ومضة للوحة القديمة
