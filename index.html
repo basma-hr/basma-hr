@@ -16262,23 +16262,52 @@
         const clean = src.trim();
         if (!clean || clean === "__IDB__") return "";
         if (clean.startsWith("data:image")) return clean;
+
+        // المحاولة 1: تحميل الصورة مباشرة عبر Image + Canvas (يعمل مع Supabase Storage حتى لو كان Content-Type غير قياسي ويحوّلها لـ JPEG صافية)
+        try {
+            const im = await loadImgAsync(clean);
+            if (im && im.width > 0 && im.height > 0) {
+                const c = document.createElement("canvas");
+                c.width = im.width;
+                c.height = im.height;
+                const ctx = c.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, c.width, c.height);
+                ctx.drawImage(im, 0, 0);
+                return c.toDataURL("image/jpeg", 0.94);
+            }
+        } catch (e1) {}
+
+        // المحاولة 2: عبر fetch + FileReader (مع تجاهل صفحات 404 HTML فقط)
         try {
             const resp = await fetch(clean, { mode: "cors", cache: "no-store" });
             if (!resp.ok) return "";
+            const ct = (resp.headers.get("content-type") || "").toLowerCase();
+            if (ct.includes("text/html") || ct.includes("application/json")) return "";
             const blob = await resp.blob();
-            if (!blob || !blob.type || !blob.type.startsWith("image/")) return "";
-            return await new Promise((resolve) => {
+            if (!blob || blob.size < 200) return "";
+            const dataUrl = await new Promise((resolve) => {
                 const fr = new FileReader();
-                fr.onloadend = () => {
-                    const res = fr.result;
-                    resolve((typeof res === "string" && res.startsWith("data:image")) ? res : "");
-                };
+                fr.onloadend = () => resolve(typeof fr.result === "string" ? fr.result : "");
                 fr.onerror = () => resolve("");
                 fr.readAsDataURL(blob);
             });
-        } catch (e) {
-            return "";
-        }
+            if (!dataUrl) return "";
+            if (dataUrl.startsWith("data:image")) return dataUrl;
+            // إذا كان application/octet-stream نتحقق منه كصورة ونحوله لـ JPEG
+            const im2 = await loadImgAsync(dataUrl.replace(/^data:[^;]+;/, "data:image/jpeg;"));
+            if (im2 && im2.width > 0) {
+                const c2 = document.createElement("canvas");
+                c2.width = im2.width;
+                c2.height = im2.height;
+                const ctx2 = c2.getContext("2d");
+                ctx2.fillStyle = "#ffffff";
+                ctx2.fillRect(0, 0, c2.width, c2.height);
+                ctx2.drawImage(im2, 0, 0);
+                return c2.toDataURL("image/jpeg", 0.94);
+            }
+        } catch (e2) {}
+        return "";
     }
 
     // ==================== نافذة معاينة وتعديل بيانات إضبارة العمل والعقد قبل التوليد ====================
@@ -16732,16 +16761,25 @@
         }
 
         try {
-            // محاولة جلب الصورة الشخصية من بيانات الموظف (السحابة أو IndexedDB أو النموذج)
-            let rawPersonal = empData.personalImg || "";
-            if (!rawPersonal && empData.id) {
-                const realEmp = (curComp().employees || []).find(e => String(e.id).trim() === String(empData.id).trim());
-                if (realEmp) rawPersonal = await resolveEmpMedia(realEmp, "personal");
+            // محاولة جلب جميع الصور (الشخصية + الهوية وجه/قفا + إخراج القيد) من بيانات الموظف (السحابة أو IndexedDB أو النموذج)
+            const realEmp = empData.id
+                ? (curComp().employees || []).find(e => String(e.id).trim() === String(empData.id).trim())
+                : null;
+            let rawPersonal = empData.personalImg || (realEmp ? await resolveEmpMedia(realEmp, "personal") : "");
+            let rawFront = empData.idFrontImg || (realEmp ? await resolveEmpMedia(realEmp, "front") : "");
+            let rawBack = empData.idBackImg || (realEmp ? await resolveEmpMedia(realEmp, "back") : "");
+            let rawCivil = empData.civilRegImg || "";
+            if (!rawCivil && realEmp) {
+                const idbC = await getMediaFromDB(curComp().id, realEmp.id, "civil");
+                rawCivil = (realEmp.civilRegImg && (realEmp.civilRegImg.startsWith("http") || realEmp.civilRegImg.startsWith("data:image")))
+                    ? realEmp.civilRegImg
+                    : (idbC || realEmp.civilRegImg || "");
             }
+
             const personalSafe = await fetchImageAsSafeDataUrl(rawPersonal);
-            const frontSafe = await fetchImageAsSafeDataUrl(empData.idFrontImg || "");
-            const backSafe = await fetchImageAsSafeDataUrl(empData.idBackImg || "");
-            const civilSafe = await fetchImageAsSafeDataUrl(empData.civilRegImg || "");
+            const frontSafe = await fetchImageAsSafeDataUrl(rawFront);
+            const backSafe = await fetchImageAsSafeDataUrl(rawBack);
+            const civilSafe = await fetchImageAsSafeDataUrl(rawCivil);
 
             const hasIdDoc = Boolean(frontSafe || backSafe);
             const hasCivilDoc = Boolean(civilSafe);
