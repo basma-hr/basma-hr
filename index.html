@@ -1467,14 +1467,15 @@
         }
 
         async function deleteEmployeeById(empId) {
-            const emp = curComp().employees.find(e => e.id === empId);
+            const cleanTargetId = String(empId || "").trim();
+            const emp = curComp().employees.find(e => String(e.id || "").trim() === cleanTargetId);
             if (!emp) return;
             if (sessionRole === "dept_head" && emp.mainDept !== sessionDept) {
                 alert("غير مسموح لك بحذف موظف خارج قسمك!");
                 return;
             }
             if (!confirm(`هل أنت متأكد من حذف سجل الموظف (${emp.name} - ID: ${emp.id}) نهائياً؟`)) return;
-            curComp().employees = curComp().employees.filter(e => e.id !== empId);
+            curComp().employees = curComp().employees.filter(e => String(e.id || "").trim() !== cleanTargetId);
             recordDeptHeadAlert("حذف", emp);
             if (document.getElementById("f_id").value.trim() === empId) clearEmployeeForm();
             if (currentSearchedEmpId === empId) currentSearchedEmpId = curComp().employees[0]?.id || null;
@@ -15820,18 +15821,27 @@
         return result;
     }
 
-    // تسجيل الحذف الصريح في deletedEmpIds حتى لا يعود الموظف المحذوف عند الدمج
+    // تسجيل الحذف الصريح في deletedEmpIds قبل الرفع لـ Supabase حتى لا يعيد الدمج الذكي الموظف المحذوف
     const _v41DeleteEmp = window.deleteEmployeeById;
     if (typeof _v41DeleteEmp === "function") {
         window.deleteEmployeeById = async function(empId) {
             const cleanId = String(empId || "").trim();
-            const existed = (curComp()?.employees || []).some(e => String(e.id).trim() === cleanId);
+            const comp = curComp();
+            const existed = (comp?.employees || []).some(e => String(e.id || "").trim() === cleanId);
+            const hadPrevDel = Boolean(comp?.deletedEmpIds && comp.deletedEmpIds[cleanId]);
+            const prevDelTs = hadPrevDel ? comp.deletedEmpIds[cleanId] : null;
+            if (existed && comp) {
+                if (!comp.deletedEmpIds || typeof comp.deletedEmpIds !== "object") comp.deletedEmpIds = {};
+                comp.deletedEmpIds[cleanId] = Date.now() + 5000;
+            }
             const res = await _v41DeleteEmp.apply(this, arguments);
-            const stillExists = (curComp()?.employees || []).some(e => String(e.id).trim() === cleanId);
-            if (existed && !stillExists && curComp()) {
-                if (!curComp().deletedEmpIds) curComp().deletedEmpIds = {};
-                curComp().deletedEmpIds[cleanId] = Date.now();
-                await window.pushToCloud(true, true);
+            const stillExists = (comp?.employees || []).some(e => String(e.id || "").trim() === cleanId);
+            if (existed && stillExists && comp && comp.deletedEmpIds) {
+                // ألغى المستخدم نافذة التأكيد — نعيد الحالة كما كانت
+                if (hadPrevDel) comp.deletedEmpIds[cleanId] = prevDelTs;
+                else delete comp.deletedEmpIds[cleanId];
+            } else if (existed && !stillExists && comp) {
+                if (typeof renderAllViews === "function") renderAllViews();
             }
             return res;
         };
