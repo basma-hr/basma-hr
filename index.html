@@ -10559,6 +10559,8 @@
         toApply.forEach(row => {
             let emp = row.emp;
             if (row.isNew) {
+                if (!(row.totalPunches > 0)) return;
+                if (curComp()?.deletedEmpIds) delete curComp().deletedEmpIds[String(row.id).trim()];
                 emp = {
                     id: String(row.id), name: row.name, mainDept: defMainDept, subDept: defSubDept,
                     natId: "", dob: "", phone: "", hireDate: new Date().toISOString().slice(0, 10), endDate: "",
@@ -12409,7 +12411,7 @@
             if (!byKey[bucketKey]) {
                 byKey[bucketKey] = {
                     id: existingEmp ? String(existingEmp.id).trim() : String(rawId || "").trim(),
-                    name: existingEmp ? existingEmp.name : (String(rawName || "").replace(/[.,،]+/g, " ").replace(/\s+/g, " ").trim() || `موظف بصمة #${rawId}`),
+                    name: existingEmp ? existingEmp.name : (curComp()?.deletedEmpArchive?.[String(rawId || "").trim()]?.name || String(rawName || "").replace(/[.,،]+/g, " ").replace(/\s+/g, " ").trim() || `موظف بصمة #${rawId}`),
                     emp: existingEmp || null,
                     isNew: !existingEmp,
                     timestamps: []
@@ -14513,20 +14515,27 @@
         let updatedExisting = 0, addedNew = 0, savedAttCount = 0;
 
         toApply.forEach(row => {
-            // إعادة البحث الحي داخل curComp().employees لتفادي أي مرجع قديم بعد المزامنة التلقائية
+            // إعادة البحث الحي داخل curComp().employees حسب الـ ID فقط
             let emp = findEmployeeByFlexibleId(row.id);
-            if (!emp && row.name) {
-                const rn = normAr(row.name);
-                if (rn && !rn.startsWith("موظف بصمه #")) {
-                    emp = (curComp().employees || []).find(e => normAr(e.name) === rn) || null;
-                }
-            }
 
             const dailyEntries = Object.entries(row.dailyMap || {});
             const hasMovements = dailyEntries.length > 0 || (row.totalPunches > 0);
 
             if (!emp) {
-                emp = {
+                // إذا لم يكن للموظف أي بصمات في الملف لا يتم استيراده نهائياً
+                if (!hasMovements) return;
+                const cleanRowId = String(row.id).trim();
+                if (curComp()?.deletedEmpIds) delete curComp().deletedEmpIds[cleanRowId];
+                const archivedEmp = curComp()?.deletedEmpArchive?.[cleanRowId];
+                if (archivedEmp && typeof archivedEmp === "object") {
+                    emp = JSON.parse(JSON.stringify(archivedEmp));
+                    emp.id = cleanRowId;
+                    emp.biometricRegistered = true;
+                    emp._empUpdatedAt = Date.now();
+                    if (!emp.monthlyAttendance || typeof emp.monthlyAttendance !== "object") emp.monthlyAttendance = {};
+                    if (emp.calcMode === "أيام") emp.workDays = row.daysPresent;
+                    else emp.workHours = row.totalHours;
+                } else emp = {
                     id: String(row.id).trim(),
                     name: String(row.name || `موظف بصمة #${row.id}`).replace(/\./g, " ").replace(/\s+/g, " ").trim(),
                     mainDept: defMainDept,
@@ -15849,6 +15858,7 @@
             deptPasswords: { ...(remoteComp.deptPasswords || {}), ...(localComp.deptPasswords || {}) },
             deptPermissions: { ...(remoteComp.deptPermissions || {}), ...(localComp.deptPermissions || {}) },
             deletedEmpIds: mergedDeleted,
+            deletedEmpArchive: { ...(remoteComp.deletedEmpArchive || {}), ...(localComp.deletedEmpArchive || {}) },
             hrAlerts: mergedAlerts,
             employees: mergedEmployees
         };
@@ -15871,12 +15881,16 @@
         window.deleteEmployeeById = async function(empId) {
             const cleanId = String(empId || "").trim();
             const comp = curComp();
-            const existed = (comp?.employees || []).some(e => String(e.id || "").trim() === cleanId);
+            const targetEmpObj = (comp?.employees || []).find(e => String(e.id || "").trim() === cleanId);
+            const existed = Boolean(targetEmpObj);
             const hadPrevDel = Boolean(comp?.deletedEmpIds && comp.deletedEmpIds[cleanId]);
             const prevDelTs = hadPrevDel ? comp.deletedEmpIds[cleanId] : null;
+            const prevArch = comp?.deletedEmpArchive?.[cleanId] || null;
             if (existed && comp) {
                 if (!comp.deletedEmpIds || typeof comp.deletedEmpIds !== "object") comp.deletedEmpIds = {};
+                if (!comp.deletedEmpArchive || typeof comp.deletedEmpArchive !== "object") comp.deletedEmpArchive = {};
                 comp.deletedEmpIds[cleanId] = Date.now() + 5000;
+                try { comp.deletedEmpArchive[cleanId] = JSON.parse(JSON.stringify(targetEmpObj)); } catch (e) {}
             }
             const res = await _v41DeleteEmp.apply(this, arguments);
             const stillExists = (comp?.employees || []).some(e => String(e.id || "").trim() === cleanId);
@@ -15884,6 +15898,10 @@
                 // ألغى المستخدم نافذة التأكيد — نعيد الحالة كما كانت
                 if (hadPrevDel) comp.deletedEmpIds[cleanId] = prevDelTs;
                 else delete comp.deletedEmpIds[cleanId];
+                if (comp.deletedEmpArchive) {
+                    if (prevArch) comp.deletedEmpArchive[cleanId] = prevArch;
+                    else delete comp.deletedEmpArchive[cleanId];
+                }
             } else if (existed && !stillExists && comp) {
                 if (typeof renderAllViews === "function") renderAllViews();
             }
