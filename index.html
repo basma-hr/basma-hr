@@ -6942,6 +6942,20 @@
                         <button type="button" onclick="closeBasmaMasterControl()" class="btn-lux btn-dark-lux"><span>إغلاق ✕</span></button>
                     </div>
 
+                    <div class="p-4 rounded-xl border-2 border-amber-400 space-y-2.5" style="background: linear-gradient(135deg, rgba(254, 243, 199, 0.35) 0%, var(--card-elevated) 100%);">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-2" style="border-color: var(--border-col);">
+                            <h4 class="text-sm font-black text-amber-800">🌟 رابط المعاينة الخصوصي للتقييم والإعلان (VIP Demo)</h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-black bg-emerald-500/20 text-emerald-800 border border-emerald-500/40">دخول مباشر بدون كلمة سر ومعزول 100% عن بياناتك</span>
+                        </div>
+                        <p class="text-xs font-bold opacity-85">شارك هذا الرابط مع أي مدير موارد بشرية أو عميل محتمل ليجرب كافة ميزات المنصة ببيانات نموذجية آمنة:</p>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" id="mc_vipDemoLinkInput" readonly value="${window.location.origin + window.location.pathname}?demo=hr" class="flex-1 min-w-[220px] lux-input num-mono text-left text-xs font-bold" dir="ltr">
+                            <button type="button" onclick="copyVipDemoLinkV61()" class="btn-lux btn-azure-primary !py-1.5 !px-3.5"><span>📋 نسخ الرابط</span></button>
+                            <button type="button" onclick="shareVipDemoWhatsAppV61()" class="btn-lux btn-emerald-wa !py-1.5 !px-3.5"><span>💬 إرسال واتساب</span></button>
+                            <a href="${window.location.origin + window.location.pathname}?demo=hr" target="_blank" rel="noopener noreferrer" class="btn-lux btn-dark-lux !py-1.5 !px-3.5"><span>👁️ معاينة</span></a>
+                        </div>
+                    </div>
+
                     <div class="p-4 rounded-xl border space-y-3" style="background: var(--card-elevated); border-color: var(--border-col);">
                         <h4 class="text-sm font-black border-b pb-2" style="border-color: var(--border-col);">1. صلاحيات وكلمات سر رؤساء الأقسام (${curComp().name})</h4>
                         <div id="mc_deptPermissionsGrid" class="space-y-2.5 text-xs"></div>
@@ -17578,6 +17592,522 @@
         injectBiometricBadgesImmediatelyV56();
         injectDeptFilterControlsInSortBarsV56();
     }, 250);
+
+
+    // ==================== 59. حزمة الترقية v59: المزامنة الشاملة المباشرة مع Excel من داخل المنصة (بيانات + رواتب بمعادلات + بصمات + سلف وإجازات + صور مصغّرة) ====================
+    async function compressImageToJpegBase64V59(src, maxW = 140, maxH = 140, quality = 0.72) {
+        if (!src || typeof src !== "string") return "";
+        if (!src.startsWith("data:image") && !src.startsWith("http")) return "";
+        return new Promise((resolve) => {
+            try {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => {
+                    try {
+                        let w = img.width, h = img.height;
+                        const ratio = Math.min(1, maxW / w, maxH / h);
+                        w = Math.max(20, Math.round(w * ratio));
+                        h = Math.max(20, Math.round(h * ratio));
+                        const c = document.createElement("canvas");
+                        c.width = w; c.height = h;
+                        const ctx = c.getContext("2d");
+                        ctx.fillStyle = "#ffffff";
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(c.toDataURL("image/jpeg", quality));
+                    } catch (e) { resolve(""); }
+                };
+                img.onerror = () => resolve("");
+                img.src = src;
+            } catch (e) { resolve(""); }
+        });
+    }
+
+    const _v58BuildExcelBuf = window.buildStyledExcelBuffer;
+    window.buildStyledExcelBuffer = async function(onlyReport = false) {
+        if (onlyReport && typeof _v58BuildExcelBuf === "function") {
+            return await _v58BuildExcelBuf(true);
+        }
+
+        const workbook = new ExcelJS.Workbook();
+        workbook.creator = `${OWNER_NAME} - ${OWNER_ROLE}`;
+        const comp = curComp();
+        const emps = comp.employees || [];
+        const period = document.getElementById("pay_month")?.value || new Date().toISOString().slice(0, 7);
+
+        // 1. ورقة السجل الشامل (بتنسيق المنصة المعتمد)
+        addFormattedSheetToExcelJS(workbook, "السجل_الشامل", "السجل الشامل لكافة الموظفين", emps);
+
+        // 2. ورقة مسير الرواتب الشهرية (بمعادلات Excel حقيقية)
+        const wsPay = workbook.addWorksheet("مسير_الرواتب", { views: [{ rightToLeft: true, state: "frozen", ySplit: 3 }] });
+        wsPay.columns = [
+            { width: 6 }, { width: 11 }, { width: 25 }, { width: 15 },
+            { width: 16 }, { width: 13 }, { width: 14 }, { width: 14 },
+            { width: 16 }, { width: 14 }, { width: 16 }, { width: 14 },
+            { width: 14 }, { width: 18 }, { width: 11 }
+        ];
+        const pr1 = wsPay.addRow([`${comp.name} — مسير الرواتب الشهرية (${period}) | ${OWNER_ROLE}: ${OWNER_NAME}`]);
+        pr1.height = 28; wsPay.mergeCells("A1:O1");
+        pr1.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF07101E" } };
+        pr1.getCell(1).font = { name: "Arial", size: 11, bold: true, color: { argb: "FF7DD3FC" } };
+        pr1.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+
+        const activeEmps = emps.filter(e => getStatus(e.endDate) === "على رأس عمله");
+        const pr2 = wsPay.addRow([`معيار الدوام: 208 ساعات شهرياً | الإضافي × 1.5 | عدد الموظفين النشطين: ${activeEmps.length}`]);
+        pr2.height = 22; wsPay.mergeCells("A2:O2");
+        pr2.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F2340" } };
+        pr2.getCell(1).font = { name: "Arial", size: 10, bold: true, color: { argb: "FFFFFFFF" } };
+        pr2.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+
+        const pr3 = wsPay.addRow([
+            "م", "ID", "الاسم الكامل", "القسم", "الراتب الأساسي", "أجر الساعة",
+            "ساعات الدوام", "ساعات الإضافي", "مبلغ الإضافي (1.5x)", "نقص الساعات",
+            "حسم النقص", "مكافآت", "سلف وحسميات", "صافي الراتب المستحق", "العملة"
+        ]);
+        pr3.height = 26;
+        pr3.eachCell(c => {
+            c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0284C7" } };
+            c.font = { name: "Arial", size: 9.5, bold: true, color: { argb: "FFFFFFFF" } };
+            c.alignment = { horizontal: "center", vertical: "middle", wrapText: true };
+        });
+
+        activeEmps.forEach((e, idx) => {
+            const r = idx + 4;
+            const base = Number(e.salary) || 0;
+            const hrs = (e.workHours !== undefined && e.workHours !== "") ? Number(e.workHours) : 208;
+            const bon = Number(e.bonus) || 0;
+            const ded = Number(e.deductions) || 0;
+            const row = wsPay.addRow([
+                idx + 1, e.id, e.name, e.mainDept, base,
+                { formula: `ROUND(E${r}/208,0)` },
+                hrs,
+                { formula: `MAX(0,G${r}-208)` },
+                { formula: `ROUND(H${r}*(E${r}/208)*1.5,0)` },
+                { formula: `MAX(0,208-G${r})` },
+                { formula: `ROUND(J${r}*(E${r}/208),0)` },
+                bon, ded,
+                { formula: `MAX(0,ROUND(E${r}+I${r}-K${r}+L${r}-M${r},0))` },
+                e.currency || "ل.س قديم"
+            ]);
+            row.height = 21;
+            row.eachCell((c, col) => {
+                c.font = { name: "Arial", size: 9.5, bold: [1, 2, 3, 5, 14].includes(col) };
+                c.alignment = { horizontal: col === 3 ? "right" : "center", vertical: "middle" };
+                if ([5, 6, 9, 11, 12, 13, 14].includes(col)) c.numFmt = "#,##0";
+                if (col === 14) c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF3C7" } };
+            });
+        });
+
+        if (activeEmps.length > 0) {
+            const lastR = activeEmps.length + 3;
+            const totRow = wsPay.addRow([
+                "", "", "المجموع الكلي:", "",
+                { formula: `SUM(E4:E${lastR})` }, "", { formula: `SUM(G4:G${lastR})` },
+                { formula: `SUM(H4:H${lastR})` }, { formula: `SUM(I4:I${lastR})` },
+                { formula: `SUM(J4:J${lastR})` }, { formula: `SUM(K4:K${lastR})` },
+                { formula: `SUM(L4:L${lastR})` }, { formula: `SUM(M4:M${lastR})` },
+                { formula: `SUM(N4:N${lastR})` }, "ل.س"
+            ]);
+            totRow.height = 25;
+            totRow.eachCell((c, col) => {
+                c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF07101E" } };
+                c.font = { name: "Arial", size: 10, bold: true, color: { argb: col === 14 ? "FFFDE047" : "FFFFFFFF" } };
+                c.alignment = { horizontal: "center", vertical: "middle" };
+                if ([5, 9, 11, 12, 13, 14].includes(col)) c.numFmt = "#,##0";
+            });
+        }
+
+        // 3. ورقة حركات البصمة اليومية للشهر الحالي
+        const wsAtt = workbook.addWorksheet("حركات_البصمة", { views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }] });
+        wsAtt.columns = [
+            { width: 10 }, { width: 25 }, { width: 15 }, { width: 14 },
+            { width: 12 }, { width: 12 }, { width: 13 }, { width: 12 }, { width: 20 }
+        ];
+        const ar1 = wsAtt.addRow([`${comp.name} — سجل حركات البصمة اليومية (${period})`]);
+        ar1.height = 26; wsAtt.mergeCells("A1:I1");
+        ar1.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F2340" } };
+        ar1.getCell(1).font = { name: "Arial", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        ar1.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+
+        const ar2 = wsAtt.addRow(["ID", "الاسم الكامل", "القسم", "التاريخ", "دخول", "خروج", "ساعات الدوام", "وردية ليلية", "ملاحظة"]);
+        ar2.height = 24;
+        ar2.eachCell(c => {
+            c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0284C7" } };
+            c.font = { name: "Arial", size: 9.5, bold: true, color: { argb: "FFFFFFFF" } };
+            c.alignment = { horizontal: "center", vertical: "middle" };
+        });
+
+        emps.forEach(e => {
+            const ma = (e.monthlyAttendance || {})[period];
+            const days = (ma && ma.days) ? ma.days : (ma && typeof ma === "object" ? ma : {});
+            Object.keys(days).sort().forEach(dayStr => {
+                const d = days[dayStr];
+                if (!d || typeof d !== "object") return;
+                const row = wsAtt.addRow([
+                    e.id, e.name, e.mainDept, dayStr, d.in || "—", d.out || "—",
+                    Number(d.hours) || 0, d.isNightShift ? "نعم" : "لا",
+                    d.missingOut ? "⚠️ بصمة خروج ناقصة" : "مكتمل"
+                ]);
+                row.height = 20;
+                row.eachCell((c, col) => {
+                    c.font = { name: "Arial", size: 9.5, bold: [1, 2, 7].includes(col) };
+                    c.alignment = { horizontal: col === 2 ? "right" : "center", vertical: "middle" };
+                    if (d.missingOut) c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFEDD5" } };
+                });
+            });
+        });
+
+        // 4. ورقة السلف والمكافآت والإجازات
+        const wsFin = workbook.addWorksheet("السلف_والإجازات", { views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }] });
+        wsFin.columns = [
+            { width: 10 }, { width: 24 }, { width: 15 }, { width: 13 },
+            { width: 13 }, { width: 15 }, { width: 28 }, { width: 20 }, { width: 14 }
+        ];
+        const fr1 = wsFin.addRow([`${comp.name} — سجل السلف والمكافآت والإجازات المبررة`]);
+        fr1.height = 26; wsFin.mergeCells("A1:I1");
+        fr1.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F2340" } };
+        fr1.getCell(1).font = { name: "Arial", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        fr1.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+
+        const fr2 = wsFin.addRow(["ID", "الاسم الكامل", "القسم", "التصنيف", "النوع", "المبلغ / المدة", "البيان", "الوقت", "بواسطة"]);
+        fr2.height = 24;
+        fr2.eachCell(c => {
+            c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0284C7" } };
+            c.font = { name: "Arial", size: 9.5, bold: true, color: { argb: "FFFFFFFF" } };
+            c.alignment = { horizontal: "center", vertical: "middle" };
+        });
+
+        emps.forEach(e => {
+            (e.financeLogs || []).forEach(fl => {
+                const r = wsFin.addRow([e.id, e.name, e.mainDept, "حركة مالية", fl.type || "", Number(fl.amount) || 0, fl.note || "", fl.time || "", fl.by || ""]);
+                r.eachCell((c, col) => {
+                    c.font = { name: "Arial", size: 9.5 };
+                    c.alignment = { horizontal: [2, 7].includes(col) ? "right" : "center", vertical: "middle" };
+                    if (col === 6) c.numFmt = "#,##0";
+                });
+            });
+            (e.leaveLogs || []).forEach(ll => {
+                const r = wsFin.addRow([e.id, e.name, e.mainDept, "إجازة", ll.mode || "", Number(ll.amount) || 0, ll.reason || "", ll.time || "", ll.by || ""]);
+                r.eachCell((c, col) => {
+                    c.font = { name: "Arial", size: 9.5 };
+                    c.alignment = { horizontal: [2, 7].includes(col) ? "right" : "center", vertical: "middle" };
+                });
+            });
+        });
+
+        // 5. ورقة أرشيف الصور والهويات (صور مضغوطة وخفيفة داخل Excel)
+        const wsPhotos = workbook.addWorksheet("أرشيف_الصور_والهويات", { views: [{ rightToLeft: true, state: "frozen", ySplit: 2 }] });
+        wsPhotos.columns = [
+            { width: 10 }, { width: 24 }, { width: 15 },
+            { width: 18 }, { width: 26 }, { width: 26 }
+        ];
+        const phr1 = wsPhotos.addRow([`${comp.name} — أرشيف الصور الشخصية والهويات (متزامن تلقائياً مع المنصة)`]);
+        phr1.height = 26; wsPhotos.mergeCells("A1:F1");
+        phr1.getCell(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0F2340" } };
+        phr1.getCell(1).font = { name: "Arial", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+        phr1.getCell(1).alignment = { horizontal: "center", vertical: "middle" };
+
+        const phr2 = wsPhotos.addRow(["ID", "الاسم الكامل", "القسم", "الصورة الشخصية", "الهوية — الوجه الأول", "الهوية — الوجه الثاني"]);
+        phr2.height = 24;
+        phr2.eachCell(c => {
+            c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF0284C7" } };
+            c.font = { name: "Arial", size: 9.5, bold: true, color: { argb: "FFFFFFFF" } };
+            c.alignment = { horizontal: "center", vertical: "middle" };
+        });
+
+        for (let i = 0; i < emps.length; i++) {
+            const e = emps[i];
+            const hasAny = Boolean(e.personalImg || e.idFrontImg || e.idBackImg);
+            if (!hasAny) continue;
+            const row = wsPhotos.addRow([e.id, e.name, e.mainDept, "", "", ""]);
+            const rIdx = row.number;
+            row.height = 78;
+            row.eachCell((c, col) => {
+                c.font = { name: "Arial", size: 9.5, bold: [1, 2].includes(col) };
+                c.alignment = { horizontal: col === 2 ? "right" : "center", vertical: "middle" };
+            });
+
+            const slots = [
+                { src: e.personalImg, colIdx: 3, w: 72, h: 72 },
+                { src: e.idFrontImg, colIdx: 4, w: 128, h: 78 },
+                { src: e.idBackImg, colIdx: 5, w: 128, h: 78 }
+            ];
+            for (const sl of slots) {
+                if (!sl.src) continue;
+                const b64 = await compressImageToJpegBase64V59(sl.src, sl.w * 2, sl.h * 2, 0.72);
+                if (b64) {
+                    try {
+                        const imgId = workbook.addImage({ base64: b64, extension: "jpeg" });
+                        wsPhotos.addImage(imgId, {
+                            tl: { col: sl.colIdx + 0.12, row: (rIdx - 1) + 0.1 },
+                            ext: { width: sl.w, height: sl.h }
+                        });
+                    } catch (err) {}
+                }
+            }
+        }
+
+        // 6. أوراق الأقسام + تنبيهات الأقسام
+        Object.keys(comp.departments || {}).forEach(dept => {
+            addFormattedSheetToExcelJS(workbook, dept.slice(0, 31), `أرشيف قسم: ${dept}`, emps.filter(e => e.mainDept === dept));
+        });
+        const alertWs = workbook.addWorksheet("تنبيهات_الأقسام", { views: [{ rightToLeft: true }] });
+        alertWs.columns = [{ width: 22 }, { width: 18 }, { width: 16 }, { width: 15 }, { width: 26 }, { width: 22 }];
+        alertWs.addRow(["الوقت", "القسم", "نوع العملية", "رقم العامل", "اسم العامل", "القسم الفرعي"]);
+        (comp.hrAlerts || []).forEach(a => alertWs.addRow([a.time, a.dept, a.action, a.empId, a.empName, a.subDept]));
+
+        return await workbook.xlsx.writeBuffer();
+    };
+
+
+    // ==================== 60. حزمة الترقية v60: رابط المعاينة والتقييم الخصوصي لمدراء الموارد البشرية (?demo=hr) ====================
+    const _v60Params = new URLSearchParams(window.location.search);
+    const IS_VIP_HR_DEMO = ["hr", "1", "true", "vip"].includes((_v60Params.get("demo") || _v60Params.get("preview") || "").trim().toLowerCase());
+
+    function buildVipDemoAttendanceDays(monthStr, mode) {
+        const days = {};
+        const totalDays = mode === "overtime" ? 27 : (mode === "shortage" ? 19 : 25);
+        for (let d = 1; d <= totalDays; d++) {
+            if (d % 7 === 5) continue; // عطلة أسبوعية
+            const dd = String(d).padStart(2, "0");
+            const dateKey = `${monthStr}-${dd}`;
+            if (mode === "night") {
+                const miss = (d === 14);
+                days[dateKey] = {
+                    in: "16:15",
+                    out: miss ? "—" : "00:35",
+                    hours: miss ? 8 : 8.33,
+                    missingOut: miss,
+                    isNightShift: !miss
+                };
+            } else if (mode === "overtime") {
+                days[dateKey] = { in: "08:00", out: "18:00", hours: 10.0, missingOut: false, isNightShift: false };
+            } else if (mode === "shortage") {
+                days[dateKey] = { in: "09:10", out: "16:40", hours: 7.5, missingOut: false, isNightShift: false };
+            } else {
+                days[dateKey] = { in: "08:30", out: "16:50", hours: 8.33, missingOut: false, isNightShift: false };
+            }
+        }
+        return { days };
+    }
+
+    function createVipDemoStateV60() {
+        const curMonth = new Date().toISOString().slice(0, 7);
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const demoEmps = [
+            {
+                id: "101", name: "طارق محمود الأحمد", mainDept: "الإدارة والموارد البشرية", subDept: "شؤون الموظفين",
+                natId: "04010022114", dob: "1990-04-12", birthPlace: "حماة", phone: "0991112233",
+                hireDate: "2024-01-10", endDate: "", shift: "دوام كامل", salary: 2400000, currency: "ل.س قديم",
+                gender: "ذكر", maritalStatus: "متزوج", calcMode: "ساعات", workHours: 224, workDays: 26,
+                bonus: 150000, deductions: 0, justifiedLeaveDays: 2, biometricRegistered: true,
+                rating: 5, ratingNote: "التزام ممتاز وسرعة في الإنجاز وتعاون مع كافة الأقسام", ratingCriteria: ["الالتزام بالدوام", "جودة العمل", "العمل الجماعي"], ratingPeriod: curMonth,
+                custom: "O+", notes: "موظف الشهر — نموذج إضافي (1.5x)",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "overtime") },
+                financeLogs: [{ time: todayStr + " 11:20", type: "إضافي", amount: 150000, unit: "ل.س", note: "مكافأة أداء مميز", by: "HR" }],
+                leaveLogs: [{ time: todayStr + " 09:00", mode: "يومي", amount: 2, equivDays: 2, reason: "إجازة إدارية مبررة", by: "HR" }]
+            },
+            {
+                id: "102", name: "سارة خالد المصطفى", mainDept: "المحاسبة والمالية", subDept: "محاسبة عامة",
+                natId: "04020088991", dob: "1994-08-22", birthPlace: "دمشق", phone: "0992223344",
+                hireDate: "2024-06-01", endDate: "", shift: "وردية صباحية", salary: 2100000, currency: "ل.س قديم",
+                gender: "أنثى", maritalStatus: "عازب", calcMode: "ساعات", workHours: 208, workDays: 26,
+                bonus: 0, deductions: 100000, justifiedLeaveDays: 1, biometricRegistered: true,
+                rating: 5, ratingNote: "دقة عالية في المطابقات المالية الشهرية", ratingCriteria: ["دقة العمل", "الالتزام بالدوام"], ratingPeriod: curMonth,
+                custom: "A+", notes: "نموذج دوام قياسي 208 ساعات + سلفة",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "standard") },
+                financeLogs: [{ time: todayStr + " 13:10", type: "سلفة", amount: 100000, unit: "ل.س", note: "سلفة منتصف الشهر", by: "HR" }],
+                leaveLogs: []
+            },
+            {
+                id: "103", name: "رامي عبد الله الحسن", mainDept: "التشغيل والضيافة", subDept: "مشرف وردية",
+                natId: "04030055662", dob: "1992-11-05", birthPlace: "حماة", phone: "0993334455",
+                hireDate: "2023-09-15", endDate: "", shift: "وردية مسائية", salary: 1950000, currency: "ل.س قديم",
+                gender: "ذكر", maritalStatus: "متزوج", calcMode: "ساعات", workHours: 218, workDays: 25,
+                bonus: 75000, deductions: 50000, justifiedLeaveDays: 0, biometricRegistered: true,
+                rating: 4, ratingNote: "أداء قوي في الورديات الليلية", ratingCriteria: ["القيادة", "الالتزام بالدوام"], ratingPeriod: curMonth,
+                custom: "B+", notes: "نموذج وردية ليلية (بصمات بعد منتصف الليل + بصمة ناقصة)",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "night") },
+                financeLogs: [], leaveLogs: []
+            },
+            {
+                id: "104", name: "نور الهدى العلي", mainDept: "التقنية والتطوير", subDept: "دعم فني وأنظمة",
+                natId: "04040077441", dob: "1997-02-18", birthPlace: "حمص", phone: "0994445566",
+                hireDate: "2025-02-01", endDate: "", shift: "دوام كامل", salary: 2200000, currency: "ل.س قديم",
+                gender: "أنثى", maritalStatus: "عازب", calcMode: "ساعات", workHours: 186, workDays: 22,
+                bonus: 0, deductions: 0, justifiedLeaveDays: 3, biometricRegistered: true,
+                rating: 4, ratingNote: "إنجاز ممتاز للمهام التقنية", ratingCriteria: ["جودة العمل"], ratingPeriod: curMonth,
+                custom: "AB+", notes: "نموذج نقص ساعات (حسم تلقائي تحت 208 س)",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "shortage") },
+                financeLogs: [], leaveLogs: []
+            },
+            {
+                id: "105", name: "مازن فؤاد السعيد", mainDept: "التشغيل والضيافة", subDept: "خدمة العملاء",
+                natId: "04050033229", dob: "1996-07-30", birthPlace: "حماة", phone: "0995556677",
+                hireDate: "2025-05-10", endDate: "", shift: "مناوبات", salary: 1650000, currency: "ل.س قديم",
+                gender: "ذكر", maritalStatus: "عازب", calcMode: "أيام", workHours: 208, workDays: 28,
+                bonus: 50000, deductions: 0, justifiedLeaveDays: 0, biometricRegistered: true,
+                rating: 4, ratingNote: "", ratingCriteria: [], ratingPeriod: curMonth,
+                custom: "O-", notes: "نموذج احتساب الراتب بنظام الأيام (30 يوم)",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "standard") },
+                financeLogs: [], leaveLogs: []
+            },
+            {
+                id: "106", name: "عمر ياسر الخطيب", mainDept: "التشغيل والضيافة", subDept: "مساعد تشغيل",
+                natId: "04060099118", dob: "2009-06-15", birthPlace: "حماة", phone: "0996667788",
+                hireDate: "2026-06-01", endDate: "", shift: "وردية صباحية", salary: 1200000, currency: "ل.س قديم",
+                gender: "ذكر", maritalStatus: "عازب", calcMode: "ساعات", workHours: 208, workDays: 26,
+                bonus: 0, deductions: 0, justifiedLeaveDays: 0, biometricRegistered: true,
+                rating: 4, ratingNote: "متدرب ملتزم", ratingCriteria: ["الالتزام بالدوام"], ratingPeriod: curMonth,
+                custom: "A-", notes: "نموذج تنبيه القاصرين (تحت 18 سنة — تلوين برتقالي تلقائي)",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "standard") },
+                financeLogs: [], leaveLogs: []
+            },
+            {
+                id: "107", name: "وسيم نزار الدرويش", mainDept: "الأمن والسلامة", subDept: "مشرف أمن وسلامة",
+                natId: "04070044551", dob: "1988-09-10", birthPlace: "حماة", phone: "0997778899",
+                hireDate: "2023-03-01", endDate: "", shift: "مناوبات", salary: 1850000, currency: "ل.س قديم",
+                gender: "ذكر", maritalStatus: "متزوج", calcMode: "ساعات", workHours: 232, workDays: 27,
+                bonus: 100000, deductions: 0, justifiedLeaveDays: 4, biometricRegistered: true,
+                rating: 5, ratingNote: "انضباط أمني عالٍ والتزام بإجراءات السلامة المهنية", ratingCriteria: ["الالتزام بالدوام", "السلامة المهنية"], ratingPeriod: curMonth,
+                custom: "B-", notes: "ورديات ليلية وإضافي",
+                monthlyAttendance: { [curMonth]: buildVipDemoAttendanceDays(curMonth, "night") },
+                financeLogs: [], leaveLogs: []
+            },
+            {
+                id: "108", name: "لينا سامر بركات", mainDept: "المحاسبة والمالية", subDept: "صندوق وكاشير",
+                natId: "04080066113", dob: "1998-12-01", birthPlace: "حلب", phone: "0998889900",
+                hireDate: "2024-11-15", endDate: "2026-10-30", shift: "وردية صباحية", salary: 1700000, currency: "ل.س قديم",
+                gender: "أنثى", maritalStatus: "عازب", calcMode: "ساعات", workHours: 160, workDays: 20,
+                bonus: 0, deductions: 0, justifiedLeaveDays: 5, biometricRegistered: false,
+                rating: 3, ratingNote: "انتهاء عقد بالتراضي", ratingCriteria: [], ratingPeriod: curMonth,
+                custom: "O+", notes: "نموذج موظف متوقف عن العمل (تلوين أحمر تلقائي)",
+                monthlyAttendance: {}, financeLogs: [], leaveLogs: []
+            }
+        ];
+
+        return {
+            isDefaultSeed: false,
+            updatedAt: Date.now(),
+            activeCompanyId: "demo_horizon",
+            theme: "mist-sky",
+            adminPass: "demo",
+            cloudUrl: "",
+            autoSync: false,
+            fieldLabels: { ...defaultFieldLabels },
+            platformConfig: {
+                platformName: "منصة بصمة",
+                platformSub: "نسخة معاينة وتقييم خاصة لمدراء الموارد البشرية",
+                ownerName: OWNER_NAME,
+                ownerRole: OWNER_ROLE,
+                ownerPhone: OWNER_PHONE,
+                soundEnabled: false
+            },
+            customEmployeeFieldDefs: ["الشهادة العلمية", "عنوان السكن"],
+            companies: {
+                demo_horizon: {
+                    id: "demo_horizon",
+                    name: "شركة الأفق الذكي (نسخة معاينة وتقييم VIP)",
+                    cloudUrl: "",
+                    autoSync: false,
+                    deptPasswords: {
+                        "الإدارة والموارد البشرية": "demo1",
+                        "المحاسبة والمالية": "demo2",
+                        "التشغيل والضيافة": "demo3",
+                        "التقنية والتطوير": "demo4",
+                        "الأمن والسلامة": "demo5"
+                    },
+                    hrAlerts: [
+                        { id: "d_alt_1", time: todayStr + " 14:30", dept: "التشغيل والضيافة", action: "تسجيل سلفة 50,000 ل.س", empId: "103", empName: "رامي عبد الله الحسن", subDept: "مشرف وردية", read: false },
+                        { id: "d_alt_2", time: todayStr + " 11:15", dept: "المحاسبة والمالية", action: "إضافة موظف وتحديث بيانات", empId: "102", empName: "سارة خالد المصطفى", subDept: "محاسبة عامة", read: false }
+                    ],
+                    departments: {
+                        "الإدارة والموارد البشرية": ["شؤون الموظفين", "التدريب والتطوير"],
+                        "المحاسبة والمالية": ["محاسبة عامة", "صندوق وكاشير"],
+                        "التشغيل والضيافة": ["مشرف وردية", "خدمة العملاء", "مساعد تشغيل"],
+                        "التقنية والتطوير": ["دعم فني وأنظمة", "تحليل بيانات"],
+                        "الأمن والسلامة": ["مشرف أمن وسلامة", "حراسة"]
+                    },
+                    employees: demoEmps
+                }
+            }
+        };
+    }
+
+    function injectVipDemoBannerV60() {
+        if (document.getElementById("vipDemoBannerBar")) return;
+        const waMsg = encodeURIComponent("مرحباً أستاذ علاء الدين، اطّلعت على نسخة المعاينة الخاصة بمنصة بصمة HR ولدي الملاحظات التالية:");
+        const waUrl = `https://wa.me/963997811005?text=${waMsg}`;
+        const bar = document.createElement("div");
+        bar.id = "vipDemoBannerBar";
+        bar.className = "no-print";
+        bar.style.cssText = "background:linear-gradient(135deg,#0f294a 0%,#0369a1 60%,#0284c7 100%);color:#ffffff;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;border-bottom:2px solid #fbbf24;position:relative;z-index:50;";
+        bar.innerHTML = `
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span style="background:#fbbf24;color:#0f172a;padding:2px 10px;border-radius:999px;font-weight:900;font-size:11px;">🌟 نسخة معاينة وتقييم خاصة (VIP Demo)</span>
+                <span style="color:#e0f2fe;">هذه بيانات افتراضية آمنة ومعزولة تماماً لتجربة كافة ميزات «منصة بصمة HR» بحرية كاملة (الرواتب، البصمات، التقارير، إضبارة العمل، Excel، والرادار الذكي).</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <button type="button" onclick="resetVipDemoDataV60()" style="background:rgba(255,255,255,0.16);color:#ffffff;border:1px solid rgba(255,255,255,0.45);padding:4px 12px;border-radius:999px;font-size:11px;font-weight:800;cursor:pointer;">🔄 استعادة بيانات التجربة</button>
+                <a href="${waUrl}" target="_blank" rel="noopener noreferrer" style="background:linear-gradient(135deg,#22c55e,#16a34a);color:#ffffff;border:1px solid #bbf7d0;padding:4px 14px;border-radius:999px;font-size:11px;font-weight:900;text-decoration:none;">💬 تواصل مع المطور (علاء الدين العبود)</a>
+            </div>
+        `;
+        document.body.prepend(bar);
+    }
+
+    window.resetVipDemoDataV60 = function() {
+        appData = createVipDemoStateV60();
+        renderAllViews();
+        showToast("🔄 تمت استعادة البيانات التجريبية الافتراضية بنجاح");
+    };
+
+    if (IS_VIP_HR_DEMO) {
+        // عزل تام 100% عن السحابة (Supabase) وعن أي بيانات حقيقية
+        window.pushToCloud = async function() { return true; };
+        window.pullFromCloud = async function() { return true; };
+        window.basmaBackupToSupabase = async function() { return true; };
+        window.persistData = async function() {
+            appData.updatedAt = Date.now();
+            renderAllViews();
+        };
+
+        appData = createVipDemoStateV60();
+        sessionRole = "hr";
+        sessionDept = null;
+        urlLockedDept = null;
+        isLoggedIn = true;
+
+        document.getElementById("loginScreen")?.classList.add("hidden");
+        document.getElementById("basmaSplashIntro")?.classList.add("splash-done");
+        injectVipDemoBannerV60();
+
+        setTimeout(() => {
+            const mInp = document.getElementById("pay_month");
+            if (mInp) mInp.value = new Date().toISOString().slice(0, 7);
+            document.getElementById("loginScreen")?.classList.add("hidden");
+            switchTab("dashboard");
+            showToast("🌟 أهلاً بك في نسخة المعاينة الخاصة لمنصة بصمة HR — يمكنك تجربة جميع الميزات بحرية");
+        }, 250);
+    }
+
+
+    // ==================== 61. دوال نسخ ومشاركة رابط المعاينة الخصوصي من الإعدادات ====================
+    window.copyVipDemoLinkV61 = function() {
+        const url = document.getElementById("mc_vipDemoLinkInput")?.value || (window.location.origin + window.location.pathname + "?demo=hr");
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => showToast("📋 تم نسخ رابط المعاينة الخصوصي (VIP Demo) بنجاح")).catch(() => {
+                prompt("انسخ الرابط:", url);
+            });
+        } else {
+            prompt("انسخ الرابط:", url);
+        }
+    };
+
+    window.shareVipDemoWhatsAppV61 = function() {
+        const url = document.getElementById("mc_vipDemoLinkInput")?.value || (window.location.origin + window.location.pathname + "?demo=hr");
+        const msg = `السلام عليكم، يسعد أوقاتك بكل خير.\nطوّرت منظومة متكاملة لإدارة الموارد البشرية والرواتب والبصمة باسم *«منصة بصمة HR»* (معالجة بصمات ZKTeco والورديات الليلية، مسير رواتب مزدوج 208 ساعة / 30 يوم، أرشفة الهويات وتوليد إضبارة العمل PDF، صلاحيات رؤساء الأقسام، ومزامنة Excel).\n\nجهزت لك *رابط معاينة خصوصي (VIP Demo)* ببيانات افتراضية ودخول مباشر بدون كلمة سر لتجربة كافة الميزات بحرية، ويسعدني جداً سماع رأيك وملاحظاتك:\n\n🔗 ${url}\n\nعلاء الدين العبود — 0997811005`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener,noreferrer");
+    };
 
     // تشغيل أولي نظيف وفوري
     // إظهار لوحة الدخول الجديدة فوراً بعد اكتمال التصميم بدون أي ومضة للوحة القديمة
