@@ -4599,6 +4599,50 @@
         display: none !important;
     }
 
+
+    /* ==================== 27. حزمة الترقية v56: عزل المنشآت + تنظيم الأزرار + قائمة التقارير والطباعة بالمسير ==================== */
+    /* إخفاء زر الحقول وزر إخفاء الأرقام من الهيدر العلوي (نُقلا لمكانهما الجديد) */
+    #hrHeaderControls button[onclick="openFieldLabelsModal()"],
+    #hrHeaderControls #btnPrivacyToggle,
+    #hrHeaderControls #btnJsonBackupQuick,
+    #hrHeaderControls button[onclick="openCloudModal()"],
+    nav #btnResetFactoryNav {
+        display: none !important;
+    }
+
+    /* عزل المنشآت تماماً عند الدخول عبر رابط منشأة مخصصة */
+    body.basma-isolated-facility #companySwitcherBox,
+    body.basma-isolated-facility #companySelector,
+    body.basma-isolated-facility button[onclick*="openNewCompanyModal"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* قائمة التقارير والطباعة الموحدة في مسير الرواتب */
+    #payrollReportsMenuWrap {
+        position: relative;
+        display: inline-block;
+    }
+    #payrollReportsDropdown {
+        position: fixed;
+        min-width: 245px;
+        z-index: 99999 !important;
+        background: var(--card-bg);
+        border: 1.5px solid #0284c7;
+        border-radius: 14px;
+        padding: 10px;
+        box-shadow: 0 16px 36px rgba(2, 12, 28, 0.34);
+        display: none;
+        flex-direction: column;
+        gap: 7px;
+    }
+    #payrollReportsDropdown.open { display: flex; }
+    #payrollReportsDropdown > button,
+    #payrollReportsDropdown > label {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
     #payslipHiddenStage { position: fixed; left: -9999px; top: 0; z-index: -1; }
 
 
@@ -17125,6 +17169,397 @@
             return res;
         };
     }
+
+
+    // ==================== 56. حزمة الترقية v56: إصلاح فوري لأزرار الإضبارة والهوية + عزل المنشآت + تنظيم القوائم + فلترة القسم/الفرعي + تأكيد التصفير ====================
+
+    // 1. عزل المنشآت تماماً عند الدخول عبر رابط منشأة (?comp= أو ?facility= أو ?c=)
+    const BASMA_URL_PARAMS_V56 = new URLSearchParams(window.location.search);
+    const BASMA_LOCKED_COMP_ID = (BASMA_URL_PARAMS_V56.get("comp") || BASMA_URL_PARAMS_V56.get("facility") || "").trim();
+    const BASMA_IS_ISOLATED_TENANT = Boolean(BASMA_LOCKED_COMP_ID || BASMA_CLIENT_SLUG);
+
+    function enforceFacilityIsolationV56() {
+        const shouldIsolate = BASMA_IS_ISOLATED_TENANT || (isLoggedIn && !isMasterOwnerSession && appData.platformConfig?.hideCompanySwitcherForSubUsers !== false);
+        if (BASMA_LOCKED_COMP_ID && appData.companies && appData.companies[BASMA_LOCKED_COMP_ID]) {
+            appData.activeCompanyId = BASMA_LOCKED_COMP_ID;
+        }
+        document.body.classList.toggle("basma-isolated-facility", shouldIsolate);
+        const swBox = document.getElementById("companySwitcherBox") || document.getElementById("companySelector")?.parentElement;
+        if (swBox) {
+            if (shouldIsolate) {
+                swBox.classList.add("hidden");
+                swBox.style.setProperty("display", "none", "important");
+            }
+        }
+        const compSel = document.getElementById("companySelector");
+        if (compSel && shouldIsolate && curComp()) {
+            compSel.innerHTML = `<option value="${curComp().id}" selected>${curComp().name}</option>`;
+            compSel.disabled = true;
+        } else if (compSel && !shouldIsolate) {
+            compSel.disabled = false;
+        }
+    }
+
+    const _v55SwitchCompany = window.switchCompany;
+    if (typeof _v55SwitchCompany === "function") {
+        window.switchCompany = async function(compId) {
+            if (BASMA_LOCKED_COMP_ID && compId !== BASMA_LOCKED_COMP_ID) {
+                showToast("🔒 هذا الرابط مخصص لهذه المنشأة فقط");
+                return;
+            }
+            if (BASMA_IS_ISOLATED_TENANT && !isMasterOwnerSession) return;
+            return await _v55SwitchCompany.apply(this, arguments);
+        };
+    }
+
+    const _v55PullFromCloudV56 = window.pullFromCloud;
+    if (typeof _v55PullFromCloudV56 === "function") {
+        window.pullFromCloud = async function() {
+            const res = await _v55PullFromCloudV56.apply(this, arguments);
+            if (BASMA_LOCKED_COMP_ID && appData.companies && appData.companies[BASMA_LOCKED_COMP_ID]) {
+                appData.activeCompanyId = BASMA_LOCKED_COMP_ID;
+            }
+            enforceFacilityIsolationV56();
+            return res;
+        };
+    }
+
+    // 2. إصلاح فوري لمشكلة اختفاء/تأخر أزرار الإضبارة والهوية عند التنقل بين الأقسام + فلترة فورية حسب القسم والقسم الفرعي في صف الفرز
+    window.basmaBarMainDept = "الكل";
+    window.basmaBarSubDept = "الكل";
+
+    function injectBiometricBadgesImmediatelyV56() {
+        if (sessionRole !== "hr") return;
+        ["dashboardQuickTable", "masterTableBody"].forEach(tbodyId => {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            Array.from(tbody.querySelectorAll("tr")).forEach(tr => {
+                const idCell = tr.querySelector("td:nth-child(2)");
+                const nameCell = tr.querySelector("td:nth-child(3)");
+                if (!idCell || !nameCell) return;
+                const empId = idCell.textContent.trim();
+                const emp = (curComp()?.employees || []).find(e => String(e.id).trim() === empId);
+                if (!emp) return;
+                const oldHolder = nameCell.querySelector(".basma-bio-badges-holder");
+                if (oldHolder) oldHolder.remove();
+                const oldLegacy = nameCell.querySelector(".fp-check-label")?.parentElement;
+                if (oldLegacy) oldLegacy.remove();
+                nameCell.insertAdjacentHTML("beforeend", `<div class="mt-1 basma-bio-badges-holder">${window.buildBiometricCheckboxHTML(emp)}</div>`);
+            });
+        });
+    }
+
+    function applyDeptSubDeptFilterToAdminTablesV56() {
+        if (sessionRole !== "hr") return;
+        const mDept = window.basmaBarMainDept || "الكل";
+        const sDept = window.basmaBarSubDept || "الكل";
+
+        ["dashboardQuickTable", "masterTableBody"].forEach(tbodyId => {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            let visibleIdx = 0;
+            Array.from(tbody.querySelectorAll("tr")).forEach(tr => {
+                const idCell = tr.querySelector("td:nth-child(2)");
+                if (!idCell) return;
+                const empId = idCell.textContent.trim();
+                const emp = (curComp()?.employees || []).find(e => String(e.id).trim() === empId);
+                if (!emp) return;
+                let show = true;
+                if (mDept !== "الكل" && emp.mainDept !== mDept) show = false;
+                if (sDept !== "الكل" && emp.subDept !== sDept) show = false;
+                if (window.masterExactIdQuery && tbodyId === "masterTableBody") {
+                    if (String(emp.id).trim() !== String(window.masterExactIdQuery).trim()) show = false;
+                }
+                tr.style.display = show ? "" : "none";
+                if (show) {
+                    visibleIdx++;
+                    const seqCell = tr.querySelector("td:nth-child(1)");
+                    if (seqCell) seqCell.textContent = String(visibleIdx);
+                }
+            });
+        });
+    }
+
+    window.onBasmaBarMainDeptChange = function(val) {
+        window.basmaBarMainDept = val || "الكل";
+        window.basmaBarSubDept = "الكل";
+        if (typeof activeMasterFilter !== "undefined") {
+            activeMasterFilter = window.basmaBarMainDept;
+        }
+        if (typeof window.renderMasterTable === "function") window.renderMasterTable();
+        if (typeof window.renderDashboard === "function") window.renderDashboard();
+        injectDeptFilterControlsInSortBarsV56();
+        applyDeptSubDeptFilterToAdminTablesV56();
+    };
+
+    window.onBasmaBarSubDeptChange = function(val) {
+        window.basmaBarSubDept = val || "الكل";
+        injectDeptFilterControlsInSortBarsV56();
+        applyDeptSubDeptFilterToAdminTablesV56();
+    };
+
+    window.resetBasmaBarDeptFilters = function() {
+        window.basmaBarMainDept = "الكل";
+        window.basmaBarSubDept = "الكل";
+        if (typeof activeMasterFilter !== "undefined") activeMasterFilter = "الكل";
+        if (typeof window.renderMasterTable === "function") window.renderMasterTable();
+        if (typeof window.renderDashboard === "function") window.renderDashboard();
+        injectDeptFilterControlsInSortBarsV56();
+        applyDeptSubDeptFilterToAdminTablesV56();
+    };
+
+    function injectDeptFilterControlsInSortBarsV56() {
+        if (sessionRole !== "hr") return;
+        const deptsObj = curComp()?.departments || {};
+        const mainDepts = Object.keys(deptsObj);
+        const curMain = window.basmaBarMainDept || "الكل";
+        const curSub = window.basmaBarSubDept || "الكل";
+
+        let subDepts = [];
+        if (curMain === "الكل") {
+            Object.values(deptsObj).forEach(arr => { if (Array.isArray(arr)) subDepts.push(...arr); });
+            subDepts = Array.from(new Set(subDepts));
+        } else if (Array.isArray(deptsObj[curMain])) {
+            subDepts = deptsObj[curMain];
+        }
+
+        document.querySelectorAll(".basma-universal-sort-bar").forEach(bar => {
+            let wrap = bar.querySelector(".basma-dept-filter-inline");
+            const filterHtml = `
+                <div class="basma-dept-filter-inline flex flex-wrap items-center gap-1.5 px-2 py-1 rounded-xl border border-sky-400/50 bg-sky-50/80">
+                    <span class="font-black text-[11px] text-sky-900">🎯 تصفية فورية:</span>
+                    <select onchange="onBasmaBarMainDeptChange(this.value)" class="lux-input !h-7 !py-0.5 !px-2 !text-xs font-extrabold" title="اختر القسم الرئيسي للعرض الفوري">
+                        <option value="الكل" ${curMain === 'الكل' ? 'selected' : ''}>🏢 كل الأقسام</option>
+                        ${mainDepts.map(d => `<option value="${d}" ${curMain === d ? 'selected' : ''}>${d}</option>`).join("")}
+                    </select>
+                    <select onchange="onBasmaBarSubDeptChange(this.value)" class="lux-input !h-7 !py-0.5 !px-2 !text-xs font-extrabold" title="اختر القسم الفرعي للعرض الفوري">
+                        <option value="الكل" ${curSub === 'الكل' ? 'selected' : ''}>📂 كل الفروع</option>
+                        ${subDepts.map(s => `<option value="${s}" ${curSub === s ? 'selected' : ''}>${s}</option>`).join("")}
+                    </select>
+                    ${(curMain !== "الكل" || curSub !== "الكل") ? `<button type="button" onclick="resetBasmaBarDeptFilters()" class="sort-pill-btn !py-0.5 !px-2 !text-[10.5px]" style="background:#e11d48;color:#fff !important;border-color:#be123c;" title="إلغاء التصفية">✕ الكل</button>` : ''}
+                </div>
+            `;
+            if (wrap) wrap.outerHTML = filterHtml;
+            else bar.insertAdjacentHTML("afterbegin", filterHtml);
+        });
+    }
+
+    // ربط التحديث الفوري لأزرار الإضبارة والهوية والفلترة مباشرة بعد renderMasterTable و renderDashboard
+    const _v55RenderMaster = window.renderMasterTable;
+    if (typeof _v55RenderMaster === "function") {
+        window.renderMasterTable = function() {
+            const res = _v55RenderMaster.apply(this, arguments);
+            if (typeof activeMasterFilter !== "undefined" && activeMasterFilter !== window.basmaBarMainDept) {
+                window.basmaBarMainDept = activeMasterFilter;
+                window.basmaBarSubDept = "الكل";
+            }
+            injectBiometricBadgesImmediatelyV56();
+            injectDeptFilterControlsInSortBarsV56();
+            applyDeptSubDeptFilterToAdminTablesV56();
+            return res;
+        };
+    }
+
+    const _v55RenderDash = window.renderDashboard;
+    if (typeof _v55RenderDash === "function") {
+        window.renderDashboard = function() {
+            const res = _v55RenderDash.apply(this, arguments);
+            injectBiometricBadgesImmediatelyV56();
+            injectDeptFilterControlsInSortBarsV56();
+            applyDeptSubDeptFilterToAdminTablesV56();
+            return res;
+        };
+    }
+
+    // 3. نقل أزرار (السحابة + نسخ JSON + استعادة) إلى قائمة «📊 البيانات»
+    function organizeDataDropdownV56() {
+        const dd = document.getElementById("basmaDataMenuDropdown");
+        if (!dd) return;
+
+        // نقل زر السحابة
+        if (!dd.querySelector("#ddCloudBtnV56")) {
+            dd.insertAdjacentHTML("beforeend", `
+                <button type="button" id="ddCloudBtnV56" onclick="document.getElementById('basmaDataMenuDropdown')?.classList.remove('open'); openCloudModal();" class="btn-lux btn-cyan-glass !py-1.5 !px-3.5 !w-full">
+                    <span>☁️ السحابة والنسخ الاحتياطي</span>
+                </button>
+            `);
+        }
+        // نقل زر نسخ JSON
+        if (!dd.querySelector("#ddJsonDownloadBtnV56")) {
+            dd.insertAdjacentHTML("beforeend", `
+                <button type="button" id="ddJsonDownloadBtnV56" onclick="document.getElementById('basmaDataMenuDropdown')?.classList.remove('open'); downloadJsonBackupFile();" class="btn-lux btn-dark-lux !py-1.5 !px-3.5 !w-full">
+                    <span>💾 نسخ JSON</span>
+                </button>
+            `);
+        }
+        // نقل زر استعادة JSON
+        if (!dd.querySelector("#ddJsonRestoreLblV56")) {
+            dd.insertAdjacentHTML("beforeend", `
+                <label id="ddJsonRestoreLblV56" class="btn-lux btn-dark-lux !py-1.5 !px-3.5 !w-full cursor-pointer">
+                    <span>📂 استعادة JSON</span>
+                    <input type="file" accept=".json" class="hidden" onchange="document.getElementById('basmaDataMenuDropdown')?.classList.remove('open'); restoreJsonBackupFile(event);">
+                </label>
+            `);
+        }
+        // نقل زر استعادة نسخة احتياطية من Supabase
+        if (!dd.querySelector("#ddSbRestoreBtnV56") && typeof window.openSupabaseBackupsModal === "function") {
+            dd.insertAdjacentHTML("beforeend", `
+                <button type="button" id="ddSbRestoreBtnV56" onclick="document.getElementById('basmaDataMenuDropdown')?.classList.remove('open'); openSupabaseBackupsModal();" class="btn-lux btn-ocean-royal !py-1.5 !px-3.5 !w-full">
+                    <span>🕰️ استعادة نسخة Supabase</span>
+                </button>
+            `);
+        }
+    }
+
+    // 4. نقل زر «تصفير المنشأة» إلى لوحة الإعدادات + إضافة رسالة تأكيد إضافية حتى بعد كلمة السر
+    const _v55OpenMasterCtrlV56 = window.openBasmaMasterControl;
+    if (typeof _v55OpenMasterCtrlV56 === "function") {
+        window.openBasmaMasterControl = function(skipPrompt = false) {
+            const res = _v55OpenMasterCtrlV56.apply(this, arguments);
+            const modal = document.getElementById("basmaMasterControlModal");
+            if (modal && !modal.querySelector("#btnFactoryResetInMasterV56")) {
+                const hdr = modal.querySelector(".border-b");
+                if (hdr) {
+                    hdr.insertAdjacentHTML("beforeend", `
+                        <button type="button" id="btnFactoryResetInMasterV56" onclick="document.getElementById('basmaMasterControlModal')?.remove(); openFactoryResetModal();" class="btn-lux btn-crimson-lux !py-1.5 !px-3.5 !text-xs">
+                            <span>⚠️ تصفير المنشأة</span>
+                        </button>
+                    `);
+                }
+            }
+            return res;
+        };
+    }
+
+    const _v55ExecFactoryReset = window.executeFactoryReset;
+    if (typeof _v55ExecFactoryReset === "function") {
+        window.executeFactoryReset = async function() {
+            if (sessionRole === "dept_head" || urlLockedDept) return;
+            const enteredPass = document.getElementById("resetPassInput")?.value.trim() || "";
+            if (enteredPass !== appData.adminPass) {
+                document.getElementById("resetErrorMsg")?.classList.remove("hidden");
+                return;
+            }
+            const compName = curComp()?.name || "المنشأة الحالية";
+            const empCnt = (curComp()?.employees || []).length;
+            const sure = confirm(`⚠️ تأكيد نهائي قبل التصفير!\n\nهل أنت متأكد تماماً من حذف كافة سجلات الموظفين (${empCnt} موظف) في منشأة (${compName})؟\nهذا الإجراء لا يمكن التراجع عنه إلا عبر نسخة احتياطية!`);
+            if (!sure) {
+                showToast("🛡️ تم إلغاء تصفير المنشأة — بياناتك محفوظة بأمان");
+                return;
+            }
+            return await _v55ExecFactoryReset.apply(this, arguments);
+        };
+    }
+
+    // 5. مسير الرواتب: حذف أزرار اليمين واليسار ووضع زر إخفاء الأرقام مكانهما + تجميع أزرار الطباعة والتقارير في قائمة «🖨️ التقارير والطباعة»
+    window.togglePayrollReportsMenu = function(ev) {
+        if (ev) ev.stopPropagation();
+        const dd = document.getElementById("payrollReportsDropdown");
+        const btn = document.getElementById("btnPayrollReportsMenu");
+        if (!dd || !btn) return;
+        const willOpen = !dd.classList.contains("open");
+        if (willOpen) {
+            const rect = btn.getBoundingClientRect();
+            dd.style.top = (rect.bottom + 8) + "px";
+            dd.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - 260)) + "px";
+            dd.classList.add("open");
+        } else {
+            dd.classList.remove("open");
+        }
+    };
+
+    document.addEventListener("click", () => {
+        document.getElementById("payrollReportsDropdown")?.classList.remove("open");
+    });
+
+    function upgradePayrollToolbarV56() {
+        // أ. تحديث شريط التمرير السريع: حذف اليمين واليسار ووضع زر إخفاء الأرقام بدلاً منهما
+        const qBar = document.getElementById("payrollQuickScrollBar");
+        if (qBar) {
+            qBar.querySelectorAll('button[onclick*="scrollPayrollTable"]').forEach(b => b.remove());
+            const leftGrp = qBar.firstElementChild;
+            if (leftGrp) {
+                // إزالة نص "تحريك الجدول بسرعة:" إن وجد
+                const lblSpan = leftGrp.querySelector("span");
+                if (lblSpan && lblSpan.textContent.includes("تحريك")) lblSpan.textContent = "🎛️ أدوات المسير:";
+
+                if (!leftGrp.querySelector("#btnPayrollPrivacyV56")) {
+                    const isHidden = document.body.classList.contains("basma-privacy-blur");
+                    const privBtn = document.createElement("button");
+                    privBtn.type = "button";
+                    privBtn.id = "btnPayrollPrivacyV56";
+                    privBtn.className = "btn-lux btn-dark-lux !py-1 !px-3.5 !text-[11px]";
+                    privBtn.innerHTML = isHidden ? `<span>👁️ إظهار الأرقام</span>` : `<span>🙈 إخفاء الأرقام</span>`;
+                    privBtn.onclick = () => {
+                        if (typeof window.toggleBasmaPrivacyMode === "function") window.toggleBasmaPrivacyMode();
+                        const hiddenNow = document.body.classList.contains("basma-privacy-blur");
+                        privBtn.innerHTML = hiddenNow ? `<span>👁️ إظهار الأرقام</span>` : `<span>🙈 إخفاء الأرقام</span>`;
+                    };
+                    leftGrp.insertBefore(privBtn, leftGrp.querySelector("button") || null);
+                }
+            }
+        }
+
+        // ب. تجميع جميع أزرار الطباعة والتقارير بالمسير داخل قائمة موحدة اسمها «🖨️ التقارير والطباعة»
+        const payTopBar = document.querySelector("#view-payroll > .lux-card .flex.flex-wrap.items-center.gap-2");
+        if (!payTopBar) return;
+
+        let menuWrap = document.getElementById("payrollReportsMenuWrap");
+        if (!menuWrap) {
+            menuWrap = document.createElement("div");
+            menuWrap.id = "payrollReportsMenuWrap";
+            menuWrap.innerHTML = `
+                <button type="button" id="btnPayrollReportsMenu" onclick="togglePayrollReportsMenu(event)" class="btn-lux btn-ocean-royal !py-1.5 !px-4 !text-xs">
+                    <span>🖨️ التقارير والطباعة ▾</span>
+                </button>
+                <div id="payrollReportsDropdown" onclick="event.stopPropagation()"></div>
+            `;
+            payTopBar.appendChild(menuWrap);
+        }
+
+        const dd = document.getElementById("payrollReportsDropdown");
+        if (!dd) return;
+
+        // نقل أزرار الطباعة والتقارير والتصدير الموجودة في شريط مسير الرواتب إلى داخل القائمة
+        const selectorsToMove = [
+            'button[onclick*="window.print"]',
+            'button[onclick*="exportPayrollExcel"]',
+            '#btnEconomicalPrintAtt',
+            '#btnSigningSheetPrint',
+            '#btnCashDenomCalc'
+        ];
+        selectorsToMove.forEach(sel => {
+            const el = payTopBar.querySelector(sel);
+            if (el && el.parentElement !== dd) {
+                el.addEventListener("click", () => dd.classList.remove("open"));
+                dd.appendChild(el);
+            }
+        });
+    }
+
+    // ربط تحسينات v56 بدورة العرض الشاملة
+    const _v55RenderAllV56 = window.renderAllViews;
+    if (typeof _v55RenderAllV56 === "function") {
+        window.renderAllViews = function() {
+            const res = _v55RenderAllV56.apply(this, arguments);
+            enforceFacilityIsolationV56();
+            organizeDataDropdownV56();
+            upgradePayrollToolbarV56();
+            injectBiometricBadgesImmediatelyV56();
+            injectDeptFilterControlsInSortBarsV56();
+            applyDeptSubDeptFilterToAdminTablesV56();
+            return res;
+        };
+    }
+
+    // تشغيل أولي فوري بعد التحميل
+    setTimeout(() => {
+        enforceFacilityIsolationV56();
+        organizeDataDropdownV56();
+        upgradePayrollToolbarV56();
+        injectBiometricBadgesImmediatelyV56();
+        injectDeptFilterControlsInSortBarsV56();
+    }, 250);
 
     // تشغيل أولي نظيف وفوري
     // إظهار لوحة الدخول الجديدة فوراً بعد اكتمال التصميم بدون أي ومضة للوحة القديمة
