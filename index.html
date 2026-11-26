@@ -4787,6 +4787,159 @@
         .basma-split-form-pane { padding: 22px 18px; }
     }
 
+
+    /* ==================== 29. حزمة الترقية v64: مركز القيادة التنفيذي (إداري / مالي / قانوني / نظرة شاملة) ==================== */
+    body.basma-privacy-blur .basma-fin-sensitive {
+        filter: blur(7px) !important;
+        user-select: none !important;
+    }
+    #view-dashboard.v64-hub-active > .grid.grid-cols-2.md\:grid-cols-6 {
+        display: none !important;
+    }
+    .v64-pulse-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .v64-pulse-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-col);
+        border-radius: 16px;
+        padding: 13px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        box-shadow: 0 6px 18px -8px rgba(2, 132, 199, 0.16);
+        position: relative;
+        overflow: hidden;
+    }
+    .v64-pulse-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--pulse-accent, #0284c7);
+    }
+    .v64-pulse-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 19px;
+        flex-shrink: 0;
+        background: var(--card-elevated);
+        border: 1px solid var(--border-col);
+    }
+    .v64-pillar-switcher {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 12px;
+        align-items: stretch;
+    }
+    .v64-pillar-card {
+        position: relative;
+        background: var(--card-bg);
+        border: 1.5px solid var(--border-col);
+        border-radius: 16px;
+        padding: 14px 16px;
+        text-align: right;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        box-shadow: 0 4px 14px -6px rgba(2, 42, 92, 0.12);
+        transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+    }
+    .v64-pillar-card:hover {
+        border-color: #0284c7;
+        background: var(--card-elevated);
+    }
+    .v64-pillar-card.pillar-active {
+        background: linear-gradient(135deg, #0c274d 0%, #0369a1 70%, #0284c7 100%) !important;
+        border-color: #fbbf24 !important;
+        box-shadow: 0 12px 26px -8px rgba(2, 132, 199, 0.45) !important;
+    }
+    .v64-pillar-card.pillar-active * {
+        color: #ffffff !important;
+    }
+    .v64-pillar-card.pillar-active .v64-pillar-sub {
+        color: #bae6fd !important;
+    }
+    .v64-pillar-card.pillar-active .v64-pillar-icon {
+        background: rgba(255, 255, 255, 0.16) !important;
+        border-color: rgba(251, 191, 36, 0.65) !important;
+    }
+    .v64-pillar-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        background: var(--card-elevated);
+        border: 1.5px solid var(--border-col);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+    .v64-pillar-dot {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 9px;
+        border-radius: 9999px;
+        font-size: 10.5px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+    .v64-dot-ok { background: rgba(16, 185, 129, 0.16); color: #047857 !important; border: 1px solid rgba(16, 185, 129, 0.45); }
+    .v64-dot-warn { background: rgba(245, 158, 11, 0.18); color: #b45309 !important; border: 1px solid rgba(245, 158, 11, 0.5); }
+    .v64-dot-danger { background: rgba(225, 29, 72, 0.18); color: #be123c !important; border: 1px solid rgba(225, 29, 72, 0.48); }
+    .v64-dot-info { background: rgba(2, 132, 199, 0.16); color: #0369a1 !important; border: 1px solid rgba(2, 132, 199, 0.42); }
+    .v64-pillar-card.pillar-active .v64-pillar-dot {
+        background: rgba(251, 191, 36, 0.22) !important;
+        color: #fef08a !important;
+        border-color: rgba(254, 240, 138, 0.65) !important;
+    }
+    .v64-overview-btn {
+        min-width: 118px;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 4px;
+        padding: 10px 14px;
+    }
+    .v64-pillar-pane {
+        display: block;
+    }
+    .v64-pillar-pane.pane-hidden {
+        display: none !important;
+    }
+    .v64-section-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 900;
+        background: var(--card-elevated);
+        border: 1px solid var(--border-col);
+    }
+    @media (max-width: 960px) {
+        .v64-pulse-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .v64-pillar-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+        .v64-pulse-strip { grid-template-columns: 1fr; }
+        .v64-pillar-switcher { grid-template-columns: 1fr; }
+    }
+
     #payslipHiddenStage { position: fixed; left: -9999px; top: 0; z-index: -1; }
 
 
@@ -18547,6 +18700,605 @@
         window.renderAllViews = function() {
             const res = _v63OrigRenderAll.apply(this, arguments);
             if (!IS_VIP_HR_DEMO) upgradeLoginScreenV62();
+            return res;
+        };
+    }
+
+
+    // ==================== 64. حزمة الترقية v64: مركز القيادة التنفيذي (إداري / مالي / قانوني / نظرة شاملة) ====================
+    const BASMA_PILLAR_STORAGE_KEY = "basma_active_dash_pillar_v64";
+    let basmaActiveDashPillar = "admin";
+    try {
+        const savedP = localStorage.getItem(BASMA_PILLAR_STORAGE_KEY);
+        if (["admin", "finance", "legal", "all"].includes(savedP)) basmaActiveDashPillar = savedP;
+    } catch (e) {}
+
+    function computeDashboardPillarStatsV64() {
+        const comp = curComp() || { employees: [], departments: {}, hrAlerts: [] };
+        const emps = comp.employees || [];
+        const depts = Object.keys(comp.departments || {});
+        const alerts = comp.hrAlerts || [];
+        const unreadAlerts = alerts.filter(a => !a.read).length;
+        const curMonth = document.getElementById("pay_month")?.value || new Date().toISOString().slice(0, 7);
+
+        let activeEmps = [], stoppedEmps = [], minorsU18 = [], minorsU15 = [];
+        let missingDocs = [], unregisteredBio = [], missingPunchEmps = [], leaveAlertEmps = [];
+        let totalBase = 0, totalNet = 0, totalOvertimeAndBonus = 0, totalDeductAndShort = 0;
+        let totalAdvDed = 0, totalOtPayOnly = 0, totalBonusOnly = 0;
+        let compliancePoints = 0, complianceMax = 0;
+
+        const deptMap = {};
+        depts.forEach(d => { deptMap[d] = { name: d, total: 0, active: 0, net: 0, base: 0 }; });
+
+        emps.forEach(e => {
+            const st = getStatus(e.endDate);
+            const age = calcAge(e.dob);
+            const isAct = (st === "على رأس عمله");
+            if (!deptMap[e.mainDept]) deptMap[e.mainDept] = { name: e.mainDept || "غير مصنف", total: 0, active: 0, net: 0, base: 0 };
+            deptMap[e.mainDept].total++;
+
+            if (isAct) {
+                activeEmps.push(e);
+                deptMap[e.mainDept].active++;
+                const p = calculateEmployeePayroll(e);
+                totalBase += p.base || 0;
+                totalNet += p.netSalary || 0;
+                totalOtPayOnly += p.overtimePay || 0;
+                totalBonusOnly += p.bonus || 0;
+                totalOvertimeAndBonus += (p.overtimePay || 0) + (p.bonus || 0);
+                totalAdvDed += p.manualDed || 0;
+                totalDeductAndShort += (p.shortageDed || 0) + (p.manualDed || 0);
+                deptMap[e.mainDept].net += p.netSalary || 0;
+                deptMap[e.mainDept].base += p.base || 0;
+
+                if (age !== "" && age < 15) minorsU15.push({ emp: e, age });
+                else if (age !== "" && age >= 15 && age < 18) minorsU18.push({ emp: e, age });
+
+                if (e.biometricRegistered === false) unregisteredBio.push(e);
+
+                // فحص بصمات الخروج الناقصة لهذا الشهر
+                const ma = (e.monthlyAttendance || {})[curMonth] || {};
+                const daysObj = (ma && ma.days) ? ma.days : ma;
+                let missOutCnt = 0;
+                if (daysObj && typeof daysObj === "object") {
+                    Object.values(daysObj).forEach(d => { if (d && d.missingOut) missOutCnt++; });
+                }
+                if (missOutCnt > 0) missingPunchEmps.push({ emp: e, count: missOutCnt });
+
+                // فحص الامتثال القانوني والوثائق
+                const missingList = [];
+                complianceMax += 5;
+                if (String(e.natId || "").trim().length >= 5) compliancePoints++; else missingList.push("الرقم الوطني");
+                if (String(e.hireDate || "").trim()) compliancePoints++; else missingList.push("تاريخ التعيين");
+                if (String(e.dob || "").trim()) compliancePoints++; else missingList.push("تاريخ الميلاد");
+                if (e.idFrontImg || e.idBackImg) compliancePoints++; else missingList.push("صورة الهوية");
+                if (e.personalImg) compliancePoints++; else missingList.push("الصورة الشخصية");
+                if (missingList.length > 0) missingDocs.push({ emp: e, missing: missingList });
+
+                // متابعة رصيد الإجازات المأجورة (15 يوماً)
+                const usedL = Number(e.justifiedLeaveDays) || 0;
+                if (usedL >= 12) leaveAlertEmps.push({ emp: e, used: usedL, excess: Math.max(0, Number((usedL - 15).toFixed(2))) });
+            } else {
+                stoppedEmps.push(e);
+            }
+        });
+
+        const stabilityPct = emps.length ? Math.round((activeEmps.length / emps.length) * 100) : 100;
+        const compliancePct = complianceMax > 0 ? Math.round((compliancePoints / complianceMax) * 100) : 100;
+        const deptFinanceList = Object.values(deptMap).sort((a, b) => b.net - a.net);
+
+        return {
+            emps, activeEmps, stoppedEmps, depts, unreadAlerts, curMonth,
+            minorsU18, minorsU15, missingDocs, unregisteredBio, missingPunchEmps, leaveAlertEmps,
+            totalBase, totalNet, totalOvertimeAndBonus, totalDeductAndShort, totalAdvDed, totalOtPayOnly, totalBonusOnly,
+            stabilityPct, compliancePct, deptFinanceList
+        };
+    }
+
+    function ensureExecutivePillarHubDOMV64() {
+        const dash = document.getElementById("view-dashboard");
+        if (!dash) return false;
+        dash.classList.add("v64-hub-active");
+
+        if (!document.getElementById("basmaExecPulseBar")) {
+            const hubShellHTML = `
+                <!-- شريط النبض التنفيذي العلوي -->
+                <div id="basmaExecPulseBar" class="space-y-3 no-print">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="v64-section-badge">🏛️ مركز القيادة والحوكمة التنفيذية</span>
+                            <span id="v64_compLabel" class="text-xs font-extrabold opacity-80"></span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" id="v64PrivacyBtn" onclick="toggleBasmaPrivacyMode(); updateV64PrivacyBtnText();" class="btn-lux btn-dark-lux !py-1 !px-3.5 !text-xs">
+                                <span>🙈 إخفاء الأرقام</span>
+                            </button>
+                            <button type="button" onclick="switchTab('form')" class="btn-lux btn-azure-primary !py-1 !px-3.5 !text-xs">
+                                <span>➕ إضافة موظف</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="v64-pulse-strip">
+                        <div class="v64-pulse-card" style="--pulse-accent:#0284c7;">
+                            <div>
+                                <span class="text-[11px] font-bold opacity-75 block">الكادر النشط والاستقرار</span>
+                                <div class="flex items-baseline gap-2 mt-0.5">
+                                    <b id="v64_pulseActive" class="text-2xl num-mono font-black text-sky-600">0</b>
+                                    <span id="v64_pulseTotalSub" class="text-[11px] font-bold opacity-75">من 0</span>
+                                </div>
+                                <span id="v64_pulseStab" class="text-[10.5px] font-extrabold text-cyan-700">الاستقرار: 0%</span>
+                            </div>
+                            <span class="v64-pulse-icon">👥</span>
+                        </div>
+
+                        <div class="v64-pulse-card" style="--pulse-accent:#059669;">
+                            <div>
+                                <span class="text-[11px] font-bold opacity-75 block">كتلة صافي الرواتب النشطة</span>
+                                <b id="v64_pulseNet" class="text-lg md:text-xl num-mono font-black text-emerald-700 block mt-0.5 basma-fin-sensitive">0</b>
+                                <span class="text-[10.5px] font-bold opacity-75">ل.س شهرياً (بعد الإضافي والسلف)</span>
+                            </div>
+                            <span class="v64-pulse-icon">💰</span>
+                        </div>
+
+                        <div class="v64-pulse-card cursor-pointer" onclick="openAlertsModal()" style="--pulse-accent:#f59e0b;" title="اضغط لفتح سجل تنبيهات الأقسام">
+                            <div>
+                                <span class="text-[11px] font-bold opacity-75 block">تنبيهات رؤساء الأقسام</span>
+                                <div class="flex items-baseline gap-2 mt-0.5">
+                                    <b id="v64_pulseAlerts" class="text-2xl num-mono font-black text-amber-600">0</b>
+                                    <span class="text-[11px] font-bold opacity-75">غير مقروء</span>
+                                </div>
+                                <span class="text-[10.5px] font-extrabold text-sky-700">اضغط لعرض السجل ⬅️</span>
+                            </div>
+                            <span class="v64-pulse-icon">🔔</span>
+                        </div>
+
+                        <div class="v64-pulse-card cursor-pointer" onclick="setBasmaDashPillarV64('legal')" style="--pulse-accent:#7c3aed;" title="اضغط لفتح المحور القانوني">
+                            <div>
+                                <span class="text-[11px] font-bold opacity-75 block">نسبة الجاهزية القانونية</span>
+                                <div class="flex items-baseline gap-2 mt-0.5">
+                                    <b id="v64_pulseLegalPct" class="text-2xl num-mono font-black text-purple-700">100%</b>
+                                    <span id="v64_pulseLegalSub" class="text-[10.5px] font-bold opacity-75">ملفات مكتملة</span>
+                                </div>
+                                <div class="w-28 h-1.5 rounded-full bg-slate-300/60 mt-1 overflow-hidden">
+                                    <div id="v64_pulseLegalBar" class="h-full rounded-full bg-emerald-500" style="width:100%;"></div>
+                                </div>
+                            </div>
+                            <span class="v64-pulse-icon">⚖️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- محوّل المحاور الثلاثة التفاعلي + نظرة شاملة -->
+                <div id="basmaPillarSwitcher" class="v64-pillar-switcher no-print">
+                    <button type="button" id="v64BtnPillar_admin" onclick="setBasmaDashPillarV64('admin')" class="v64-pillar-card">
+                        <div class="flex items-center gap-3">
+                            <span class="v64-pillar-icon">🏢</span>
+                            <div>
+                                <div class="text-sm font-black">المحور الإداري والتشغيلي</div>
+                                <div class="v64-pillar-sub text-[11px] font-bold opacity-75">الأقسام، التنبيهات، البصمة، والتقييمات</div>
+                            </div>
+                        </div>
+                        <span id="v64Dot_admin" class="v64-pillar-dot v64-dot-info">نشط</span>
+                    </button>
+
+                    <button type="button" id="v64BtnPillar_finance" onclick="setBasmaDashPillarV64('finance')" class="v64-pillar-card">
+                        <div class="flex items-center gap-3">
+                            <span class="v64-pillar-icon">💰</span>
+                            <div>
+                                <div class="text-sm font-black">المحور المالي والرواتب</div>
+                                <div class="v64-pillar-sub text-[11px] font-bold opacity-75">توزيع الرواتب، الإضافي 1.5x، والسلف</div>
+                            </div>
+                        </div>
+                        <span id="v64Dot_finance" class="v64-pillar-dot v64-dot-ok">متوازن</span>
+                    </button>
+
+                    <button type="button" id="v64BtnPillar_legal" onclick="setBasmaDashPillarV64('legal')" class="v64-pillar-card">
+                        <div class="flex items-center gap-3">
+                            <span class="v64-pillar-icon">⚖️</span>
+                            <div>
+                                <div class="text-sm font-black">المحور القانوني والامتثال</div>
+                                <div class="v64-pillar-sub text-[11px] font-bold opacity-75">القاصرون، الوثائق، إضبارة العمل، والإجازات</div>
+                            </div>
+                        </div>
+                        <span id="v64Dot_legal" class="v64-pillar-dot v64-dot-ok">جاهز</span>
+                    </button>
+
+                    <button type="button" id="v64BtnPillar_all" onclick="setBasmaDashPillarV64('all')" class="v64-pillar-card v64-overview-btn" title="عرض المحاور الثلاثة معاً في صفحة واحدة">
+                        <span class="text-lg">🌐</span>
+                        <span class="text-xs font-black">نظرة شاملة</span>
+                    </button>
+                </div>
+
+                <!-- حاوية المحور الإداري -->
+                <div id="pillarPaneAdmin" class="v64-pillar-pane space-y-4">
+                    <div id="v64AdminQuickStats" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+                </div>
+
+                <!-- حاوية المحور المالي -->
+                <div id="pillarPaneFinance" class="v64-pillar-pane space-y-4"></div>
+
+                <!-- حاوية المحور القانوني -->
+                <div id="pillarPaneLegal" class="v64-pillar-pane space-y-4">
+                    <div id="v64LegalDynamicContent" class="space-y-4"></div>
+                </div>
+            `;
+
+            const greet = document.getElementById("basmaGreetingBanner");
+            if (greet) greet.insertAdjacentHTML("afterend", hubShellHTML);
+            else dash.insertAdjacentHTML("afterbegin", hubShellHTML);
+        }
+
+        // تنظيم وتوزيع بطاقات لوحة القيادة الأصلية تلقائياً داخل محورها المناسب بدون أي فقدان أو تكرار
+        const adminPane = document.getElementById("pillarPaneAdmin");
+        const legalPane = document.getElementById("pillarPaneLegal");
+
+        if (adminPane) {
+            const alertsBanner = document.getElementById("dashLatestAlertText")?.closest(".lux-card");
+            if (alertsBanner && alertsBanner.parentElement !== adminPane) {
+                adminPane.prepend(alertsBanner);
+            }
+            const eomPanel = document.getElementById("basmaEmpOfMonthPanel");
+            if (eomPanel && eomPanel.parentElement !== adminPane) {
+                adminPane.appendChild(eomPanel);
+            }
+            const deptCard = document.getElementById("deptCardsGrid")?.closest(".lux-card");
+            if (deptCard && deptCard.parentElement !== adminPane) {
+                adminPane.appendChild(deptCard);
+            }
+            const quickTableCard = document.getElementById("dashboardQuickTable")?.closest(".lux-card");
+            if (quickTableCard && quickTableCard.parentElement !== adminPane) {
+                adminPane.appendChild(quickTableCard);
+            }
+        }
+
+        if (legalPane) {
+            const radarPanel = document.getElementById("basmaSmartRadarPanel");
+            if (radarPanel && radarPanel.parentElement !== legalPane) {
+                legalPane.appendChild(radarPanel);
+            }
+        }
+
+        return true;
+    }
+
+    window.updateV64PrivacyBtnText = function() {
+        const btn = document.getElementById("v64PrivacyBtn");
+        if (!btn) return;
+        const isHidden = document.body.classList.contains("basma-privacy-blur");
+        btn.innerHTML = isHidden ? `<span>👁️ إظهار الأرقام</span>` : `<span>🙈 إخفاء الأرقام</span>`;
+    };
+
+    window.setBasmaDashPillarV64 = function(pillar) {
+        if (!["admin", "finance", "legal", "all"].includes(pillar)) pillar = "admin";
+        basmaActiveDashPillar = pillar;
+        try { localStorage.setItem(BASMA_PILLAR_STORAGE_KEY, pillar); } catch (e) {}
+
+        ["admin", "finance", "legal", "all"].forEach(k => {
+            document.getElementById("v64BtnPillar_" + k)?.classList.toggle("pillar-active", k === pillar);
+        });
+
+        const pAdmin = document.getElementById("pillarPaneAdmin");
+        const pFin = document.getElementById("pillarPaneFinance");
+        const pLeg = document.getElementById("pillarPaneLegal");
+        if (pAdmin) pAdmin.classList.toggle("pane-hidden", pillar !== "admin" && pillar !== "all");
+        if (pFin) pFin.classList.toggle("pane-hidden", pillar !== "finance" && pillar !== "all");
+        if (pLeg) pLeg.classList.toggle("pane-hidden", pillar !== "legal" && pillar !== "all");
+    };
+
+    function renderExecutivePillarHubV64() {
+        if (sessionRole !== "hr") return;
+        if (!ensureExecutivePillarHubDOMV64()) return;
+
+        const st = computeDashboardPillarStatsV64();
+        const compName = curComp()?.name || "";
+
+        // 1. تحديث شريط النبض التنفيذي
+        const setTxt = (id, v) => { const el = document.getElementById(id); if (el) el.innerText = v; };
+        setTxt("v64_compLabel", compName);
+        setTxt("v64_pulseActive", st.activeEmps.length);
+        setTxt("v64_pulseTotalSub", `من ${st.emps.length} مسجل`);
+        setTxt("v64_pulseStab", `نسبة الاستقرار: ${st.stabilityPct}%`);
+        setTxt("v64_pulseNet", st.totalNet.toLocaleString());
+        setTxt("v64_pulseAlerts", st.unreadAlerts);
+        setTxt("v64_pulseLegalPct", `${st.compliancePct}%`);
+        setTxt("v64_pulseLegalSub", st.missingDocs.length === 0 ? "جميع الملفات مكتملة" : `${st.missingDocs.length} ملف يحتاج استكمال`);
+
+        const legBar = document.getElementById("v64_pulseLegalBar");
+        if (legBar) {
+            legBar.style.width = `${st.compliancePct}%`;
+            legBar.style.background = st.compliancePct >= 85 ? "#10b981" : (st.compliancePct >= 60 ? "#f59e0b" : "#e11d48");
+        }
+        updateV64PrivacyBtnText();
+
+        // 2. تحديث نقاط الإشعار الذكية على بطاقات المحاور
+        const dotAdmin = document.getElementById("v64Dot_admin");
+        if (dotAdmin) {
+            const adminIssues = st.unreadAlerts + st.unregisteredBio.length + st.missingPunchEmps.length;
+            if (adminIssues > 0) {
+                dotAdmin.className = "v64-pillar-dot v64-dot-info";
+                dotAdmin.innerText = `${adminIssues} متابعة`;
+            } else {
+                dotAdmin.className = "v64-pillar-dot v64-dot-ok";
+                dotAdmin.innerText = "منضبط ✓";
+            }
+        }
+        const dotFin = document.getElementById("v64Dot_finance");
+        if (dotFin) {
+            if (st.totalDeductAndShort > 0 || st.totalOvertimeAndBonus > 0) {
+                dotFin.className = "v64-pillar-dot v64-dot-warn";
+                dotFin.innerText = `${st.activeEmps.length} راتب`;
+            } else {
+                dotFin.className = "v64-pillar-dot v64-dot-ok";
+                dotFin.innerText = `${st.activeEmps.length} راتب`;
+            }
+        }
+        const dotLegal = document.getElementById("v64Dot_legal");
+        if (dotLegal) {
+            const legalAlerts = st.missingDocs.length + st.minorsU18.length + st.minorsU15.length + st.leaveAlertEmps.length;
+            if (st.minorsU15.length > 0 || st.missingDocs.length > 0) {
+                dotLegal.className = "v64-pillar-dot v64-dot-danger";
+                dotLegal.innerText = `${legalAlerts} ملاحظة`;
+            } else if (legalAlerts > 0) {
+                dotLegal.className = "v64-pillar-dot v64-dot-warn";
+                dotLegal.innerText = `${legalAlerts} تنبيه`;
+            } else {
+                dotLegal.className = "v64-pillar-dot v64-dot-ok";
+                dotLegal.innerText = "100% جاهز";
+            }
+        }
+
+        // 3. محتوى مؤشرات المحور الإداري
+        const adminStatsEl = document.getElementById("v64AdminQuickStats");
+        if (adminStatsEl) {
+            const bioRegCount = st.activeEmps.length - st.unregisteredBio.length;
+            adminStatsEl.innerHTML = `
+                <div class="lux-card p-3.5 border-r-4 border-r-sky-500">
+                    <span class="text-[11px] font-bold opacity-75 block">إجمالي الأقسام والكادر</span>
+                    <div class="text-xl num-mono font-black text-sky-600 mt-0.5">${st.emps.length} <span class="text-xs font-bold opacity-75">في ${st.depts.length} أقسام</span></div>
+                </div>
+                <div class="lux-card p-3.5 border-r-4 border-r-emerald-500">
+                    <span class="text-[11px] font-bold opacity-75 block">مسجلو جهاز البصمة</span>
+                    <div class="text-xl num-mono font-black text-emerald-600 mt-0.5">${bioRegCount} <span class="text-xs font-bold opacity-75">نشط (${st.unregisteredBio.length} بلا بصمة)</span></div>
+                </div>
+                <div class="lux-card p-3.5 border-r-4 border-r-amber-500">
+                    <span class="text-[11px] font-bold opacity-75 block">بصمات خروج ناقصة (${st.curMonth})</span>
+                    <div class="text-xl num-mono font-black text-amber-600 mt-0.5">${st.missingPunchEmps.length} <span class="text-xs font-bold opacity-75">موظف</span></div>
+                </div>
+                <div class="lux-card p-3.5 border-r-4 border-r-rose-500">
+                    <span class="text-[11px] font-bold opacity-75 block">المتوقفون عن العمل</span>
+                    <div class="text-xl num-mono font-black text-rose-600 mt-0.5">${st.stoppedEmps.length} <span class="text-xs font-bold opacity-75">ملف أرشيفي</span></div>
+                </div>
+            `;
+        }
+
+        // 4. محتوى المحور المالي والرواتب
+        const finPane = document.getElementById("pillarPaneFinance");
+        if (finPane) {
+            const maxDeptNet = Math.max(1, ...st.deptFinanceList.map(d => d.net));
+            const topFinEmps = st.activeEmps
+                .map(e => ({ emp: e, p: calculateEmployeePayroll(e) }))
+                .filter(x => x.p.overtimePay > 0 || x.p.bonus > 0 || x.p.manualDed > 0 || x.p.shortageDed > 0)
+                .sort((a, b) => (b.p.overtimePay + b.p.bonus + b.p.manualDed) - (a.p.overtimePay + a.p.bonus + a.p.manualDed))
+                .slice(0, 8);
+
+            finPane.innerHTML = `
+                <div class="lux-card p-4 flex flex-wrap items-center justify-between gap-3 border-r-4 border-r-emerald-500">
+                    <div>
+                        <h3 class="text-sm font-black">💰 لوحة القيادة المالية والرواتب — دورة (${st.curMonth})</h3>
+                        <p class="text-[11.5px] font-bold opacity-75 mt-0.5">تحليل فوري للكتلة المالية، الساعات الإضافية (1.5x)، السلف، وتوزيع الرواتب على الأقسام</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="switchTab('payroll')" class="btn-lux btn-azure-primary !py-1.5 !px-3.5 !text-xs"><span>💰 مسير الرواتب (208 س / 30 يوم)</span></button>
+                        <button type="button" onclick="if(typeof openCashDenominationsModal==='function') openCashDenominationsModal()" class="btn-lux btn-basma-advance !py-1.5 !px-3.5 !text-xs"><span>💵 فئات النقد</span></button>
+                        <button type="button" onclick="if(typeof openCloseMonthModal==='function') openCloseMonthModal()" class="btn-lux btn-crimson-lux !py-1.5 !px-3.5 !text-xs"><span>🔒 إغلاق وأرشفة الشهر</span></button>
+                        <button type="button" onclick="exportPayrollExcel()" class="btn-lux btn-ocean-royal !py-1.5 !px-3.5 !text-xs"><span>📥 تصدير Excel المالي</span></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+                    <div class="lux-card p-4 border-r-4 border-r-sky-500">
+                        <span class="text-xs font-bold opacity-75 block">إجمالي الرواتب الأساسية</span>
+                        <b class="text-xl num-mono font-black text-sky-700 block mt-1 basma-fin-sensitive">${st.totalBase.toLocaleString()}</b>
+                        <span class="text-[11px] font-bold opacity-70">ل.س (${st.activeEmps.length} موظف نشط)</span>
+                    </div>
+                    <div class="lux-card p-4 border-r-4 border-r-emerald-500">
+                        <span class="text-xs font-bold opacity-75 block">الإضافي (1.5x) والمكافآت</span>
+                        <b class="text-xl num-mono font-black text-emerald-700 block mt-1 basma-fin-sensitive">+${st.totalOvertimeAndBonus.toLocaleString()}</b>
+                        <span class="text-[11px] font-bold opacity-70">إضافي: ${st.totalOtPayOnly.toLocaleString()} | مكافآت: ${st.totalBonusOnly.toLocaleString()}</span>
+                    </div>
+                    <div class="lux-card p-4 border-r-4 border-r-rose-500">
+                        <span class="text-xs font-bold opacity-75 block">السلف وحسم نقص الساعات</span>
+                        <b class="text-xl num-mono font-black text-rose-600 block mt-1 basma-fin-sensitive">-${st.totalDeductAndShort.toLocaleString()}</b>
+                        <span class="text-[11px] font-bold opacity-70">سلف وخصومات مباشرة: ${st.totalAdvDed.toLocaleString()}</span>
+                    </div>
+                    <div class="lux-card p-4 border-r-4 border-r-amber-500" style="background:linear-gradient(135deg, rgba(254,243,199,0.35), var(--card-bg)) !important;">
+                        <span class="text-xs font-bold opacity-80 block">صافي الرواتب المستحقة للدفع</span>
+                        <b class="text-xl num-mono font-black text-amber-700 block mt-1 basma-fin-sensitive">${st.totalNet.toLocaleString()}</b>
+                        <span class="text-[11px] font-extrabold opacity-75">ليرة سورية مستحقة</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <!-- توزيع الكتلة المالية على الأقسام -->
+                    <div class="lg:col-span-7 lux-card p-4 space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--border-col);">
+                            <h4 class="text-sm font-black">📊 توزيع كتلة الرواتب على الأقسام</h4>
+                            <button type="button" onclick="switchTab('stats')" class="text-xs font-extrabold text-sky-700 hover:underline">التحليل الكامل ⬅️</button>
+                        </div>
+                        <div class="space-y-2.5">
+                            ${st.deptFinanceList.map(d => {
+                                const sharePct = st.totalNet > 0 ? Math.round((d.net / st.totalNet) * 100) : 0;
+                                const barW = Math.max(4, Math.round((d.net / maxDeptNet) * 100));
+                                const avgSal = d.active > 0 ? Math.round(d.net / d.active) : 0;
+                                return `
+                                <div class="p-2.5 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);">
+                                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs mb-1.5">
+                                        <span class="font-black">${d.name} <span class="opacity-70 font-bold">(${d.active} نشط)</span></span>
+                                        <span class="num-mono font-black text-sky-700 basma-fin-sensitive">${d.net.toLocaleString()} ل.س <span class="text-[10.5px] opacity-75">(${sharePct}%)</span></span>
+                                    </div>
+                                    <div class="w-full h-2.5 rounded-full bg-slate-300/60 overflow-hidden">
+                                        <div class="h-full rounded-full" style="width:${barW}%;background:linear-gradient(90deg,#0284c7,#38bdf8,#10b981);"></div>
+                                    </div>
+                                    <div class="text-[10.5px] font-bold opacity-70 mt-1 basma-fin-sensitive">متوسط صافي الراتب بالقسم: ${avgSal.toLocaleString()} ل.س</div>
+                                </div>`;
+                            }).join("") || `<p class="text-xs text-center py-4 opacity-70">لا توجد بيانات رواتب بعد.</p>`}
+                        </div>
+                    </div>
+
+                    <!-- أحدث السلف والإضافي والحسميات -->
+                    <div class="lg:col-span-5 lux-card p-4 space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--border-col);">
+                            <h4 class="text-sm font-black">💳 متابعة السلف والإضافي هذا الشهر</h4>
+                            <span class="text-[11px] font-extrabold opacity-75">${topFinEmps.length} حركة نشطة</span>
+                        </div>
+                        <div class="space-y-2 max-h-[320px] overflow-y-auto">
+                            ${topFinEmps.length ? topFinEmps.map(({ emp, p }) => `
+                                <div class="p-2.5 rounded-xl border flex items-center justify-between gap-2 text-xs" style="background:var(--card-elevated);border-color:var(--border-col);">
+                                    <div>
+                                        <div class="font-black">${emp.name} <span class="num-mono opacity-70">#${emp.id}</span></div>
+                                        <div class="text-[11px] font-bold mt-0.5 flex flex-wrap gap-2 basma-fin-sensitive">
+                                            ${(p.overtimePay + p.bonus) > 0 ? `<span class="text-emerald-700">+${(p.overtimePay + p.bonus).toLocaleString()} إضافي</span>` : ''}
+                                            ${(p.manualDed + p.shortageDed) > 0 ? `<span class="text-rose-600">-${(p.manualDed + p.shortageDed).toLocaleString()} سلف/حسم</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="openQuickFinanceModal('${emp.id}')" class="btn-basma-advance !py-1 !px-2.5 !text-[10.5px]"><span>💳 تعديل</span></button>
+                                </div>
+                            `).join("") : `<div class="text-center py-8 text-xs font-bold opacity-70">✅ لا توجد سلف أو حسميات أو إضافي مسجل حتى الآن.</div>`}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. محتوى المحور القانوني والامتثال
+        const legDyn = document.getElementById("v64LegalDynamicContent");
+        if (legDyn) {
+            const allMinors = [...st.minorsU15.map(x => ({ ...x, badge: "تحت 15 سنة", cls: "bg-emerald-100 text-emerald-800 border-emerald-400" })), ...st.minorsU18.map(x => ({ ...x, badge: "قاصر (15-17)", cls: "bg-amber-100 text-amber-800 border-amber-400" }))];
+
+            legDyn.innerHTML = `
+                <div class="lux-card p-4 flex flex-wrap items-center justify-between gap-3 border-r-4 border-r-purple-600">
+                    <div>
+                        <h3 class="text-sm font-black">⚖️ المحور القانوني والامتثال العمالي وتجهيز التفتيش</h3>
+                        <p class="text-[11.5px] font-bold opacity-75 mt-0.5">رقابة القاصرين، استكمال الوثائق والهويات، توليد إضبارة العمل الرسمية PDF، ومتابعة الإجازات وبراءة الذمة</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-black ${st.compliancePct >= 85 ? 'bg-emerald-100 text-emerald-800 border border-emerald-400' : 'bg-amber-100 text-amber-800 border border-amber-400'}">
+                            مؤشر الامتثال القانوني: ${st.compliancePct}%
+                        </span>
+                        <button type="button" onclick="switchTab('reports')" class="btn-lux btn-ocean-royal !py-1.5 !px-3.5 !text-xs"><span>📄 التقارير الرسمية للتفتيش</span></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="lux-card p-3.5 border-r-4 border-r-purple-500">
+                        <span class="text-[11px] font-bold opacity-75 block">ملفات بها وثائق ناقصة</span>
+                        <b class="text-2xl num-mono font-black ${st.missingDocs.length ? 'text-rose-600' : 'text-emerald-600'}">${st.missingDocs.length}</b>
+                    </div>
+                    <div class="lux-card p-3.5 border-r-4 border-r-amber-500">
+                        <span class="text-[11px] font-bold opacity-75 block">قاصرون (15 - 17 سنة)</span>
+                        <b class="text-2xl num-mono font-black text-amber-600">${st.minorsU18.length}</b>
+                    </div>
+                    <div class="lux-card p-3.5 border-r-4 border-r-emerald-500">
+                        <span class="text-[11px] font-bold opacity-75 block">أحداث تحت 15 سنة</span>
+                        <b class="text-2xl num-mono font-black text-emerald-600">${st.minorsU15.length}</b>
+                    </div>
+                    <div class="lux-card p-3.5 border-r-4 border-r-rose-500">
+                        <span class="text-[11px] font-bold opacity-75 block">متوقفون (لبراءة الذمة)</span>
+                        <b class="text-2xl num-mono font-black text-rose-600">${st.stoppedEmps.length}</b>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <!-- تدقيق الوثائق الناقصة وإصدار إضبارة العمل -->
+                    <div class="lg:col-span-7 lux-card p-4 space-y-3">
+                        <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--border-col);">
+                            <h4 class="text-sm font-black">🪪 تدقيق الوثائق وإضبارة العمل الرسمية PDF</h4>
+                            <span class="text-[11px] font-extrabold opacity-75">${st.missingDocs.length ? `${st.missingDocs.length} بحاجة لاستكمال` : '✅ جميع الوثائق مكتملة'}</span>
+                        </div>
+                        <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                            ${(st.missingDocs.length ? st.missingDocs.slice(0, 12) : st.activeEmps.slice(0, 6).map(e => ({ emp: e, missing: [] }))).map(({ emp, missing }) => `
+                                <div class="p-2.5 rounded-xl border flex flex-wrap items-center justify-between gap-2 text-xs" style="background:var(--card-elevated);border-color:var(--border-col);">
+                                    <div>
+                                        <div class="font-black">${emp.name} <span class="num-mono opacity-70">#${emp.id}</span> — <span class="opacity-80">${emp.mainDept}</span></div>
+                                        <div class="text-[11px] font-bold mt-0.5 ${missing.length ? 'text-rose-600' : 'text-emerald-700'}">
+                                            ${missing.length ? `⚠️ ينقصه: ${missing.join("، ")}` : "✅ الوثائق الأساسية مكتملة وجاهزة للتفتيش"}
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <button type="button" onclick="loadEmployeeToForm('${emp.id}')" class="btn-lux btn-dark-lux !py-1 !px-2.5 !text-[10.5px]"><span>✏️ استكمال</span></button>
+                                        <button type="button" onclick="if(typeof generateWorkDossierPdf==='function') generateWorkDossierPdf('${emp.id}')" class="btn-basma-dossier !py-1 !px-2.5 !text-[10.5px]"><span>📁 إضبارة PDF</span></button>
+                                    </div>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+
+                    <!-- القاصرون + الإجازات المأجورة + براءة الذمة -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="lux-card p-4 space-y-2.5">
+                            <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--border-col);">
+                                <h4 class="text-sm font-black">🛡️ رقابة القاصرين والأحداث (تحت 18 سنة)</h4>
+                                <span class="text-[11px] font-black">${allMinors.length}</span>
+                            </div>
+                            ${allMinors.length ? `<div class="space-y-2 max-h-[150px] overflow-y-auto">${allMinors.map(m => `
+                                <div class="p-2 rounded-xl border flex items-center justify-between gap-2 text-xs" style="background:var(--card-elevated);border-color:var(--border-col);">
+                                    <div>
+                                        <b class="block">${m.emp.name} <span class="num-mono opacity-70">#${m.emp.id}</span></b>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black border mt-0.5 ${m.cls}">${m.badge} — ${m.age} سنة</span>
+                                    </div>
+                                    <button type="button" onclick="loadEmployeeToForm('${m.emp.id}')" class="btn-lux btn-azure-primary !py-1 !px-2.5 !text-[10.5px]"><span>ملف</span></button>
+                                </div>
+                            `).join("")}</div>` : `<p class="text-xs font-bold text-emerald-700 py-2">✅ لا يوجد قاصرون تحت 18 سنة على رأس عملهم حالياً.</p>`}
+                        </div>
+
+                        <div class="lux-card p-4 space-y-2.5">
+                            <div class="flex items-center justify-between pb-2 border-b" style="border-color:var(--border-col);">
+                                <h4 class="text-sm font-black">🌴 الإجازات المأجورة (15 يوم) وبراءة الذمة</h4>
+                            </div>
+                            <div class="space-y-2 text-xs">
+                                ${st.leaveAlertEmps.length ? st.leaveAlertEmps.slice(0, 4).map(x => `
+                                    <div class="p-2 rounded-lg border flex items-center justify-between gap-2" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.35);">
+                                        <span><b>${x.emp.name}</b>: استهلك <b class="num-mono">${x.used}</b> يوم ${x.excess > 0 ? `(تجاوز ${x.excess} يوم)` : '(اقترب من الحد)'}</span>
+                                        <button type="button" onclick="openJustifiedLeaveModal('${x.emp.id}')" class="btn-basma-leave !py-0.5 !px-2 !text-[10px]"><span>إجازة</span></button>
+                                    </div>
+                                `).join("") : `<div class="text-emerald-700 font-bold">✅ جميع أرصدة الإجازات السنوية ضمن الحد القانوني (15 يوماً).</div>`}
+                                ${st.stoppedEmps.length ? `
+                                    <div class="pt-2 border-t" style="border-color:var(--border-col);">
+                                        <div class="font-extrabold text-rose-600 mb-1.5">📌 أحدث المتوقفين عن العمل (للمتابعة وبراءة الذمة):</div>
+                                        ${st.stoppedEmps.slice(0, 4).map(e => `
+                                            <div class="flex items-center justify-between py-1 border-b last:border-b-0" style="border-color:var(--border-col);">
+                                                <span><b>${e.name}</b> <span class="opacity-70">(${e.mainDept})</span></span>
+                                                <span class="num-mono text-[11px] font-bold text-rose-600">${e.endDate || 'متوقف'}</span>
+                                            </div>
+                                        `).join("")}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // تطبيق المحور المختار حالياً
+        setBasmaDashPillarV64(basmaActiveDashPillar);
+    }
+
+    // ربط renderDashboard و renderAllViews لضمان التحديث الفوري لمركز القيادة التنفيذي
+    const _v64OrigRenderDashboard = window.renderDashboard;
+    if (typeof _v64OrigRenderDashboard === "function") {
+        window.renderDashboard = function() {
+            const res = _v64OrigRenderDashboard.apply(this, arguments);
+            renderExecutivePillarHubV64();
+            return res;
+        };
+    }
+    const _v64OrigRenderAll = window.renderAllViews;
+    if (typeof _v64OrigRenderAll === "function") {
+        window.renderAllViews = function() {
+            const res = _v64OrigRenderAll.apply(this, arguments);
+            if (sessionRole === "hr") renderExecutivePillarHubV64();
             return res;
         };
     }
