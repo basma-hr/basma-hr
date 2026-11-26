@@ -4644,34 +4644,45 @@
     }
 
 
-    /* ==================== 28. حزمة الترقية v62: صفحة الدخول المطوّرة Split-Screen الفخمة ==================== */
+    /* ==================== 28. حزمة الترقية v63: صفحة الدخول الاحترافية Split-Screen الثابتة والمحسّنة ==================== */
+    body:not(.basma-clean-entry-mode) #loginScreen {
+        overflow-y: auto !important;
+        padding: 18px !important;
+    }
     body:not(.basma-clean-entry-mode) #loginScreen > .lux-card.basma-split-login-card {
-        max-width: 920px !important;
+        max-width: 940px !important;
         width: 100% !important;
         padding: 0 !important;
         overflow: hidden !important;
         border-radius: 24px !important;
-        border: 2px solid #0284c7 !important;
-        box-shadow: 0 28px 65px -16px rgba(2, 42, 92, 0.38) !important;
+        border: 1.5px solid rgba(2, 132, 199, 0.55) !important;
+        box-shadow: 0 30px 70px -15px rgba(7, 25, 58, 0.34), 0 0 0 4px rgba(56, 189, 248, 0.14) !important;
+        background: #ffffff !important;
+    }
+    body:not(.basma-clean-entry-mode) #loginScreen > .lux-card.basma-split-login-card::before {
+        display: none !important;
+        content: none !important;
     }
     .basma-split-grid {
         display: grid;
-        grid-template-columns: 1.08fr 0.92fr;
-        min-height: 520px;
+        grid-template-columns: 1.06fr 0.94fr;
+        min-height: 540px;
+        width: 100%;
     }
     .basma-split-form-pane {
-        padding: 28px 30px 22px;
+        padding: 30px 32px 22px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        background: linear-gradient(155deg, #ffffff 0%, #f4faff 100%);
+        background: linear-gradient(155deg, #ffffff 0%, #f5faff 100%);
         color: #0f172a;
+        position: relative;
     }
     .basma-split-showcase-pane {
-        padding: 30px 26px;
-        background: radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.25) 0%, transparent 50%),
-                    radial-gradient(circle at 85% 85%, rgba(251, 191, 36, 0.16) 0%, transparent 48%),
-                    linear-gradient(160deg, #071529 0%, #0d2547 55%, #081a33 100%);
+        padding: 30px 28px;
+        background: radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.28) 0%, transparent 48%),
+                    radial-gradient(circle at 86% 88%, rgba(251, 191, 36, 0.18) 0%, transparent 46%),
+                    linear-gradient(160deg, #061326 0%, #0c2344 52%, #071933 100%);
         color: #ffffff;
         display: flex;
         flex-direction: column;
@@ -4680,6 +4691,16 @@
         overflow: hidden;
         border-right: 1px solid rgba(56, 189, 248, 0.25);
     }
+    .basma-split-showcase-pane::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #0284c7, #38bdf8, #fbbf24, #38bdf8, #0284c7);
+        pointer-events: none;
+    }
     .basma-split-showcase-pane * { color: #f8fafc; }
     .basma-role-switch {
         display: grid;
@@ -4687,11 +4708,11 @@
         gap: 6px;
         padding: 4px;
         border-radius: 9999px;
-        background: #e2effa;
-        border: 1px solid rgba(2, 132, 199, 0.28);
+        background: #e6f2fc;
+        border: 1px solid rgba(2, 132, 199, 0.26);
     }
     .basma-role-btn {
-        padding: 7px 12px;
+        padding: 8px 12px;
         border-radius: 9999px;
         font-size: 12px;
         font-weight: 800;
@@ -4699,12 +4720,12 @@
         background: transparent;
         color: #334155 !important;
         cursor: pointer;
-        transition: background 0.18s ease, color 0.18s ease;
+        transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
     }
     .basma-role-btn.role-active {
         background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.34);
     }
     .basma-pass-eye-btn {
         position: absolute;
@@ -4714,30 +4735,37 @@
         background: transparent;
         border: none;
         cursor: pointer;
-        font-size: 15px;
+        font-size: 16px;
         padding: 4px 6px;
         color: #475569;
+        line-height: 1;
     }
+    .basma-pass-eye-btn:hover { color: #0284c7; }
     .basma-showcase-feat {
         display: flex;
         align-items: flex-start;
-        gap: 10px;
-        padding: 10px 12px;
+        gap: 11px;
+        padding: 11px 13px;
         border-radius: 14px;
-        background: rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.065);
         border: 1px solid rgba(125, 211, 252, 0.22);
         text-align: right;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .basma-showcase-feat:hover {
+        background: rgba(56, 189, 248, 0.13);
+        border-color: rgba(251, 191, 36, 0.45);
     }
     .basma-showcase-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: linear-gradient(135deg, rgba(56, 189, 248, 0.28), rgba(251, 191, 36, 0.22));
-        border: 1px solid rgba(251, 191, 36, 0.45);
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.26), rgba(251, 191, 36, 0.22));
+        border: 1px solid rgba(251, 191, 36, 0.48);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 16px;
+        font-size: 17px;
         flex-shrink: 0;
     }
     .basma-login-footer-bar {
@@ -4746,9 +4774,9 @@
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        padding-top: 12px;
-        margin-top: 12px;
-        border-top: 1px dashed rgba(2, 132, 199, 0.28);
+        padding-top: 13px;
+        margin-top: 14px;
+        border-top: 1px dashed rgba(2, 132, 199, 0.26);
         font-size: 11px;
         font-weight: 700;
         color: #475569;
@@ -4756,7 +4784,7 @@
     @media (max-width: 820px) {
         .basma-split-grid { grid-template-columns: 1fr; min-height: auto; }
         .basma-split-showcase-pane { display: none !important; }
-        .basma-split-form-pane { padding: 20px 16px; }
+        .basma-split-form-pane { padding: 22px 18px; }
     }
 
     #payslipHiddenStage { position: fixed; left: -9999px; top: 0; z-index: -1; }
@@ -18226,7 +18254,7 @@
     };
 
 
-    // ==================== 62. حزمة الترقية v62: واجهة الدخول الاحترافية Split-Screen + تبديل الدور + إظهار كلمة السر + تذكرني ====================
+    // ==================== 63. حزمة الترقية v63: تثبيت صفحة الدخول Split-Screen ومنع استبدالها + تحديث حي للمنشأة والأقسام ====================
     const BASMA_REMEMBER_KEY = "basma_remember_login_v62";
     let v62SelectedLoginRole = "hr";
 
@@ -18237,17 +18265,53 @@
         return "🌙 مساء الخير، أهلاً بك في";
     }
 
+    function refreshV62LoginMetaOnly() {
+        const wrap = document.getElementById("basmaSplitLoginV62");
+        if (!wrap) return;
+        const pCfg = appData.platformConfig || {};
+        const comp = curComp();
+        const titleEl = document.getElementById("v62_loginPlatformName");
+        const compEl = document.getElementById("v62_loginCompName");
+        const ownerEl = document.getElementById("v62_loginOwnerName");
+        const phoneEl = document.getElementById("v62_loginOwnerPhone");
+        if (titleEl && pCfg.platformName) titleEl.innerText = pCfg.platformName;
+        if (compEl && comp?.name) compEl.innerText = "🏢 " + comp.name;
+        if (ownerEl && pCfg.ownerName) ownerEl.innerText = pCfg.ownerName;
+        if (phoneEl && pCfg.ownerPhone) phoneEl.innerText = pCfg.ownerPhone;
+
+        const deptSel = document.getElementById("v62DeptSelect");
+        if (deptSel && comp?.departments) {
+            const depts = Object.keys(comp.departments);
+            const curVal = deptSel.value;
+            const curOptions = Array.from(deptSel.options).map(o => o.value).join("|");
+            const newOptions = depts.join("|");
+            if (curOptions !== newOptions) {
+                const params = new URLSearchParams(window.location.search);
+                const deptParam = params.get("dept");
+                deptSel.innerHTML = depts.map(d => `<option value="${d}">${'قسم ' + d}</option>`).join("");
+                if (deptParam && depts.includes(deptParam)) deptSel.value = deptParam;
+                else if (curVal && depts.includes(curVal)) deptSel.value = curVal;
+            }
+        }
+    }
+
     function upgradeLoginScreenV62() {
-        if (document.body.classList.contains("basma-clean-entry-mode")) return;
+        if (IS_VIP_HR_DEMO || document.body.classList.contains("basma-clean-entry-mode")) return;
         const loginCard = document.querySelector("#loginScreen > .lux-card");
-        if (!loginCard || document.getElementById("basmaSplitLoginV62")) return;
+        if (!loginCard) return;
+
+        // إذا كانت الشاشة المقسمة مبنية أصلاً نحدّث البيانات النصية فقط بدون إعادة بناء أو وميض
+        if (document.getElementById("basmaSplitLoginV62")) {
+            refreshV62LoginMetaOnly();
+            return;
+        }
 
         const pCfg = appData.platformConfig || {};
         const params = new URLSearchParams(window.location.search);
         const deptParam = params.get("dept");
         const compName = (curComp()?.name || "مطعم أورانتس (Orontes Restaurant)").trim();
         const depts = Object.keys(curComp()?.departments || {});
-        const isLockedDept = Boolean(deptParam && depts.includes(deptParam));
+        const isLockedDept = Boolean(deptParam && (depts.includes(deptParam) || deptParam.trim().length > 0));
         v62SelectedLoginRole = isLockedDept ? "dept_head" : "hr";
 
         let savedRem = null;
@@ -18257,126 +18321,138 @@
         }
 
         const waSupport = `https://wa.me/963997811005?text=${encodeURIComponent("مرحباً أستاذ علاء الدين، أحتاج مساعدة في الدخول إلى منصة بصمة HR.")}`;
+        const safeDepts = depts.length ? depts : (isLockedDept ? [deptParam] : ["المطبخ", "الصالة", "المحاسبة"]);
 
         loginCard.classList.add("basma-split-login-card");
+        // نحتفظ بالمعرفين basmaStableLoginBuilt و basmaCleanDeptLoginReady لمنع أي كود قديم من استبدال الشاشة المقسمة بعد المزامنة!
         loginCard.innerHTML = `
-            <div id="basmaSplitLoginV62" class="basma-split-grid" dir="rtl">
-                <!-- الجانب الأيمن: نموذج تسجيل الدخول المنظّم -->
-                <div class="basma-split-form-pane text-right">
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between gap-2 pb-3 border-b" style="border-color: rgba(2,132,199,0.2);">
-                            <div>
-                                <div class="text-[11.5px] font-extrabold text-sky-700">${getSmartArabicGreetingV62()}</div>
-                                <h1 class="text-2xl font-black basma-gold-title mt-0.5">${pCfg.platformName || "منصة بصمة"}</h1>
-                                <div class="text-xs font-bold text-slate-600 mt-0.5">🏢 ${compName}</div>
-                            </div>
-                            <div class="basma-oval-emblem sm-emblem md:hidden">${BASMA_OVAL_FP_SVG}</div>
-                        </div>
-
-                        <!-- تبديل نوع الدخول (الإدارة العامة / رئيس قسم) -->
-                        <div class="${isLockedDept ? 'hidden' : ''}">
-                            <div class="basma-role-switch">
-                                <button type="button" id="v62RoleBtnHr" onclick="setV62LoginRole('hr')" class="basma-role-btn ${v62SelectedLoginRole === 'hr' ? 'role-active' : ''}">🛡️ الإدارة العامة (HR)</button>
-                                <button type="button" id="v62RoleBtnDept" onclick="setV62LoginRole('dept_head')" class="basma-role-btn ${v62SelectedLoginRole === 'dept_head' ? 'role-active' : ''}">👥 رئيس قسم</button>
-                            </div>
-                        </div>
-
-                        <!-- اختيار القسم عند وضع رئيس قسم -->
-                        <div id="v62DeptPickerWrap" class="${v62SelectedLoginRole === 'dept_head' ? '' : 'hidden'} space-y-1.5">
-                            <label class="block text-xs font-extrabold text-slate-700">📂 القسم المخصص:</label>
-                            <select id="v62DeptSelect" ${isLockedDept ? 'disabled' : ''} class="w-full lux-input !h-10 font-extrabold text-xs">
-                                ${depts.map(d => `<option value="${d}" ${(isLockedDept ? d === deptParam : savedRem?.dept === d) ? 'selected' : ''}>قسم ${d}</option>`).join("")}
-                            </select>
-                        </div>
-
-                        <!-- حقل كلمة المرور مع زر العين -->
-                        <div class="space-y-1.5">
-                            <label id="loginPassLabel" class="block text-xs font-extrabold text-slate-700">
-                                ${isLockedDept ? `🔒 كلمة سر رئيس قسم (${deptParam}):` : (v62SelectedLoginRole === 'dept_head' ? '🔒 كلمة سر رئيس القسم:' : '🔒 كلمة مرور مدير الموارد البشرية (HR):')}
-                            </label>
-                            <div class="relative">
-                                <input type="password" id="loginPass" value="${savedRem?.remember && savedRem?.pass ? savedRem.pass : ''}"
-                                    placeholder="أدخل كلمة المرور السرية..." autocomplete="off"
-                                    class="w-full lux-input !h-12 !pl-11 num-mono font-black text-center text-base tracking-widest"
-                                    onkeydown="if(event.key==='Enter') handleV62LoginClick()">
-                                <button type="button" id="v62ToggleEye" onclick="toggleV62PassVisibility()" class="basma-pass-eye-btn" title="إظهار / إخفاء كلمة المرور">👁️</button>
-                            </div>
-                            <p id="loginError" class="text-rose-600 text-xs font-extrabold mt-1 hidden text-center">❌ كلمة المرور غير صحيحة! يرجى التأكد والمحاولة مرة أخرى.</p>
-                        </div>
-
-                        <!-- تذكرني + شارة التشفير -->
-                        <div class="flex items-center justify-between gap-2 text-xs">
-                            <label class="inline-flex items-center gap-2 cursor-pointer select-none font-bold text-slate-700">
-                                <input type="checkbox" id="v62RememberChk" ${savedRem?.remember ? 'checked' : ''} class="w-4 h-4 accent-sky-600 rounded">
-                                <span>تذكرني على هذا الجهاز</span>
-                            </label>
-                            <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300">🔐 اتصال مشفّر</span>
-                        </div>
-
-                        <!-- زر الدخول مع مؤشر التحميل -->
-                        <button type="button" id="v62SubmitLoginBtn" onclick="handleV62LoginClick()" class="w-full py-3.5 btn-lux btn-azure-primary text-sm font-black">
-                            <span id="v62LoginBtnText">🚀 تسجيل الدخول إلى المنظومة</span>
-                        </button>
-                    </div>
-
-                    <!-- الشريط السفلي الهادئ -->
-                    <div class="basma-login-footer-bar">
-                        <span class="inline-flex items-center gap-1.5 text-emerald-700">
-                            <span class="basma-live-dot"></span>
-                            <span>سحابة Supabase متصلة</span>
-                        </span>
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="installPWAApp()" class="text-sky-700 hover:underline font-extrabold bg-transparent border-0 cursor-pointer text-[11px]">📲 تثبيت التطبيق</button>
-                            <span class="opacity-40">|</span>
-                            <a href="${waSupport}" target="_blank" rel="noopener noreferrer" class="text-emerald-700 hover:underline font-extrabold text-[11px] no-underline">💬 الدعم الفني</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- الجانب الأيسر: لوحة الهوية والميزات (تظهر على الحاسوب وتختفي على الموبايل) -->
-                <div class="basma-split-showcase-pane text-right">
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="px-3 py-1 rounded-full text-[10.5px] font-black" style="background:rgba(251,191,36,0.18);border:1px solid rgba(251,191,36,0.55);color:#fde68a;">BASMA ERP • CLOUD HR</span>
-                        <span class="text-[11px] font-bold num-mono opacity-80" dir="ltr">${pCfg.ownerPhone || OWNER_PHONE}</span>
-                    </div>
-
-                    <div class="my-auto py-4 space-y-4">
-                        <div class="flex items-center gap-3.5">
-                            <div class="basma-oval-emblem" style="width:52px;height:68px;">${BASMA_OVAL_FP_SVG}</div>
-                            <div>
-                                <div class="text-xl font-black" style="color:#ffffff;">منظومة الموارد البشرية الذكية</div>
-                                <div class="text-xs font-bold mt-0.5" style="color:#bae6fd;">إدارة متكاملة للكادر، البصمة، والرواتب في مكان واحد</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-2.5">
-                            <div class="basma-showcase-feat">
-                                <span class="basma-showcase-icon">👆</span>
+            <div id="basmaStableLoginBuilt">
+                <span id="basmaCleanDeptLoginReady" class="hidden"></span>
+                <div id="basmaSplitLoginV62" class="basma-split-grid" dir="rtl">
+                    <!-- الجانب الأيمن: نموذج تسجيل الدخول المنظّم -->
+                    <div class="basma-split-form-pane text-right">
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between gap-2 pb-3 border-b" style="border-color: rgba(2,132,199,0.2);">
                                 <div>
-                                    <div class="text-xs font-black" style="color:#ffffff;">معالجة بصمات ZKTeco والورديات الليلية</div>
-                                    <div class="text-[11px] opacity-80">استيراد مباشر لملفات البصمة الخام مع ربط تلقائي لبصمات ما بعد منتصف الليل.</div>
+                                    <div class="text-[11.5px] font-extrabold text-sky-700">${getSmartArabicGreetingV62()}</div>
+                                    <h1 id="v62_loginPlatformName" class="text-2xl font-black basma-gold-title mt-0.5">${pCfg.platformName || "منصة بصمة"}</h1>
+                                    <div id="v62_loginCompName" class="text-xs font-bold text-slate-600 mt-0.5">🏢 ${compName}</div>
+                                </div>
+                                <div class="basma-oval-emblem sm-emblem md:hidden">${BASMA_OVAL_FP_SVG}</div>
+                            </div>
+
+                            <!-- تبديل نوع الدخول (الإدارة العامة / رئيس قسم) -->
+                            <div class="${isLockedDept ? 'hidden' : ''}">
+                                <div class="basma-role-switch">
+                                    <button type="button" id="v62RoleBtnHr" onclick="setV62LoginRole('hr')" class="basma-role-btn ${v62SelectedLoginRole === 'hr' ? 'role-active' : ''}">🛡️ الإدارة العامة (HR)</button>
+                                    <button type="button" id="v62RoleBtnDept" onclick="setV62LoginRole('dept_head')" class="basma-role-btn ${v62SelectedLoginRole === 'dept_head' ? 'role-active' : ''}">👥 رئيس قسم</button>
                                 </div>
                             </div>
-                            <div class="basma-showcase-feat">
-                                <span class="basma-showcase-icon">💰</span>
-                                <div>
-                                    <div class="text-xs font-black" style="color:#ffffff;">مسير رواتب ذكي (208 ساعة / 30 يوم)</div>
-                                    <div class="text-[11px] opacity-80">احتساب تلقائي للإضافي (1.5x)، السلف، الإجازات، وكشوفات واتساب فورية.</div>
-                                </div>
+
+                            <!-- شارة القسم المثبّت عند الدخول من رابط قسم مخصص -->
+                            ${isLockedDept ? `
+                            <div class="p-3 rounded-xl border-2 border-sky-400 bg-sky-50 text-center">
+                                <div class="text-[11px] font-bold text-sky-700">بوابة الدخول المخصصة لرئيس القسم</div>
+                                <div class="text-base font-black text-slate-900 mt-0.5">📂 قسم ${deptParam}</div>
+                            </div>` : ''}
+
+                            <!-- اختيار القسم عند وضع رئيس قسم -->
+                            <div id="v62DeptPickerWrap" class="${(v62SelectedLoginRole === 'dept_head' && !isLockedDept) ? '' : 'hidden'} space-y-1.5">
+                                <label class="block text-xs font-extrabold text-slate-700">📂 اختر القسم:</label>
+                                <select id="v62DeptSelect" class="w-full lux-input !h-10 font-extrabold text-xs">
+                                    ${safeDepts.map(d => `<option value="${d}" ${(isLockedDept ? d === deptParam : savedRem?.dept === d) ? 'selected' : ''}>قسم ${d}</option>`).join("")}
+                                </select>
                             </div>
-                            <div class="basma-showcase-feat">
-                                <span class="basma-showcase-icon">🪪</span>
-                                <div>
-                                    <div class="text-xs font-black" style="color:#ffffff;">أرشفة الهويات وإضبارة العمل الرسمية PDF</div>
-                                    <div class="text-[11px] opacity-80">توليد عقود العمل وإضبارة الموظف بدقة عالية مع مزامنة شاملة لملفات Excel.</div>
+
+                            <!-- حقل كلمة المرور مع زر العين -->
+                            <div class="space-y-1.5">
+                                <label id="loginPassLabel" class="block text-xs font-extrabold text-slate-700">
+                                    ${isLockedDept ? `🔒 كلمة سر رئيس قسم (${deptParam}):` : (v62SelectedLoginRole === 'dept_head' ? '🔒 كلمة سر رئيس القسم:' : '🔒 كلمة مرور مدير الموارد البشرية (HR):')}
+                                </label>
+                                <div class="relative">
+                                    <input type="password" id="loginPass" value="${savedRem?.remember && savedRem?.pass ? savedRem.pass : ''}"
+                                        placeholder="أدخل كلمة المرور السرية..." autocomplete="off"
+                                        class="w-full lux-input !h-12 !pl-11 num-mono font-black text-center text-base tracking-widest"
+                                        onkeydown="if(event.key==='Enter') handleV62LoginClick()">
+                                    <button type="button" id="v62ToggleEye" onclick="toggleV62PassVisibility()" class="basma-pass-eye-btn" title="إظهار / إخفاء كلمة المرور">👁️</button>
                                 </div>
+                                <p id="loginError" class="text-rose-600 text-xs font-extrabold mt-1 hidden text-center">❌ كلمة المرور غير صحيحة! يرجى التأكد والمحاولة مرة أخرى.</p>
+                            </div>
+
+                            <!-- تذكرني + شارة التشفير -->
+                            <div class="flex items-center justify-between gap-2 text-xs">
+                                <label class="inline-flex items-center gap-2 cursor-pointer select-none font-bold text-slate-700">
+                                    <input type="checkbox" id="v62RememberChk" ${savedRem?.remember ? 'checked' : ''} class="w-4 h-4 accent-sky-600 rounded">
+                                    <span>تذكرني على هذا الجهاز</span>
+                                </label>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10.5px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-300">🔐 اتصال مشفّر</span>
+                            </div>
+
+                            <!-- زر الدخول مع مؤشر التحميل -->
+                            <button type="button" id="v62SubmitLoginBtn" onclick="handleV62LoginClick()" class="w-full py-3.5 btn-lux btn-azure-primary text-sm font-black">
+                                <span id="v62LoginBtnText">🚀 تسجيل الدخول إلى المنظومة</span>
+                            </button>
+                        </div>
+
+                        <!-- الشريط السفلي الهادئ -->
+                        <div class="basma-login-footer-bar">
+                            <span class="inline-flex items-center gap-1.5 text-emerald-700">
+                                <span class="basma-live-dot"></span>
+                                <span>سحابة Supabase متصلة</span>
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="installPWAApp()" class="text-sky-700 hover:underline font-extrabold bg-transparent border-0 cursor-pointer text-[11px]">📲 تثبيت التطبيق</button>
+                                <span class="opacity-40">|</span>
+                                <a href="${waSupport}" target="_blank" rel="noopener noreferrer" class="text-emerald-700 hover:underline font-extrabold text-[11px] no-underline">💬 الدعم الفني</a>
                             </div>
                         </div>
                     </div>
 
-                    <div class="pt-3 border-t flex items-center justify-between text-[11px]" style="border-color:rgba(125,211,252,0.2);">
-                        <span style="color:#bae6fd;">إدارة وملكية: <b style="color:#fde68a;">${pCfg.ownerName || OWNER_NAME}</b></span>
-                        <span style="color:#7dd3fc;">مزامنة فورية آمنة ☁️</span>
+                    <!-- الجانب الأيسر: لوحة الهوية والميزات (تظهر على الحاسوب وتختفي على الموبايل) -->
+                    <div class="basma-split-showcase-pane text-right">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="px-3 py-1 rounded-full text-[10.5px] font-black" style="background:rgba(251,191,36,0.18);border:1px solid rgba(251,191,36,0.55);color:#fde68a;">BASMA ERP • CLOUD HR</span>
+                            <span id="v62_loginOwnerPhone" class="text-[11px] font-bold num-mono opacity-85" dir="ltr">${pCfg.ownerPhone || OWNER_PHONE}</span>
+                        </div>
+
+                        <div class="my-auto py-4 space-y-4">
+                            <div class="flex items-center gap-3.5">
+                                <div class="basma-oval-emblem" style="width:52px;height:68px;">${BASMA_OVAL_FP_SVG}</div>
+                                <div>
+                                    <div class="text-xl font-black" style="color:#ffffff;">منظومة الموارد البشرية الذكية</div>
+                                    <div class="text-xs font-bold mt-0.5" style="color:#bae6fd;">إدارة متكاملة للكادر، البصمة، والرواتب في مكان واحد</div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2.5">
+                                <div class="basma-showcase-feat">
+                                    <span class="basma-showcase-icon">👆</span>
+                                    <div>
+                                        <div class="text-xs font-black" style="color:#ffffff;">معالجة بصمات ZKTeco والورديات الليلية</div>
+                                        <div class="text-[11px] opacity-85">استيراد مباشر لملفات البصمة الخام مع ربط تلقائي لبصمات ما بعد منتصف الليل.</div>
+                                    </div>
+                                </div>
+                                <div class="basma-showcase-feat">
+                                    <span class="basma-showcase-icon">💰</span>
+                                    <div>
+                                        <div class="text-xs font-black" style="color:#ffffff;">مسير رواتب ذكي (208 ساعة / 30 يوم)</div>
+                                        <div class="text-[11px] opacity-85">احتساب تلقائي للإضافي (1.5x)، السلف، الإجازات، وكشوفات واتساب فورية.</div>
+                                    </div>
+                                </div>
+                                <div class="basma-showcase-feat">
+                                    <span class="basma-showcase-icon">🪪</span>
+                                    <div>
+                                        <div class="text-xs font-black" style="color:#ffffff;">أرشفة الهويات وإضبارة العمل الرسمية PDF</div>
+                                        <div class="text-[11px] opacity-85">توليد عقود العمل وإضبارة الموظف بدقة عالية مع مزامنة شاملة لملفات Excel.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t flex items-center justify-between text-[11px]" style="border-color:rgba(125,211,252,0.2);">
+                            <span style="color:#bae6fd;">إدارة وملكية: <b id="v62_loginOwnerName" style="color:#fde68a;">${pCfg.ownerName || OWNER_NAME}</b></span>
+                            <span style="color:#7dd3fc;">مزامنة فورية آمنة ☁️</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -18412,11 +18488,46 @@
         const remChk = document.getElementById("v62RememberChk")?.checked;
         const selDept = document.getElementById("v62DeptSelect")?.value || "";
 
+        if (!passVal) {
+            document.getElementById("loginPass")?.focus();
+            return;
+        }
+
         if (btn) btn.disabled = true;
         if (txt) txt.innerText = "⏳ جاري التحقق والمزامنة مع السحابة...";
 
         try {
-            await attemptLogin();
+            // إذا اختار المستخدم تبويب «رئيس قسم» وحدد قسماً بعينه نتحقق من كلمة سر ذلك القسم أولاً بدقة
+            if (v62SelectedLoginRole === "dept_head" && !urlLockedDept && selDept) {
+                await window.pullFromCloud(false, true);
+                const comp = curComp();
+                const expectedP = typeof normalizeAuthPassword === "function"
+                    ? normalizeAuthPassword(comp?.deptPasswords?.[selDept] || "")
+                    : String(comp?.deptPasswords?.[selDept] || "").trim();
+                const enteredP = typeof normalizeAuthPassword === "function"
+                    ? normalizeAuthPassword(passVal)
+                    : passVal;
+                const adminP = typeof normalizeAuthPassword === "function"
+                    ? normalizeAuthPassword(appData.adminPass || "2026")
+                    : String(appData.adminPass || "2026").trim();
+
+                if ((expectedP && enteredP === expectedP) || enteredP === adminP) {
+                    sessionRole = "dept_head";
+                    sessionDept = selDept;
+                    dhActiveSubView = "list";
+                    isMasterOwnerSession = false;
+                    if (typeof completeUnifiedLogin === "function") {
+                        completeUnifiedLogin(`مرحباً بك، رئيس قسم (${selDept})`);
+                    } else {
+                        await attemptLogin();
+                    }
+                } else {
+                    await attemptLogin();
+                }
+            } else {
+                await attemptLogin();
+            }
+
             if (isLoggedIn) {
                 if (remChk) {
                     try { localStorage.setItem(BASMA_REMEMBER_KEY, JSON.stringify({ remember: true, role: v62SelectedLoginRole, dept: selDept, pass: passVal })); } catch (e) {}
@@ -18430,20 +18541,24 @@
         }
     };
 
-    // تشغيل ترقية صفحة الدخول مباشرة بعد بناء الهيدر واللوحة
-    setTimeout(() => {
-        if (!IS_VIP_HR_DEMO) upgradeLoginScreenV62();
-    }, 60);
+    // ربط renderAllViews لتحديث اسم المنشأة والأقسام داخل الشاشة المقسمة بسلاسة دون استبدالها أبداً
+    const _v63OrigRenderAll = window.renderAllViews;
+    if (typeof _v63OrigRenderAll === "function") {
+        window.renderAllViews = function() {
+            const res = _v63OrigRenderAll.apply(this, arguments);
+            if (!IS_VIP_HR_DEMO) upgradeLoginScreenV62();
+            return res;
+        };
+    }
 
-    // تشغيل أولي نظيف وفوري
-    // إظهار لوحة الدخول الجديدة فوراً بعد اكتمال التصميم بدون أي ومضة للوحة القديمة
-    document.body.classList.add("basma-ready");
-
+    // تشغيل أولي نظيف وفوري بدون أي ومضة: نبني الشاشة المقسمة قبل إظهار الصفحة!
     injectBackgroundWatermark();
     buildLoginAndHeaderOnce();
+    if (!IS_VIP_HR_DEMO) upgradeLoginScreenV62();
     injectExtendedFormFields();
     injectBasmaFooterCopyrights();
     renderAllViews();
+    document.body.classList.add("basma-ready");
 })();
 </script>
 </body>
