@@ -5075,6 +5075,530 @@
         .v65-avatar-frame { width: 92px; height: 92px; }
     }
 
+
+    /* ==================== 31. حزمة الترقية البصرية الشاملة v70 على أساس v65 (الـ 7 تطويرات التصميمية) ==================== */
+
+    /* ---- 1) تهدئة الألوان وتوحيد هرمية الأزرار (Unified Glassmorphic Button Hierarchy) ---- */
+    :root, [data-theme="mist-sky"] {
+        --v70-ctx-color: #0284c7;
+        --v70-ctx-soft: rgba(2, 132, 199, 0.12);
+        --v70-glass-btn-bg: rgba(255, 255, 255, 0.88);
+        --v70-glass-btn-hover: rgba(224, 242, 254, 0.96);
+        --v70-glass-btn-border: rgba(2, 132, 199, 0.28);
+        --v70-popover-bg: rgba(255, 255, 255, 0.98);
+        --v70-drawer-bg: linear-gradient(165deg, #ffffff 0%, #f3f9ff 100%);
+    }
+    [data-theme="midnight-azure"] {
+        --v70-ctx-color: #38bdf8;
+        --v70-ctx-soft: rgba(56, 189, 248, 0.16);
+        --v70-glass-btn-bg: rgba(15, 31, 58, 0.88);
+        --v70-glass-btn-hover: rgba(24, 48, 86, 0.96);
+        --v70-glass-btn-border: rgba(125, 211, 252, 0.26);
+        --v70-popover-bg: rgba(11, 24, 46, 0.98);
+        --v70-drawer-bg: linear-gradient(165deg, #0b182e 0%, #071122 100%);
+    }
+
+    /* إزالة التوهج المزدوج الصارخ وتوحيد الظلال الهادئة */
+    .btn-lux, .btn-basma-advance, .btn-basma-leave, .btn-basma-star,
+    .btn-basma-holo-card, .btn-pdf-id-unified, .btn-basma-att, .btn-basma-dossier,
+    .nav-tab, .sort-pill-btn {
+        box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+        border-width: 1px !important;
+        transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease !important;
+    }
+
+    /* الزر الأساسي الأبرز في الشاشة: تدرج بصمة السماوي بلمسة ذهبية خفيفة */
+    .btn-azure-primary, .nav-tab.active, .sort-pill-btn.active-sort {
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 62%, #0369a1 100%) !important;
+        border-color: rgba(251, 191, 36, 0.55) !important;
+        box-shadow: 0 6px 16px -4px rgba(2, 132, 199, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+        color: #ffffff !important;
+    }
+    .btn-azure-primary *, .nav-tab.active *, .sort-pill-btn.active-sort * { color: #ffffff !important; }
+
+    /* الأزرار الثانوية والأدوات: زجاجية هادئة بحواف معدنية ملونة خفيفة بدل الألوان الفاقعة */
+    .btn-ocean-royal, .btn-cyan-glass, .btn-basma-holo-card, .btn-pdf-id-unified {
+        background: var(--v70-glass-btn-bg) !important;
+        border-color: rgba(2, 132, 199, 0.42) !important;
+        color: #0369a1 !important;
+    }
+    .btn-ocean-royal *, .btn-cyan-glass *, .btn-basma-holo-card *, .btn-pdf-id-unified * { color: #0369a1 !important; }
+    .btn-ocean-royal:hover, .btn-cyan-glass:hover, .btn-basma-holo-card:hover, .btn-pdf-id-unified:hover {
+        background: rgba(2, 132, 199, 0.14) !important;
+        border-color: #0284c7 !important;
+    }
+
+    .btn-basma-advance, .btn-basma-star {
+        background: var(--v70-glass-btn-bg) !important;
+        border-color: rgba(217, 119, 6, 0.48) !important;
+        color: #b45309 !important;
+    }
+    .btn-basma-advance *, .btn-basma-star * { color: #b45309 !important; }
+    .btn-basma-advance:hover, .btn-basma-star:hover {
+        background: rgba(245, 158, 11, 0.14) !important;
+        border-color: #d97706 !important;
+    }
+
+    .btn-basma-leave {
+        background: var(--v70-glass-btn-bg) !important;
+        border-color: rgba(124, 58, 237, 0.44) !important;
+        color: #6d28d9 !important;
+    }
+    .btn-basma-leave * { color: #6d28d9 !important; }
+    .btn-basma-leave:hover {
+        background: rgba(139, 92, 246, 0.13) !important;
+        border-color: #7c3aed !important;
+    }
+
+    .btn-basma-att:not(.btn-basma-att-empty), .btn-basma-dossier {
+        background: var(--v70-glass-btn-bg) !important;
+        border-color: rgba(13, 148, 136, 0.46) !important;
+        color: #0f766e !important;
+    }
+    .btn-basma-att:not(.btn-basma-att-empty) *, .btn-basma-dossier * { color: #0f766e !important; }
+    .btn-basma-att:not(.btn-basma-att-empty):hover, .btn-basma-dossier:hover {
+        background: rgba(13, 148, 136, 0.13) !important;
+        border-color: #0d9488 !important;
+    }
+
+    /* ألوان الأزرار الزجاجية الهادئة في الوضع الليلي الملكي */
+    [data-theme="midnight-azure"] .btn-ocean-royal,
+    [data-theme="midnight-azure"] .btn-cyan-glass,
+    [data-theme="midnight-azure"] .btn-basma-holo-card,
+    [data-theme="midnight-azure"] .btn-pdf-id-unified {
+        color: #7dd3fc !important;
+        border-color: rgba(56, 189, 248, 0.42) !important;
+    }
+    [data-theme="midnight-azure"] .btn-ocean-royal *,
+    [data-theme="midnight-azure"] .btn-cyan-glass *,
+    [data-theme="midnight-azure"] .btn-basma-holo-card *,
+    [data-theme="midnight-azure"] .btn-pdf-id-unified * { color: #7dd3fc !important; }
+
+    [data-theme="midnight-azure"] .btn-basma-advance,
+    [data-theme="midnight-azure"] .btn-basma-star {
+        color: #fde68a !important;
+        border-color: rgba(251, 191, 36, 0.45) !important;
+    }
+    [data-theme="midnight-azure"] .btn-basma-advance *,
+    [data-theme="midnight-azure"] .btn-basma-star * { color: #fde68a !important; }
+
+    [data-theme="midnight-azure"] .btn-basma-leave {
+        color: #ddd6fe !important;
+        border-color: rgba(167, 139, 250, 0.45) !important;
+    }
+    [data-theme="midnight-azure"] .btn-basma-leave * { color: #ddd6fe !important; }
+
+    [data-theme="midnight-azure"] .btn-basma-att:not(.btn-basma-att-empty),
+    [data-theme="midnight-azure"] .btn-basma-dossier {
+        color: #5eead4 !important;
+        border-color: rgba(45, 212, 191, 0.42) !important;
+    }
+    [data-theme="midnight-azure"] .btn-basma-att:not(.btn-basma-att-empty) *,
+    [data-theme="midnight-azure"] .btn-basma-dossier * { color: #5eead4 !important; }
+
+    /* الإبقاء على ألوان الحالات الدلالية صريحة: واتساب أخضر + حذف/خروج أحمر */
+    .btn-emerald-wa, .btn-basma-wa-direct, .btn-basma-wa-inline {
+        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+        border-color: rgba(134, 239, 172, 0.55) !important;
+        color: #ffffff !important;
+    }
+    .btn-crimson-lux, .btn-basma-att-empty {
+        background: linear-gradient(135deg, #e11d48 0%, #be123c 100%) !important;
+        border-color: rgba(253, 164, 175, 0.55) !important;
+        color: #ffffff !important;
+    }
+    .btn-emerald-wa *, .btn-crimson-lux *, .btn-basma-att-empty * { color: #ffffff !important; }
+
+    /* ---- 2) التلوين السياقي للشريط العلوي بدون شريط جانبي (Contextual Topbar Grouping) ---- */
+    nav {
+        position: relative !important;
+        border-top: 2.5px solid var(--v70-ctx-color) !important;
+        transition: border-color 0.25s ease !important;
+    }
+    body[data-v70-ctx="admin"] { --v70-ctx-color: #0284c7; --v70-ctx-soft: rgba(2, 132, 199, 0.13); }
+    body[data-v70-ctx="finance"] { --v70-ctx-color: #059669; --v70-ctx-soft: rgba(5, 150, 105, 0.13); }
+    body[data-v70-ctx="legal"] { --v70-ctx-color: #7c3aed; --v70-ctx-soft: rgba(124, 58, 237, 0.13); }
+    html[data-theme="midnight-azure"] body[data-v70-ctx="admin"] { --v70-ctx-color: #38bdf8; }
+    html[data-theme="midnight-azure"] body[data-v70-ctx="finance"] { --v70-ctx-color: #34d399; }
+    html[data-theme="midnight-azure"] body[data-v70-ctx="legal"] { --v70-ctx-color: #a78bfa; }
+
+    body[data-v70-ctx="finance"] .nav-tab.active {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        box-shadow: 0 6px 16px -4px rgba(5, 150, 105, 0.42) !important;
+    }
+    body[data-v70-ctx="legal"] .nav-tab.active {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%) !important;
+        box-shadow: 0 6px 16px -4px rgba(109, 40, 217, 0.42) !important;
+    }
+
+    .v70-nav-sep {
+        display: inline-block;
+        width: 1.5px;
+        height: 22px;
+        background: var(--border-col);
+        margin: 0 4px;
+        opacity: 0.7;
+        flex-shrink: 0;
+    }
+    .v70-ctx-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 11px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 900;
+        background: var(--v70-ctx-soft);
+        border: 1px solid var(--v70-ctx-color);
+        color: var(--v70-ctx-color) !important;
+        white-space: nowrap;
+    }
+    .v70-ctx-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--v70-ctx-color);
+        display: inline-block;
+    }
+
+    /* ---- 3) الأدراج المنزلقة الاحترافية (Slide-over Drawers) ---- */
+    @keyframes v70SlideInLeft {
+        from { transform: translateX(-100%); opacity: 0.5; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    #deptActiveFinanceModal.flex,
+    #justifiedLeaveModal.flex,
+    #empMonthlyAttModal {
+        align-items: stretch !important;
+        justify-content: flex-end !important;
+        padding: 0 !important;
+        background: rgba(4, 12, 26, 0.52) !important;
+        backdrop-filter: blur(4px) !important;
+        -webkit-backdrop-filter: blur(4px) !important;
+    }
+    #deptActiveFinanceModal > .lux-card,
+    #justifiedLeaveModal > .lux-card,
+    #empMonthlyAttModal > .lux-card {
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        border-radius: 0 22px 22px 0 !important;
+        margin: 0 !important;
+        overflow-y: auto !important;
+        background: var(--v70-drawer-bg) !important;
+        border-top: none !important;
+        border-bottom: none !important;
+        border-left: none !important;
+        border-right: 3px solid var(--v70-ctx-color) !important;
+        box-shadow: 18px 0 50px rgba(2, 10, 28, 0.42) !important;
+        animation: v70SlideInLeft 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+    }
+    #deptActiveFinanceModal > .lux-card,
+    #justifiedLeaveModal > .lux-card {
+        width: min(460px, 95vw) !important;
+        max-width: min(460px, 95vw) !important;
+    }
+    #empMonthlyAttModal > .lux-card {
+        width: min(860px, 96vw) !important;
+        max-width: min(860px, 96vw) !important;
+    }
+
+    /* ---- 4) تخفيف ازدحام صفوف الجداول بزر «⋯» (Row Overflow Menu) ---- */
+    .v70-more-trigger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 30px;
+        height: 28px;
+        padding: 0 8px;
+        border-radius: 999px;
+        background: var(--v70-glass-btn-bg);
+        border: 1px solid var(--v70-glass-btn-border);
+        color: var(--text-main) !important;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        line-height: 1;
+    }
+    .v70-more-trigger:hover {
+        background: var(--v70-ctx-soft);
+        border-color: var(--v70-ctx-color);
+        color: var(--v70-ctx-color) !important;
+    }
+    .v70-tucked-btn {
+        display: none !important;
+    }
+    #v70RowActionPopover {
+        position: fixed;
+        z-index: 99999;
+        min-width: 195px;
+        max-width: 245px;
+        padding: 7px;
+        border-radius: 14px;
+        background: var(--v70-popover-bg);
+        border: 1.5px solid var(--v70-ctx-color);
+        box-shadow: 0 18px 40px -10px rgba(2, 12, 28, 0.35);
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+    }
+    #v70RowActionPopover.open { display: flex; }
+    .v70-pop-item {
+        width: 100%;
+        padding: 7px 11px;
+        border-radius: 9px;
+        border: none;
+        background: transparent;
+        color: var(--text-main) !important;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        cursor: pointer;
+    }
+    .v70-pop-item:hover {
+        background: var(--v70-ctx-soft);
+        color: var(--v70-ctx-color) !important;
+    }
+    .v70-pop-item.is-danger { color: #e11d48 !important; }
+    [data-theme="midnight-azure"] .v70-pop-item.is-danger { color: #fda4af !important; }
+    .v70-pop-item.is-danger:hover { background: rgba(225, 29, 72, 0.14); }
+
+    /* ---- 5) ترقية بطاقات الإحصائيات بحلقات SVG الدائرية والأعمدة المصغرة ---- */
+    .v70-ring-wrap {
+        width: 52px;
+        height: 52px;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .v70-ring-wrap svg {
+        width: 52px;
+        height: 52px;
+        transform: rotate(-90deg);
+    }
+    .v70-ring-bg {
+        fill: none;
+        stroke: rgba(148, 163, 184, 0.25);
+        stroke-width: 4.5;
+    }
+    .v70-ring-fg {
+        fill: none;
+        stroke-width: 4.5;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.55s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.3s ease;
+    }
+    .v70-ring-txt {
+        position: absolute;
+        font-family: 'JetBrains Mono', sans-serif !important;
+        font-size: 10.5px;
+        font-weight: 900;
+        color: var(--text-main);
+    }
+    .v70-spark-wrap {
+        width: 58px;
+        height: 44px;
+        display: inline-flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 3px;
+        padding: 4px;
+        border-radius: 10px;
+        background: var(--card-elevated);
+        border: 1px solid var(--border-col);
+        flex-shrink: 0;
+    }
+    .v70-spark-bar {
+        width: 7px;
+        border-radius: 3px 3px 1px 1px;
+        background: linear-gradient(180deg, #34d399, #059669);
+        min-height: 5px;
+        transition: height 0.4s ease;
+    }
+
+    /* ---- 6) تحسينات الوضع الليلي الملكي (Midnight Azure Dark Mode Polish) ---- */
+    #v70ThemeToggleBtn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 11.5px;
+        font-weight: 800;
+        background: var(--v70-glass-btn-bg);
+        border: 1px solid rgba(251, 191, 36, 0.52);
+        color: var(--text-main) !important;
+        cursor: pointer;
+    }
+    #v70ThemeToggleBtn:hover {
+        background: var(--v70-ctx-soft);
+        border-color: #fbbf24;
+    }
+    [data-theme="midnight-azure"] .v64-pulse-card,
+    [data-theme="midnight-azure"] .v64-pillar-card:not(.pillar-active),
+    [data-theme="midnight-azure"] .v64-section-badge {
+        background: rgba(15, 29, 54, 0.94) !important;
+        border-color: rgba(56, 189, 248, 0.28) !important;
+        color: #f1f5f9 !important;
+    }
+    [data-theme="midnight-azure"] .v64-pulse-icon,
+    [data-theme="midnight-azure"] .v64-pillar-icon {
+        background: rgba(24, 45, 82, 0.95) !important;
+        border-color: rgba(125, 211, 252, 0.25) !important;
+    }
+    [data-theme="midnight-azure"] .v64-dot-ok { background: rgba(16, 185, 129, 0.22); color: #6ee7b7 !important; }
+    [data-theme="midnight-azure"] .v64-dot-warn { background: rgba(245, 158, 11, 0.22); color: #fde68a !important; }
+    [data-theme="midnight-azure"] .v64-dot-danger { background: rgba(225, 29, 72, 0.24); color: #fda4af !important; }
+    [data-theme="midnight-azure"] .v64-dot-info { background: rgba(56, 189, 248, 0.22); color: #7dd3fc !important; }
+
+    [data-theme="midnight-azure"] #view-master thead th:nth-child(1),
+    [data-theme="midnight-azure"] #view-master thead th:nth-child(2),
+    [data-theme="midnight-azure"] #view-master thead th:nth-child(3) {
+        background: #0f294a !important;
+        color: #ffffff !important;
+    }
+    [data-theme="midnight-azure"] #view-master tbody tr:not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(1),
+    [data-theme="midnight-azure"] #view-master tbody tr:not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(2),
+    [data-theme="midnight-azure"] #view-master tbody tr:not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(3) {
+        background-color: #0e1e38 !important;
+    }
+    [data-theme="midnight-azure"] #view-master tbody tr:nth-child(even):not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(1),
+    [data-theme="midnight-azure"] #view-master tbody tr:nth-child(even):not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(2),
+    [data-theme="midnight-azure"] #view-master tbody tr:nth-child(even):not(.row-inactive):not(.row-under18):not(.row-under15) td:nth-child(3) {
+        background-color: #132747 !important;
+    }
+    [data-theme="midnight-azure"] #view-master tbody tr.row-inactive td:nth-child(1),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-inactive td:nth-child(2),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-inactive td:nth-child(3) { background-color: #4c1124 !important; }
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under18 td:nth-child(1),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under18 td:nth-child(2),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under18 td:nth-child(3) { background-color: #45280d !important; }
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under15 td:nth-child(1),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under15 td:nth-child(2),
+    [data-theme="midnight-azure"] #view-master tbody tr.row-under15 td:nth-child(3) { background-color: #0c3b2e !important; }
+
+    [data-theme="midnight-azure"] .v65-contact-shell {
+        background: linear-gradient(160deg, #0c1b33 0%, #071224 100%) !important;
+        color: #f1f5f9 !important;
+    }
+    [data-theme="midnight-azure"] .v65-cred-card,
+    [data-theme="midnight-azure"] .v65-channel-btn,
+    [data-theme="midnight-azure"] .v65-contact-shell .lg\:col-span-7 {
+        background: rgba(18, 35, 64, 0.92) !important;
+        color: #f1f5f9 !important;
+        border-color: rgba(56, 189, 248, 0.30) !important;
+    }
+    [data-theme="midnight-azure"] .v65-contact-shell .text-slate-600,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-slate-700,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-slate-900 {
+        color: #e2e8f0 !important;
+    }
+    [data-theme="midnight-azure"] .v65-contact-shell .text-sky-900,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-purple-900,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-emerald-900,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-amber-900,
+    [data-theme="midnight-azure"] .v65-contact-shell .text-amber-800 {
+        color: #7dd3fc !important;
+    }
+
+    /* ---- 7) ملف الموظف البصري 360° (Visual 360° Smart Profile Card) ---- */
+    .v70-p360-hero {
+        background: radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.24) 0%, transparent 48%),
+                    radial-gradient(circle at 88% 82%, rgba(251, 191, 36, 0.16) 0%, transparent 45%),
+                    linear-gradient(145deg, #07172e 0%, #0e2a52 60%, #081d3b 100%);
+        border-radius: 18px;
+        padding: 20px 22px;
+        color: #ffffff;
+        border: 1px solid rgba(125, 211, 252, 0.35);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .v70-p360-hero * { color: #f8fafc; }
+    .v70-p360-avatar {
+        width: 78px;
+        height: 78px;
+        border-radius: 20px;
+        padding: 2.5px;
+        background: linear-gradient(135deg, #fbbf24 0%, #38bdf8 60%, #fef08a 100%);
+        flex-shrink: 0;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .v70-p360-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 17px;
+        display: block;
+    }
+    .v70-p360-initials {
+        width: 100%;
+        height: 100%;
+        border-radius: 17px;
+        background: #0c2344;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 900;
+        color: #fde68a !important;
+    }
+    .v70-p360-tabs {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        padding: 6px;
+        border-radius: 14px;
+        background: var(--card-elevated);
+        border: 1px solid var(--border-col);
+    }
+    .v70-p360-tab {
+        padding: 9px 10px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text-main) !important;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        text-align: center;
+    }
+    .v70-p360-tab:hover { background: var(--v70-ctx-soft); }
+    .v70-p360-tab.is-active {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+        color: #ffffff !important;
+        border-color: rgba(251, 191, 36, 0.5) !important;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.30);
+    }
+    .v70-p360-doc-box {
+        border-radius: 14px;
+        border: 1px solid var(--border-col);
+        background: var(--card-elevated);
+        padding: 12px;
+        text-align: center;
+    }
+    .v70-p360-doc-img {
+        width: 100%;
+        height: 155px;
+        object-fit: contain;
+        border-radius: 10px;
+        background: #ffffff;
+        border: 1px solid var(--border-col);
+        margin-top: 8px;
+    }
+    @media (max-width: 720px) {
+        .v70-p360-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
     #payslipHiddenStage { position: fixed; left: -9999px; top: 0; z-index: -1; }
 
 
@@ -14322,12 +14846,22 @@
 
     // ---------- 36.1 تثبيت الثيم النهاري (mist-sky) دائماً في الموقع الرئيسي والأقسام ----------
     function enforceDayThemeAlways() {
-        appData.theme = "mist-sky";
-        document.documentElement.setAttribute("data-theme", "mist-sky");
+        let saved = "mist-sky";
+        try {
+            const st = localStorage.getItem("basma_theme_v70");
+            if (st === "midnight-azure" || st === "mist-sky") saved = st;
+        } catch (e) {}
+        appData.theme = saved;
+        document.documentElement.setAttribute("data-theme", saved);
         const sel = document.getElementById("themeSelector");
         if (sel) sel.style.display = "none";
+        if (typeof window.syncV70ThemeButton === "function") window.syncV70ThemeButton();
     }
-    window.changeTheme = function() { enforceDayThemeAlways(); };
+    window.changeTheme = function(tName) {
+        const target = (tName === "midnight-azure") ? "midnight-azure" : "mist-sky";
+        try { localStorage.setItem("basma_theme_v70", target); } catch (e) {}
+        enforceDayThemeAlways();
+    };
     enforceDayThemeAlways();
 
     // ---------- 36.2 تطبيع الأرقام العربية/الفارسية والأحرف لكلمات السر لمنع أي خطأ إدخال ----------
@@ -19663,6 +20197,527 @@
             closeBasmaContactAboutModal();
         }
     });
+
+
+    // ==================== 70. حزمة التطوير البصري الشامل v70 على أساس v65 (جميع التطويرات الـ 7) ====================
+    let v70ProfileActiveTab = "admin"; // admin | finance | leaves | docs
+
+    // ---- (6) مبدل الوضع النهاري البلوري / الليلي الملكي ----
+    window.syncV70ThemeButton = function() {
+        const btn = document.getElementById("v70ThemeToggleBtn");
+        if (!btn) return;
+        const isDark = document.documentElement.getAttribute("data-theme") === "midnight-azure";
+        btn.innerHTML = isDark ? `<span>☀️ النهاري</span>` : `<span>🌙 الليلي</span>`;
+        btn.title = isDark ? "التبديل إلى الوضع النهاري البلوري" : "التبديل إلى الوضع الليلي الملكي";
+    };
+
+    window.toggleBasmaDayNightV70 = function() {
+        const isDark = document.documentElement.getAttribute("data-theme") === "midnight-azure";
+        const nextTheme = isDark ? "mist-sky" : "midnight-azure";
+        window.changeTheme(nextTheme);
+        showToast(nextTheme === "midnight-azure" ? "🌙 تم تفعيل الوضع الليلي الملكي" : "☀️ تم تفعيل الوضع النهاري البلوري");
+    };
+
+    function ensureThemeToggleButtonV70() {
+        const hdrCtrl = document.getElementById("hrHeaderControls");
+        if (hdrCtrl && !document.getElementById("v70ThemeToggleBtn")) {
+            hdrCtrl.insertAdjacentHTML("beforeend", `
+                <button type="button" id="v70ThemeToggleBtn" onclick="toggleBasmaDayNightV70()"></button>
+            `);
+        }
+        window.syncV70ThemeButton();
+    }
+
+    // ---- (2) التلوين السياقي للشريط العلوي بدون شريط جانبي ----
+    function setupContextualTopNavV70() {
+        const navTabs = document.getElementById("hrNavTabs");
+        if (!navTabs || navTabs.hasAttribute("data-v70-grouped")) return;
+        navTabs.setAttribute("data-v70-grouped", "1");
+
+        const tDash = document.getElementById("tab-dashboard");
+        const tForm = document.getElementById("tab-form");
+        const tSearch = document.getElementById("tab-search");
+        const tMaster = document.getElementById("tab-master");
+        const tPayroll = document.getElementById("tab-payroll");
+        const tStats = document.getElementById("tab-stats");
+        const tReports = document.getElementById("tab-reports");
+        const tContact = document.getElementById("tab-contact-v65");
+
+        const makeSep = () => {
+            const s = document.createElement("span");
+            s.className = "v70-nav-sep";
+            return s;
+        };
+
+        // ترتيب منطقي في 3 مجموعات واضحة مع فواصل رفيعة: الإداري | المالي | القانوني
+        const ordered = [tDash, tMaster, tForm, tSearch, makeSep(), tPayroll, tStats, makeSep(), tReports, makeSep(), tContact].filter(Boolean);
+        ordered.forEach(el => navTabs.appendChild(el));
+
+        // إضافة شارة السياق الحي بجانب أزرار المزامنة في الشريط العلوي
+        const navEl = navTabs.closest("nav");
+        const rightGroup = navEl ? navEl.lastElementChild : null;
+        if (rightGroup && !document.getElementById("v70NavContextPill")) {
+            rightGroup.insertAdjacentHTML("afterbegin", `
+                <span id="v70NavContextPill" class="v70-ctx-pill no-print">
+                    <span class="v70-ctx-dot"></span>
+                    <span id="v70NavContextText">الوضع الإداري</span>
+                </span>
+            `);
+        }
+    }
+
+    function updateContextualThemeV70(explicitCtx = null) {
+        let ctx = explicitCtx;
+        if (!ctx) {
+            const isVis = (id) => { const el = document.getElementById("view-" + id); return el && !el.classList.contains("hidden"); };
+            if (isVis("payroll") || isVis("stats")) ctx = "finance";
+            else if (isVis("reports")) ctx = "legal";
+            else if (isVis("dashboard")) {
+                if (basmaActiveDashPillar === "finance") ctx = "finance";
+                else if (basmaActiveDashPillar === "legal") ctx = "legal";
+                else ctx = "admin";
+            } else {
+                ctx = "admin";
+            }
+        }
+        document.body.setAttribute("data-v70-ctx", ctx);
+        const txt = document.getElementById("v70NavContextText");
+        if (txt) {
+            if (ctx === "finance") txt.innerText = "💰 المحور المالي والرواتب";
+            else if (ctx === "legal") txt.innerText = "⚖️ المحور القانوني والتفتيش";
+            else txt.innerText = "🏢 المحور الإداري والكادر";
+        }
+    }
+
+    // ---- (5) ترقية بطاقات الإحصائيات برسوم SVG دائرية وأعمدة مقارنة مصغرة ----
+    function buildSvgProgressRingV70(pct, strokeColor) {
+        const clamped = Math.max(0, Math.min(100, Number(pct) || 0));
+        const r = 21;
+        const c = 2 * Math.PI * r;
+        const offset = c - (clamped / 100) * c;
+        return `
+            <span class="v70-ring-wrap">
+                <svg viewBox="0 0 52 52">
+                    <circle class="v70-ring-bg" cx="26" cy="26" r="${r}"></circle>
+                    <circle class="v70-ring-fg" cx="26" cy="26" r="${r}" stroke="${strokeColor}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${offset.toFixed(1)}"></circle>
+                </svg>
+                <span class="v70-ring-txt">${clamped}%</span>
+            </span>
+        `;
+    }
+
+    function buildPayrollSparkBarsV70(deptList) {
+        const top = (deptList || []).slice(0, 5);
+        const maxVal = Math.max(1, ...top.map(d => d.net || 0));
+        if (!top.length) {
+            return `<span class="v70-spark-wrap" title="توزيع الرواتب على الأقسام"><span class="v70-spark-bar" style="height:28%"></span><span class="v70-spark-bar" style="height:52%"></span><span class="v70-spark-bar" style="height:76%"></span><span class="v70-spark-bar" style="height:44%"></span></span>`;
+        }
+        return `<span class="v70-spark-wrap" title="مقارنة كتلة الرواتب بين أعلى الأقسام">
+            ${top.map(d => {
+                const h = Math.max(18, Math.round(((d.net || 0) / maxVal) * 100));
+                return `<span class="v70-spark-bar" style="height:${h}%;" title="${d.dept}: ${(d.net || 0).toLocaleString()} ل.س"></span>`;
+            }).join("")}
+        </span>`;
+    }
+
+    function enhanceVisualKpisV70() {
+        const pulseBar = document.getElementById("basmaExecPulseBar");
+        if (!pulseBar || sessionRole !== "hr") return;
+        const st = computeDashboardPillarStatsV64();
+        const cards = pulseBar.querySelectorAll(".v64-pulse-card");
+        if (cards.length < 4) return;
+
+        // البطاقة 1: حلقة الاستقرار الدائرية SVG
+        const icon1 = cards[0].querySelector(".v64-pulse-icon, .v70-ring-wrap");
+        if (icon1) {
+            const stabColor = st.stabilityPct >= 80 ? "#0284c7" : (st.stabilityPct >= 55 ? "#f59e0b" : "#e11d48");
+            icon1.outerHTML = buildSvgProgressRingV70(st.stabilityPct, stabColor);
+        }
+        // البطاقة 2: أعمدة مصغرة لمقارنة رواتب الأقسام
+        const icon2 = cards[1].querySelector(".v64-pulse-icon, .v70-spark-wrap");
+        if (icon2) {
+            icon2.outerHTML = buildPayrollSparkBarsV70(st.deptFinanceList);
+        }
+        // البطاقة 4: حلقة الجاهزية القانونية SVG
+        const icon4 = cards[3].querySelector(".v64-pulse-icon, .v70-ring-wrap");
+        if (icon4) {
+            const legColor = st.compliancePct >= 85 ? "#10b981" : (st.compliancePct >= 60 ? "#f59e0b" : "#e11d48");
+            icon4.outerHTML = buildSvgProgressRingV70(st.compliancePct, legColor);
+        }
+    }
+
+    // ---- (4) تخفيف ازدحام صفوف الجداول بزر «⋯» (Row Overflow Menu) ----
+    let v70ActiveRowPopoverButtons = [];
+
+    function ensureRowActionPopoverDOMV70() {
+        if (!document.getElementById("v70RowActionPopover")) {
+            document.body.insertAdjacentHTML("beforeend", `<div id="v70RowActionPopover" class="no-print"></div>`);
+            document.addEventListener("click", (ev) => {
+                if (!ev.target.closest("#v70RowActionPopover") && !ev.target.closest(".v70-more-trigger")) {
+                    document.getElementById("v70RowActionPopover")?.classList.remove("open");
+                }
+            });
+            window.addEventListener("scroll", () => {
+                document.getElementById("v70RowActionPopover")?.classList.remove("open");
+            }, true);
+        }
+    }
+
+    window.openRowOverflowMenuV70 = function(triggerBtn, ev) {
+        if (ev) ev.stopPropagation();
+        ensureRowActionPopoverDOMV70();
+        const pop = document.getElementById("v70RowActionPopover");
+        const container = triggerBtn.parentElement;
+        if (!pop || !container) return;
+
+        const tucked = Array.from(container.querySelectorAll(".v70-tucked-btn"));
+        if (!tucked.length) return;
+        v70ActiveRowPopoverButtons = tucked;
+
+        pop.innerHTML = tucked.map((b, idx) => {
+            const label = (b.innerText || b.getAttribute("title") || "إجراء").trim();
+            const isDanger = b.classList.contains("btn-crimson-lux") || label.includes("حذف");
+            return `<button type="button" onclick="execRowOverflowItemV70(${idx})" class="v70-pop-item ${isDanger ? 'is-danger' : ''}"><span>${label}</span><span class="opacity-50 text-[10px]">⬅</span></button>`;
+        }).join("");
+
+        const rect = triggerBtn.getBoundingClientRect();
+        pop.classList.add("open");
+        const popW = pop.offsetWidth || 205;
+        const popH = pop.offsetHeight || 180;
+        let left = rect.left;
+        if (left + popW > window.innerWidth - 10) left = window.innerWidth - popW - 10;
+        if (left < 10) left = 10;
+        let top = rect.bottom + 6;
+        if (top + popH > window.innerHeight - 10) top = Math.max(10, rect.top - popH - 6);
+        pop.style.left = left + "px";
+        pop.style.top = top + "px";
+    };
+
+    window.execRowOverflowItemV70 = function(idx) {
+        const target = v70ActiveRowPopoverButtons[idx];
+        document.getElementById("v70RowActionPopover")?.classList.remove("open");
+        if (target && typeof target.click === "function") target.click();
+    };
+
+    function compactTableActionRowsV70() {
+        if (sessionRole !== "hr") return;
+        ensureRowActionPopoverDOMV70();
+        ["dashboardQuickTable", "masterTableBody"].forEach(tbId => {
+            const tbody = document.getElementById(tbId);
+            if (!tbody) return;
+            tbody.querySelectorAll("tr").forEach(tr => {
+                const lastTd = tr.lastElementChild;
+                if (!lastTd) return;
+                const wrap = lastTd.querySelector("div") || lastTd;
+                const btns = Array.from(wrap.querySelectorAll("button, a")).filter(el => !el.classList.contains("v70-more-trigger"));
+                if (btns.length <= 2) return;
+
+                let editBtn = btns.find(b => (b.innerText || "").includes("تعديل") || (b.getAttribute("onclick") || "").includes("loadEmployeeToForm"));
+                let attBtn = btns.find(b => b.classList.contains("btn-basma-att") || (b.getAttribute("onclick") || "").includes("openEmployeeAttendanceModal"));
+                const keepSet = new Set();
+                if (editBtn) keepSet.add(editBtn);
+                if (attBtn) keepSet.add(attBtn);
+                for (const b of btns) {
+                    if (keepSet.size >= 2) break;
+                    if (!b.classList.contains("btn-crimson-lux")) keepSet.add(b);
+                }
+
+                let tuckedCount = 0;
+                btns.forEach(b => {
+                    if (keepSet.has(b)) {
+                        b.classList.remove("v70-tucked-btn");
+                    } else {
+                        b.classList.add("v70-tucked-btn");
+                        tuckedCount++;
+                    }
+                });
+
+                let moreBtn = wrap.querySelector(".v70-more-trigger");
+                if (tuckedCount > 0) {
+                    if (!moreBtn) {
+                        moreBtn = document.createElement("button");
+                        moreBtn.type = "button";
+                        moreBtn.className = "v70-more-trigger no-print";
+                        moreBtn.title = "المزيد من الإجراءات";
+                        moreBtn.innerText = "⋯";
+                        moreBtn.onclick = function(ev) { window.openRowOverflowMenuV70(moreBtn, ev); };
+                        wrap.appendChild(moreBtn);
+                    }
+                } else if (moreBtn) {
+                    moreBtn.remove();
+                }
+            });
+        });
+    }
+
+    let v70CompactTimer = null;
+    function scheduleRowCompactV70() {
+        clearTimeout(v70CompactTimer);
+        v70CompactTimer = setTimeout(compactTableActionRowsV70, 55);
+    }
+
+    // ---- (7) تحويل «البطاقة الذكية» إلى ملف موظف بصري 360° ----
+    window.setProfile360TabV70 = function(tabName) {
+        v70ProfileActiveTab = tabName;
+        window.runSmartSearch();
+    };
+
+    async function hydrateProfile360MediaV70(emp) {
+        const avHolder = document.getElementById("v70_p360_avatar_holder");
+        const docPersonal = document.getElementById("v70_doc_personal");
+        const docFront = document.getElementById("v70_doc_front");
+        const docBack = document.getElementById("v70_doc_back");
+
+        const [pImg, fImg, bImg] = await Promise.all([
+            resolveEmpMedia(emp, "personal").catch(() => emp.personalImg || ""),
+            resolveEmpMedia(emp, "front").catch(() => emp.idFrontImg || ""),
+            resolveEmpMedia(emp, "back").catch(() => emp.idBackImg || "")
+        ]);
+
+        if (avHolder && pImg && (pImg.startsWith("data:image") || pImg.startsWith("http") || pImg.startsWith("uploads/"))) {
+            avHolder.innerHTML = `<img src="${pImg}" alt="${emp.name}">`;
+        }
+        const renderDoc = (el, src, emptyTxt) => {
+            if (!el) return;
+            if (src && (src.startsWith("data:image") || src.startsWith("http") || src.startsWith("uploads/"))) {
+                el.innerHTML = `<img src="${src}" class="v70-p360-doc-img" alt="">`;
+            } else {
+                el.innerHTML = `<div class="py-10 text-xs font-bold opacity-60">${emptyTxt}</div>`;
+            }
+        };
+        renderDoc(docPersonal, pImg, "لم تُرفع الصورة الشخصية بعد");
+        renderDoc(docFront, fImg, "لم يُرفع الوجه الأمامي للهوية");
+        renderDoc(docBack, bImg, "لم يُرفع الوجه الخلفي للهوية");
+    }
+
+    window.runSmartSearch = function() {
+        const emps = curComp().employees || [];
+        const inputEl = document.getElementById("smartSearchInput");
+        const rawInput = (inputEl?.value || "").trim().toLowerCase();
+        const q = rawInput || (currentSearchedEmpId ? String(currentSearchedEmpId).toLowerCase() : String(emps[0]?.id || "").toLowerCase());
+        const card = document.getElementById("employeeProfileCard");
+        if (!card) return;
+
+        const emp = emps.find(e =>
+            String(e.id || "").toLowerCase() === q ||
+            String(e.name || "").toLowerCase().includes(q) ||
+            (e.natId && String(e.natId).toLowerCase().includes(q)) ||
+            (e.phone && String(e.phone).toLowerCase().includes(q))
+        );
+        if (!emp) {
+            currentSearchedEmpId = null;
+            card.innerHTML = `<p class="text-center text-rose-400 font-semibold text-sm py-6">لا يوجد موظف يطابق عبارة البحث (${rawInput}) في (${curComp().name})</p>`;
+            return;
+        }
+
+        currentSearchedEmpId = emp.id;
+        const age = calcAge(emp.dob);
+        const st = getStatus(emp.endDate);
+        const srv = calcService(emp.hireDate, emp.endDate);
+        const p = calculateEmployeePayroll(emp);
+        const curYm = document.getElementById("pay_month")?.value || new Date().toISOString().slice(0, 7);
+        const attRec = emp.monthlyAttendance?.[curYm] || { daysPresent: 0, totalHours: 0, missingOutDays: 0 };
+
+        const checks = [
+            Boolean(emp.natId && String(emp.natId).trim()),
+            Boolean(emp.phone && String(emp.phone).trim()),
+            Boolean(emp.dob && String(emp.dob).trim()),
+            Boolean(emp.hireDate && String(emp.hireDate).trim()),
+            Boolean(emp.personalImg),
+            Boolean(emp.idFrontImg),
+            Boolean(emp.idBackImg),
+            emp.biometricRegistered !== false
+        ];
+        const compPct = Math.round((checks.filter(Boolean).length / checks.length) * 100);
+        const initials = String(emp.name || "م").trim().split(/\s+/).slice(0, 2).map(w => w[0]).join(" ");
+        const stars = Number(emp.rating) || 0;
+        const starBadge = `<button type="button" onclick="if(typeof openEmpRatingModal==='function') openEmpRatingModal('${emp.id}')" class="px-2.5 py-0.5 rounded-full text-[11px] font-black" style="background:rgba(251,191,36,0.22);border:1px solid rgba(251,191,36,0.55);color:#fde68a !important;">${stars > 0 ? '★'.repeat(stars) + ' ' + stars + '/5' : '☆ أضف تقييم'}</button>`;
+
+        let tabBody = "";
+        if (v70ProfileActiveTab === "admin") {
+            const extraEntries = Object.entries(emp.extraInfo || {});
+            tabBody = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('mainDept')}</span><b class="text-sm font-black">${emp.mainDept || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('subDept')}</span><b class="text-sm font-black">${emp.subDept || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('natId')}</span><b class="text-sm num-mono font-black">${emp.natId || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('phone')}</span><b class="text-sm num-mono font-black text-sky-400">${emp.phone || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('dob')} والعمر</span><b class="text-sm num-mono font-black">${emp.dob || '—'} (${age !== '' ? age + ' سنة' : '—'})</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">الجنس والحالة</span><b class="text-sm font-black">${emp.gender || 'ذكر'} — ${emp.maritalStatus || 'عازب'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('hireDate')}</span><b class="text-sm num-mono font-black">${emp.hireDate || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">مدة الخدمة الفعلية</span><b class="text-sm font-black text-cyan-400">${srv}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('endDate')}</span><b class="text-sm num-mono font-black">${emp.endDate || 'مستمر على رأس عمله'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('shift')}</span><b class="text-sm font-black">${emp.shift || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('custom')}</span><b class="text-sm font-black">${emp.custom || '—'}</b></div>
+                    <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${L('notes')}</span><b class="text-sm font-bold">${emp.notes || '—'}</b></div>
+                    ${extraEntries.map(([k, v]) => `<div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">${k}</span><b class="text-sm font-black">${v}</b></div>`).join("")}
+                </div>
+            `;
+        } else if (v70ProfileActiveTab === "finance") {
+            const logs = (emp.financeLogs || []).slice(0, 6);
+            tabBody = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">الراتب الأساسي (${p.calcMode})</span><b class="text-base num-mono font-black basma-fin-sensitive">${p.base.toLocaleString()} ل.س</b></div>
+                        <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">الإضافي والمكافآت</span><b class="text-base num-mono font-black text-emerald-500 basma-fin-sensitive">+${(p.overtimePay + p.bonus).toLocaleString()} ل.س</b></div>
+                        <div class="p-3 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);"><span class="opacity-70 block">السلف والحسميات</span><b class="text-base num-mono font-black text-rose-500 basma-fin-sensitive">-${(p.shortageDed + p.manualDed).toLocaleString()} ل.س</b></div>
+                        <div class="p-3 rounded-xl border border-sky-400/50 bg-sky-500/10"><span class="text-sky-400 font-bold block">صافي الراتب المستحق</span><b class="text-lg num-mono font-black text-sky-400 basma-fin-sensitive">${p.netSalary.toLocaleString()} ل.س</b></div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="openQuickFinanceModal('${emp.id}')" class="btn-basma-advance !py-1.5 !px-4"><span>💳 تسجيل سلفة / إضافي / خصم</span></button>
+                        <button type="button" onclick="if(typeof generateLuxuryPayslipCard==='function') generateLuxuryPayslipCard('${emp.id}')" class="btn-lux btn-ocean-royal !py-1.5 !px-4"><span>📄 بطاقة كشف الراتب PNG</span></button>
+                    </div>
+                    <div class="p-3.5 rounded-xl border space-y-2 text-xs" style="background:var(--card-elevated);border-color:var(--border-col);">
+                        <div class="font-black">📋 أحدث الحركات المالية المسجلة</div>
+                        ${logs.length ? logs.map(l => `<div class="flex items-center justify-between py-1.5 border-b last:border-0" style="border-color:var(--border-col);"><span><b>${l.type}</b> — ${l.note || 'بدون ملاحظة'} <span class="opacity-65">(${l.by || 'HR'})</span></span><span class="num-mono font-black">${Number(l.amount||0).toLocaleString()} ل.س <span class="opacity-60 font-normal text-[10.5px]">${l.time || ''}</span></span></div>`).join("") : `<p class="opacity-65 py-2">لا توجد سلف أو مكافآت مسجلة لهذا الموظف حالياً.</p>`}
+                    </div>
+                </div>
+            `;
+        } else if (v70ProfileActiveTab === "leaves") {
+            const usedPct = Math.min(100, Math.round((p.usedLeaveDays / ANNUAL_PAID_LEAVE_DAYS) * 100));
+            const lLogs = (emp.leaveLogs || []).slice(0, 6);
+            tabBody = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="p-3.5 rounded-xl border space-y-1.5" style="background:var(--card-elevated);border-color:var(--border-col);">
+                            <div class="flex items-center justify-between"><span class="opacity-70 font-bold">رصيد الإجازات المأجورة (15 يوم)</span><b class="num-mono font-black">${p.usedLeaveDays} / 15 يوم</b></div>
+                            <div class="w-full h-2 rounded-full bg-slate-400/25 overflow-hidden"><div class="h-2 rounded-full" style="width:${usedPct}%;background:${p.excessLeaveDays > 0 ? '#e11d48' : '#8b5cf6'};"></div></div>
+                            <span class="block text-[11px] font-bold opacity-80">المتبقي المأجور: <b>${p.remainingLeaveDays} يوم</b></span>
+                        </div>
+                        <div class="p-3.5 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);">
+                            <span class="opacity-70 block font-bold">حالة جهاز البصمة</span>
+                            <b class="text-sm font-black block mt-1 ${emp.biometricRegistered !== false ? 'text-emerald-500' : 'text-amber-500'}">${emp.biometricRegistered !== false ? '✅ مسجّل على جهاز البصمة' : '⚠️ غير مسجّل على الجهاز'}</b>
+                        </div>
+                        <div class="p-3.5 rounded-xl border" style="background:var(--card-elevated);border-color:var(--border-col);">
+                            <span class="opacity-70 block font-bold">ملخص دوام شهر (${curYm})</span>
+                            <b class="text-sm num-mono font-black block mt-1">${attRec.daysPresent || 0} يوم حضور • ${attRec.totalHours || 0} ساعة</b>
+                            <span class="text-[10.5px] font-bold opacity-75">بصمات ناقصة: ${attRec.missingOutDays || 0}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="openEmployeeAttendanceModal('${emp.id}')" class="btn-basma-att !py-1.5 !px-4"><span>🕒 فتح سجل حركات الدوام الشهري</span></button>
+                        <button type="button" onclick="openJustifiedLeaveModal('${emp.id}')" class="btn-basma-leave !py-1.5 !px-4"><span>🌴 تسجيل إجازة يومية / ساعية</span></button>
+                    </div>
+                    <div class="p-3.5 rounded-xl border space-y-2 text-xs" style="background:var(--card-elevated);border-color:var(--border-col);">
+                        <div class="font-black">🌴 سجل الإجازات المبررة</div>
+                        ${lLogs.length ? lLogs.map(l => `<div class="flex items-center justify-between py-1.5 border-b last:border-0" style="border-color:var(--border-col);"><span><b>${l.mode}</b>: ${l.amount} — ${l.reason || ''}</span><span class="num-mono opacity-70 text-[10.5px]">${l.time || ''}</span></div>`).join("") : `<p class="opacity-65 py-2">لا توجد إجازات مسجلة حتى الآن.</p>`}
+                    </div>
+                </div>
+            `;
+        } else {
+            tabBody = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                        <div class="v70-p360-doc-box"><div class="font-black">👤 الصورة الشخصية</div><div id="v70_doc_personal"><div class="py-10 opacity-60">جاري التحميل...</div></div></div>
+                        <div class="v70-p360-doc-box"><div class="font-black">🪪 الهوية — الوجه الأمامي</div><div id="v70_doc_front"><div class="py-10 opacity-60">جاري التحميل...</div></div></div>
+                        <div class="v70-p360-doc-box"><div class="font-black">🪪 الهوية — الوجه الخلفي</div><div id="v70_doc_back"><div class="py-10 opacity-60">جاري التحميل...</div></div></div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="if(typeof generateWorkDossierPdf==='function') generateWorkDossierPdf('${emp.id}')" class="btn-basma-dossier !py-2 !px-4"><span>📁 توليد إضبارة عمل رسمية PDF</span></button>
+                        <button type="button" onclick="exportEmployeeIdToPdf('${emp.id}', false)" class="btn-lux btn-azure-primary !py-2 !px-4"><span>🖨️ تصدير الهوية PDF (ملوّن HD)</span></button>
+                        <button type="button" onclick="exportEmployeeIdToPdf('${emp.id}', true)" class="btn-lux btn-dark-lux !py-2 !px-4"><span>🖨️ الهوية PDF أبيض وأسود</span></button>
+                        <button type="button" onclick="if(typeof openEmployeeIdCardViewer==='function') openEmployeeIdCardViewer('${emp.id}')" class="btn-lux btn-ocean-royal !py-2 !px-4"><span>🪪 عارض الهوية</span></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        card.innerHTML = `
+            <div class="space-y-4">
+                <div class="v70-p360-hero">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div id="v70_p360_avatar_holder" class="v70-p360-avatar">
+                            <span class="v70-p360-initials">${initials}</span>
+                        </div>
+                        <div class="space-y-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black num-mono" style="background:rgba(56,189,248,0.22);border:1px solid rgba(125,211,252,0.45);">ID #${emp.id}</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black" style="background:${st === 'على رأس عمله' ? 'rgba(16,185,129,0.24)' : 'rgba(225,29,72,0.32)'};border:1px solid ${st === 'على رأس عمله' ? 'rgba(110,231,183,0.5)' : 'rgba(253,164,175,0.55)'};">${st}</span>
+                                ${starBadge}
+                            </div>
+                            <h3 class="text-xl font-black truncate" style="color:#ffffff !important;">${emp.name}</h3>
+                            <p class="text-xs font-bold opacity-85" style="color:#bae6fd !important;">${emp.mainDept} — ${emp.subDept || 'عام'} • ${emp.shift || 'دوام كامل'}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-end gap-2.5 min-w-[200px]">
+                        <div class="flex flex-wrap items-center gap-2">
+                            ${buildWhatsAppBadgeHTML(emp)}
+                            <button type="button" onclick="loadEmployeeToForm('${emp.id}')" class="px-3.5 py-1.5 rounded-full text-xs font-black cursor-pointer" style="background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.35);color:#ffffff !important;">✏️ تعديل الملف</button>
+                        </div>
+                        <div class="w-full max-w-[220px]">
+                            <div class="flex items-center justify-between text-[10.5px] font-bold mb-1"><span>اكتمال ملف الموظف</span><span class="num-mono">${compPct}%</span></div>
+                            <div class="w-full h-1.5 rounded-full bg-white/15 overflow-hidden"><div class="h-1.5 rounded-full" style="width:${compPct}%;background:${compPct >= 80 ? '#34d399' : '#fbbf24'};"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="v70-p360-tabs no-print">
+                    <button type="button" onclick="setProfile360TabV70('admin')" class="v70-p360-tab ${v70ProfileActiveTab === 'admin' ? 'is-active' : ''}">🏢 الإداري والوظيفي</button>
+                    <button type="button" onclick="setProfile360TabV70('finance')" class="v70-p360-tab ${v70ProfileActiveTab === 'finance' ? 'is-active' : ''}">💰 الراتب والسلف</button>
+                    <button type="button" onclick="setProfile360TabV70('leaves')" class="v70-p360-tab ${v70ProfileActiveTab === 'leaves' ? 'is-active' : ''}">🌴 الإجازات والبصمة</button>
+                    <button type="button" onclick="setProfile360TabV70('docs')" class="v70-p360-tab ${v70ProfileActiveTab === 'docs' ? 'is-active' : ''}">🪪 الوثائق والهوية</button>
+                </div>
+
+                <div class="pt-1">${tabBody}</div>
+            </div>
+        `;
+
+        hydrateProfile360MediaV70(emp);
+    };
+
+    // ---- ربط جميع دوال الترقية v70 بدورة العرض والتنقل بسلاسة ----
+    const _v70OrigSwitchTab = window.switchTab;
+    window.switchTab = function(tabName) {
+        const res = _v70OrigSwitchTab.apply(this, arguments);
+        updateContextualThemeV70();
+        scheduleRowCompactV70();
+        return res;
+    };
+
+    const _v70OrigSetPillar = window.setBasmaDashPillarV64;
+    if (typeof _v70OrigSetPillar === "function") {
+        window.setBasmaDashPillarV64 = function(p) {
+            const res = _v70OrigSetPillar.apply(this, arguments);
+            updateContextualThemeV70(p === "overview" ? "admin" : p);
+            return res;
+        };
+    }
+
+    const _v70OrigRenderHub = renderExecutivePillarHubV64;
+    renderExecutivePillarHubV64 = function() {
+        _v70OrigRenderHub.apply(this, arguments);
+        enhanceVisualKpisV70();
+        updateContextualThemeV70();
+    };
+
+    const _v70OrigRenderAll = window.renderAllViews;
+    window.renderAllViews = function() {
+        const res = _v70OrigRenderAll.apply(this, arguments);
+        ensureThemeToggleButtonV70();
+        setupContextualTopNavV70();
+        updateContextualThemeV70();
+        enhanceVisualKpisV70();
+        scheduleRowCompactV70();
+        return res;
+    };
+
+    // مراقب خفيف لضغط أزرار الصفوف حتى بعد حقن أزرار الإضبارة/التقييم/الحركات المتأخرة
+    const v70TableObs = new MutationObserver(() => scheduleRowCompactV70());
+    ["dashboardQuickTable", "masterTableBody"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) v70TableObs.observe(el, { childList: true, subtree: true });
+    });
+
+    // تشغيل أولي
+    setTimeout(() => {
+        enforceDayThemeAlways();
+        ensureThemeToggleButtonV70();
+        setupContextualTopNavV70();
+        updateContextualThemeV70();
+        enhanceVisualKpisV70();
+        scheduleRowCompactV70();
+    }, 100);
 
     // تشغيل أولي نظيف وفوري بدون أي ومضة: نبني الشاشة المقسمة قبل إظهار الصفحة!
     injectBackgroundWatermark();
